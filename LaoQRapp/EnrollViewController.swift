@@ -48,12 +48,6 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         // Do any additional setup after loading the view.
         apd.enrollVC = self
         step3View.isHidden = true
-        //開発環境のラベル作成
-//        if devCheck == "開発" {
-//            label1.backgroundColor = .yellow
-//            label1.textColor = .black
-//            label1.text = "【開発環境】"
-//        }
         //ツールバーの設定
         self.navigationController?.setToolbarHidden(false, animated: false)
         nextButton_ = UIBarButtonItem(title: "次へ", style: .plain, target: self, action: #selector(self.tapNextButton))
@@ -67,9 +61,6 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         settingBtn.layer.borderColor = standardBlue_.cgColor
         settingBtn.layer.cornerRadius = 8
         
-        //QRリーダー起動時の判別用にボタンにTAGを設定
-        QRScanButton.tag = 999
-        
         for field in fields {
             field.delegate = self
         }
@@ -78,7 +69,8 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
             v.layer.cornerRadius = 10
         }
         
-        
+//        itemCD_ = "222222"
+//        serialNO = "123456789012345678"
         
     }
     
@@ -510,6 +502,9 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         
         print(orderStr)
         
+        self.postSS()
+        
+        
         let param:[String:Any] = [
             "SYAIN_CD":syainCD_,
             "LOCAT_CD":locateCD_,
@@ -538,6 +533,12 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                     let json_ = json!
 
                     if json!["RTNCD"] as! String == "000" {
+                        
+                        //スプレッドシート登録
+                        self.postSS()
+                        //FMDB登録
+                        
+                        
                         //登録完了
                         DispatchQueue.main.async {
                             let alert = UIAlertController(title: "登録完了", message: "", preferredStyle: .alert)
@@ -574,6 +575,112 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         alert.addAction(UIAlertAction(title: "やり直す", style: .cancel, handler: nil))
         //アラートを表示
         self.present(alert,animated: true)
+ 
+    }
+    
+    var postAlert:UIAlertController!
+    func postSS(){
+        //登録
+        sheetId = "1Ps2oJPkjXp0F2VDEG-39H-DSJD1AFjB6Lhuka3vJu6w"
+        sheetName = "detail"
+        
+        //新規登録
+        postAlert = UIAlertController(title: "データ登録中", message: "", preferredStyle: .alert)
+        self.present(postAlert, animated: true, completion: nil)
+        let url = "https://script.google.com/macros/s/AKfycbzo7SQFMFqc6BXTvjxxiQgqUB08vT263oT-Df2WAWedb1lxEQU/exec"
+        
+        let param = [
+            "sheetid":sheetId,
+            "sheetName":sheetName,
+            "operation":"input",
+            "loc":locateCD_,
+            "itemCD":itemCD_,
+            "uv":UVField.text!,
+            "uh":UHField.text!,
+            "lv":LVField.text!,
+            "lh":LHField.text!,
+            "wt":WTField.text!,
+            "ht":HTField.text!,
+            "serial":serialNO,
+            "staff":syainCD_,
+            "date":Date().entryDate
+        ]
+
+        var request = URLRequest(url: URL(string: url)!)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 20.0
+        let session = URLSession(configuration: config)
+        
+        do{
+            request.httpBody = try JSONSerialization.data(withJSONObject: param, options: .prettyPrinted)
+            
+            let task = session.dataTask(with: request as URLRequest, completionHandler: {(data,response,err) -> Void in
+                var str1 = ""
+                var str2 = ""
+                if err == nil {
+                    if data != nil {
+                        do{
+                            let json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary ?? [:]
+                            print(json)
+                            let status = json["status"] as? String ?? ""
+                            let rtnMsg = json["rtnMsg"] as? String ?? ""
+                            let error = json["error"] as? String ?? ""
+                            print(rtnMsg)
+                            print(error)
+                            
+                            if status == "success" { //登録成功
+                                str1 = "正常に登録できました"
+//                                self.dbUpdate()
+//                                DispatchQueue.main.async {
+//                                    self.back()
+//                                }
+                            }else { //その他のエラー
+                                str1 = "Error:2002"
+                                str2 = rtnMsg
+                            }
+                            
+                        }catch{
+                            //スプレッドシートに接続できない
+                            str1 = "Error:2003"
+                            str2 = "スプレッドシートに登録できません"
+                        }
+                        
+                    }else {
+                        //GASからの戻りがない
+                        str1 = "Error:2004"
+                        str2 = "スプレッドシートに接続できませんでした"
+                    }
+                }else {
+                    //接続エラー
+                    str1 = "Error"
+                    str2 = err!.localizedDescription
+                }
+                
+                DispatchQueue.main.async {
+                    self.postAlert.title = str1
+                    self.postAlert.message = str2
+                    self.postAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    
+                }
+                
+            })
+            task.resume()
+        }catch{
+            //json解析エラー
+            print("Error:\(error)")
+            DispatchQueue.main.async {
+                self.postAlert.title = "Error"
+                self.postAlert.message = error.localizedDescription
+                self.postAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            }
+            
+            return
+            
+        }
+        
     }
     
     func resetQR() {
