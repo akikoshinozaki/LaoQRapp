@@ -1,0 +1,576 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 51;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7B78E0E9EBC457D02E109C46 /* Pods_LaoQRapp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E380D639552C658E90D8F116 /* Pods_LaoQRapp.framework */; };
+		C3ACA1C82526BC3E00F2CC51 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA1C72526BC3E00F2CC51 /* AppDelegate.swift */; };
+		C3ACA1CC2526BC3E00F2CC51 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA1CB2526BC3E00F2CC51 /* ViewController.swift */; };
+		C3ACA1CF2526BC3E00F2CC51 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1CD2526BC3E00F2CC51 /* Main.storyboard */; };
+		C3ACA1D22526BC3E00F2CC51 /* LaoQRapp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA1D02526BC3E00F2CC51 /* LaoQRapp.xcdatamodeld */; };
+		C3ACA1D42526BC3F00F2CC51 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1D32526BC3F00F2CC51 /* Assets.xcassets */; };
+		C3ACA1D72526BC3F00F2CC51 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1D52526BC3F00F2CC51 /* LaunchScreen.storyboard */; };
+		C3ACA1EF2526BEAA00F2CC51 /* arrow_nextのコピー.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1E02526BEA900F2CC51 /* arrow_nextのコピー.png */; };
+		C3ACA1F02526BEAA00F2CC51 /* arrow_backのコピー.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1E12526BEA900F2CC51 /* arrow_backのコピー.png */; };
+		C3ACA1F12526BEAA00F2CC51 /* arrow_back.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1E22526BEA900F2CC51 /* arrow_back.png */; };
+		C3ACA1F22526BEAA00F2CC51 /* offline.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1E32526BEA900F2CC51 /* offline.png */; };
+		C3ACA1F32526BEAA00F2CC51 /* arrow_next.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1E42526BEA900F2CC51 /* arrow_next.png */; };
+		C3ACA1F42526BEAA00F2CC51 /* inquiry.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1E52526BEA900F2CC51 /* inquiry.png */; };
+		C3ACA1F52526BEAA00F2CC51 /* print.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1E62526BEA900F2CC51 /* print.png */; };
+		C3ACA1F62526BEAA00F2CC51 /* enroll.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1E72526BEA900F2CC51 /* enroll.png */; };
+		C3ACA1F72526BEAA00F2CC51 /* listbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1E82526BEA900F2CC51 /* listbutton.png */; };
+		C3ACA1F82526BEAA00F2CC51 /* QRbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1E92526BEA900F2CC51 /* QRbutton.png */; };
+		C3ACA1F92526BEAA00F2CC51 /* input.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1EA2526BEA900F2CC51 /* input.png */; };
+		C3ACA1FA2526BEAA00F2CC51 /* syaincd.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1EB2526BEA900F2CC51 /* syaincd.png */; };
+		C3ACA1FB2526BEAA00F2CC51 /* dateChange.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1EC2526BEA900F2CC51 /* dateChange.png */; };
+		C3ACA1FC2526BEAA00F2CC51 /* barcode.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1ED2526BEA900F2CC51 /* barcode.png */; };
+		C3ACA1FD2526BEAA00F2CC51 /* reload.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1EE2526BEA900F2CC51 /* reload.png */; };
+		C3ACA2082526BEBF00F2CC51 /* DBBackUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2002526BEBF00F2CC51 /* DBBackUp.swift */; };
+		C3ACA2092526BEBF00F2CC51 /* EntryDataBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2012526BEBF00F2CC51 /* EntryDataBase.swift */; };
+		C3ACA20B2526BEBF00F2CC51 /* DataDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2032526BEBF00F2CC51 /* DataDownload.swift */; };
+		C3ACA20C2526BEBF00F2CC51 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2042526BEBF00F2CC51 /* Common.swift */; };
+		C3ACA20D2526BEBF00F2CC51 /* IBM.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2052526BEBF00F2CC51 /* IBM.swift */; };
+		C3ACA2112526BEED00F2CC51 /* QRScannerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA20F2526BEED00F2CC51 /* QRScannerView.xib */; };
+		C3ACA2122526BEED00F2CC51 /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2102526BEED00F2CC51 /* QRScannerView.swift */; };
+		C3ACA2142526BF0800F2CC51 /* SimpleAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2132526BF0800F2CC51 /* SimpleAlert.swift */; };
+		C3ACA2162526C1A200F2CC51 /* HostConnect.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2152526C1A200F2CC51 /* HostConnect.swift */; };
+		C3ACA2182526F8A600F2CC51 /* EnrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2172526F8A600F2CC51 /* EnrollViewController.swift */; };
+		C3ACA21B2526FB0400F2CC51 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2192526FB0400F2CC51 /* SettingView.swift */; };
+		C3ACA21C2526FB0400F2CC51 /* SettingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA21A2526FB0400F2CC51 /* SettingView.xib */; };
+		C3ACA21E2526FC0700F2CC51 /* libzbar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3ACA21D2526FC0700F2CC51 /* libzbar.a */; };
+		C3B6FBE1252ABAB0007397E1 /* SerialNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B6FBE0252ABAB0007397E1 /* SerialNumber.swift */; };
+		C3B6FBE3252AFA0A007397E1 /* InquiryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B6FBE2252AFA0A007397E1 /* InquiryViewController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		5351F89B737653FEB4A78DC2 /* Pods-LaoQRapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LaoQRapp.release.xcconfig"; path = "Target Support Files/Pods-LaoQRapp/Pods-LaoQRapp.release.xcconfig"; sourceTree = "<group>"; };
+		C3ACA1C42526BC3E00F2CC51 /* LaoQRapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LaoQRapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C3ACA1C72526BC3E00F2CC51 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		C3ACA1CB2526BC3E00F2CC51 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		C3ACA1CE2526BC3E00F2CC51 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C3ACA1D12526BC3E00F2CC51 /* LaoQRapp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LaoQRapp.xcdatamodel; sourceTree = "<group>"; };
+		C3ACA1D32526BC3F00F2CC51 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C3ACA1D62526BC3F00F2CC51 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		C3ACA1D82526BC3F00F2CC51 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C3ACA1DE2526BCBB00F2CC51 /* LaoQRapp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LaoQRapp.entitlements; sourceTree = "<group>"; };
+		C3ACA1E02526BEA900F2CC51 /* arrow_nextのコピー.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_nextのコピー.png"; sourceTree = "<group>"; };
+		C3ACA1E12526BEA900F2CC51 /* arrow_backのコピー.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_backのコピー.png"; sourceTree = "<group>"; };
+		C3ACA1E22526BEA900F2CC51 /* arrow_back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_back.png; sourceTree = "<group>"; };
+		C3ACA1E32526BEA900F2CC51 /* offline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = offline.png; sourceTree = "<group>"; };
+		C3ACA1E42526BEA900F2CC51 /* arrow_next.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_next.png; sourceTree = "<group>"; };
+		C3ACA1E52526BEA900F2CC51 /* inquiry.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = inquiry.png; sourceTree = "<group>"; };
+		C3ACA1E62526BEA900F2CC51 /* print.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = print.png; sourceTree = "<group>"; };
+		C3ACA1E72526BEA900F2CC51 /* enroll.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = enroll.png; sourceTree = "<group>"; };
+		C3ACA1E82526BEA900F2CC51 /* listbutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = listbutton.png; sourceTree = "<group>"; };
+		C3ACA1E92526BEA900F2CC51 /* QRbutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = QRbutton.png; sourceTree = "<group>"; };
+		C3ACA1EA2526BEA900F2CC51 /* input.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = input.png; sourceTree = "<group>"; };
+		C3ACA1EB2526BEA900F2CC51 /* syaincd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = syaincd.png; sourceTree = "<group>"; };
+		C3ACA1EC2526BEA900F2CC51 /* dateChange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dateChange.png; sourceTree = "<group>"; };
+		C3ACA1ED2526BEA900F2CC51 /* barcode.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = barcode.png; sourceTree = "<group>"; };
+		C3ACA1EE2526BEA900F2CC51 /* reload.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reload.png; sourceTree = "<group>"; };
+		C3ACA2002526BEBF00F2CC51 /* DBBackUp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DBBackUp.swift; sourceTree = "<group>"; };
+		C3ACA2012526BEBF00F2CC51 /* EntryDataBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntryDataBase.swift; sourceTree = "<group>"; };
+		C3ACA2032526BEBF00F2CC51 /* DataDownload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataDownload.swift; sourceTree = "<group>"; };
+		C3ACA2042526BEBF00F2CC51 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
+		C3ACA2052526BEBF00F2CC51 /* IBM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IBM.swift; sourceTree = "<group>"; };
+		C3ACA20F2526BEED00F2CC51 /* QRScannerView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = QRScannerView.xib; sourceTree = "<group>"; };
+		C3ACA2102526BEED00F2CC51 /* QRScannerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRScannerView.swift; sourceTree = "<group>"; };
+		C3ACA2132526BF0800F2CC51 /* SimpleAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleAlert.swift; sourceTree = "<group>"; };
+		C3ACA2152526C1A200F2CC51 /* HostConnect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostConnect.swift; sourceTree = "<group>"; };
+		C3ACA2172526F8A600F2CC51 /* EnrollViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnrollViewController.swift; sourceTree = "<group>"; };
+		C3ACA2192526FB0400F2CC51 /* SettingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
+		C3ACA21A2526FB0400F2CC51 /* SettingView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingView.xib; sourceTree = "<group>"; };
+		C3ACA21D2526FC0700F2CC51 /* libzbar.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libzbar.a; sourceTree = "<group>"; };
+		C3B6FBE0252ABAB0007397E1 /* SerialNumber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerialNumber.swift; sourceTree = "<group>"; };
+		C3B6FBE2252AFA0A007397E1 /* InquiryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InquiryViewController.swift; sourceTree = "<group>"; };
+		E380D639552C658E90D8F116 /* Pods_LaoQRapp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LaoQRapp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F54A7448A8DAB8BC2D84FDEA /* Pods-LaoQRapp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LaoQRapp.debug.xcconfig"; path = "Target Support Files/Pods-LaoQRapp/Pods-LaoQRapp.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C3ACA1C12526BC3E00F2CC51 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7B78E0E9EBC457D02E109C46 /* Pods_LaoQRapp.framework in Frameworks */,
+				C3ACA21E2526FC0700F2CC51 /* libzbar.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		37D02A29831EBF3D6ED562FD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C3ACA21D2526FC0700F2CC51 /* libzbar.a */,
+				E380D639552C658E90D8F116 /* Pods_LaoQRapp.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9AA9D163B951B353AC83BFA0 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F54A7448A8DAB8BC2D84FDEA /* Pods-LaoQRapp.debug.xcconfig */,
+				5351F89B737653FEB4A78DC2 /* Pods-LaoQRapp.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		C3ACA1BB2526BC3E00F2CC51 = {
+			isa = PBXGroup;
+			children = (
+				C3ACA1C62526BC3E00F2CC51 /* LaoQRapp */,
+				C3ACA1C52526BC3E00F2CC51 /* Products */,
+				9AA9D163B951B353AC83BFA0 /* Pods */,
+				37D02A29831EBF3D6ED562FD /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		C3ACA1C52526BC3E00F2CC51 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C3ACA1C42526BC3E00F2CC51 /* LaoQRapp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C3ACA1C62526BC3E00F2CC51 /* LaoQRapp */ = {
+			isa = PBXGroup;
+			children = (
+				C3ACA1DF2526BEA900F2CC51 /* img */,
+				C3ACA1FE2526BEBF00F2CC51 /* Object */,
+				C3ACA1DE2526BCBB00F2CC51 /* LaoQRapp.entitlements */,
+				C3ACA1C72526BC3E00F2CC51 /* AppDelegate.swift */,
+				C3ACA1CB2526BC3E00F2CC51 /* ViewController.swift */,
+				C3ACA2172526F8A600F2CC51 /* EnrollViewController.swift */,
+				C3B6FBE2252AFA0A007397E1 /* InquiryViewController.swift */,
+				C3ACA2192526FB0400F2CC51 /* SettingView.swift */,
+				C3ACA21A2526FB0400F2CC51 /* SettingView.xib */,
+				C3ACA1CD2526BC3E00F2CC51 /* Main.storyboard */,
+				C3ACA1D32526BC3F00F2CC51 /* Assets.xcassets */,
+				C3ACA1D52526BC3F00F2CC51 /* LaunchScreen.storyboard */,
+				C3ACA1D82526BC3F00F2CC51 /* Info.plist */,
+				C3ACA1D02526BC3E00F2CC51 /* LaoQRapp.xcdatamodeld */,
+			);
+			path = LaoQRapp;
+			sourceTree = "<group>";
+		};
+		C3ACA1DF2526BEA900F2CC51 /* img */ = {
+			isa = PBXGroup;
+			children = (
+				C3ACA1E02526BEA900F2CC51 /* arrow_nextのコピー.png */,
+				C3ACA1E12526BEA900F2CC51 /* arrow_backのコピー.png */,
+				C3ACA1E22526BEA900F2CC51 /* arrow_back.png */,
+				C3ACA1E32526BEA900F2CC51 /* offline.png */,
+				C3ACA1E42526BEA900F2CC51 /* arrow_next.png */,
+				C3ACA1E52526BEA900F2CC51 /* inquiry.png */,
+				C3ACA1E62526BEA900F2CC51 /* print.png */,
+				C3ACA1E72526BEA900F2CC51 /* enroll.png */,
+				C3ACA1E82526BEA900F2CC51 /* listbutton.png */,
+				C3ACA1E92526BEA900F2CC51 /* QRbutton.png */,
+				C3ACA1EA2526BEA900F2CC51 /* input.png */,
+				C3ACA1EB2526BEA900F2CC51 /* syaincd.png */,
+				C3ACA1EC2526BEA900F2CC51 /* dateChange.png */,
+				C3ACA1ED2526BEA900F2CC51 /* barcode.png */,
+				C3ACA1EE2526BEA900F2CC51 /* reload.png */,
+			);
+			path = img;
+			sourceTree = "<group>";
+		};
+		C3ACA1FE2526BEBF00F2CC51 /* Object */ = {
+			isa = PBXGroup;
+			children = (
+				C3B6FBE0252ABAB0007397E1 /* SerialNumber.swift */,
+				C3ACA2152526C1A200F2CC51 /* HostConnect.swift */,
+				C3ACA2102526BEED00F2CC51 /* QRScannerView.swift */,
+				C3ACA20F2526BEED00F2CC51 /* QRScannerView.xib */,
+				C3ACA2002526BEBF00F2CC51 /* DBBackUp.swift */,
+				C3ACA2012526BEBF00F2CC51 /* EntryDataBase.swift */,
+				C3ACA2032526BEBF00F2CC51 /* DataDownload.swift */,
+				C3ACA2042526BEBF00F2CC51 /* Common.swift */,
+				C3ACA2052526BEBF00F2CC51 /* IBM.swift */,
+				C3ACA2132526BF0800F2CC51 /* SimpleAlert.swift */,
+			);
+			path = Object;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C3ACA1C32526BC3E00F2CC51 /* LaoQRapp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C3ACA1DB2526BC3F00F2CC51 /* Build configuration list for PBXNativeTarget "LaoQRapp" */;
+			buildPhases = (
+				4B65F4F2BF59B853FC442EE7 /* [CP] Check Pods Manifest.lock */,
+				C3ACA1C02526BC3E00F2CC51 /* Sources */,
+				C3ACA1C12526BC3E00F2CC51 /* Frameworks */,
+				C3ACA1C22526BC3E00F2CC51 /* Resources */,
+				6A09698CC6AC5B01F4627BB1 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LaoQRapp;
+			productName = LaoQRapp;
+			productReference = C3ACA1C42526BC3E00F2CC51 /* LaoQRapp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C3ACA1BC2526BC3E00F2CC51 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1140;
+				LastUpgradeCheck = 1140;
+				ORGANIZATIONNAME = "Akiko Shinozaki";
+				TargetAttributes = {
+					C3ACA1C32526BC3E00F2CC51 = {
+						CreatedOnToolsVersion = 11.4.1;
+					};
+				};
+			};
+			buildConfigurationList = C3ACA1BF2526BC3E00F2CC51 /* Build configuration list for PBXProject "LaoQRapp" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C3ACA1BB2526BC3E00F2CC51;
+			productRefGroup = C3ACA1C52526BC3E00F2CC51 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C3ACA1C32526BC3E00F2CC51 /* LaoQRapp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C3ACA1C22526BC3E00F2CC51 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C3ACA1EF2526BEAA00F2CC51 /* arrow_nextのコピー.png in Resources */,
+				C3ACA1D72526BC3F00F2CC51 /* LaunchScreen.storyboard in Resources */,
+				C3ACA1F62526BEAA00F2CC51 /* enroll.png in Resources */,
+				C3ACA1F32526BEAA00F2CC51 /* arrow_next.png in Resources */,
+				C3ACA1F22526BEAA00F2CC51 /* offline.png in Resources */,
+				C3ACA1FB2526BEAA00F2CC51 /* dateChange.png in Resources */,
+				C3ACA1F72526BEAA00F2CC51 /* listbutton.png in Resources */,
+				C3ACA1F42526BEAA00F2CC51 /* inquiry.png in Resources */,
+				C3ACA1FA2526BEAA00F2CC51 /* syaincd.png in Resources */,
+				C3ACA1FC2526BEAA00F2CC51 /* barcode.png in Resources */,
+				C3ACA1FD2526BEAA00F2CC51 /* reload.png in Resources */,
+				C3ACA1D42526BC3F00F2CC51 /* Assets.xcassets in Resources */,
+				C3ACA1CF2526BC3E00F2CC51 /* Main.storyboard in Resources */,
+				C3ACA21C2526FB0400F2CC51 /* SettingView.xib in Resources */,
+				C3ACA1F52526BEAA00F2CC51 /* print.png in Resources */,
+				C3ACA1F92526BEAA00F2CC51 /* input.png in Resources */,
+				C3ACA1F12526BEAA00F2CC51 /* arrow_back.png in Resources */,
+				C3ACA1F82526BEAA00F2CC51 /* QRbutton.png in Resources */,
+				C3ACA1F02526BEAA00F2CC51 /* arrow_backのコピー.png in Resources */,
+				C3ACA2112526BEED00F2CC51 /* QRScannerView.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4B65F4F2BF59B853FC442EE7 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-LaoQRapp-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6A09698CC6AC5B01F4627BB1 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LaoQRapp/Pods-LaoQRapp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-LaoQRapp/Pods-LaoQRapp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-LaoQRapp/Pods-LaoQRapp-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C3ACA1C02526BC3E00F2CC51 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C3ACA2082526BEBF00F2CC51 /* DBBackUp.swift in Sources */,
+				C3ACA1CC2526BC3E00F2CC51 /* ViewController.swift in Sources */,
+				C3ACA20C2526BEBF00F2CC51 /* Common.swift in Sources */,
+				C3ACA2092526BEBF00F2CC51 /* EntryDataBase.swift in Sources */,
+				C3ACA2142526BF0800F2CC51 /* SimpleAlert.swift in Sources */,
+				C3ACA2162526C1A200F2CC51 /* HostConnect.swift in Sources */,
+				C3ACA1D22526BC3E00F2CC51 /* LaoQRapp.xcdatamodeld in Sources */,
+				C3B6FBE1252ABAB0007397E1 /* SerialNumber.swift in Sources */,
+				C3ACA1C82526BC3E00F2CC51 /* AppDelegate.swift in Sources */,
+				C3ACA21B2526FB0400F2CC51 /* SettingView.swift in Sources */,
+				C3ACA2182526F8A600F2CC51 /* EnrollViewController.swift in Sources */,
+				C3ACA20D2526BEBF00F2CC51 /* IBM.swift in Sources */,
+				C3B6FBE3252AFA0A007397E1 /* InquiryViewController.swift in Sources */,
+				C3ACA2122526BEED00F2CC51 /* QRScannerView.swift in Sources */,
+				C3ACA20B2526BEBF00F2CC51 /* DataDownload.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		C3ACA1CD2526BC3E00F2CC51 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C3ACA1CE2526BC3E00F2CC51 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		C3ACA1D52526BC3F00F2CC51 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C3ACA1D62526BC3F00F2CC51 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C3ACA1D92526BC3F00F2CC51 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		C3ACA1DA2526BC3F00F2CC51 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C3ACA1DC2526BC3F00F2CC51 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F54A7448A8DAB8BC2D84FDEA /* Pods-LaoQRapp.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = LaoQRapp/LaoQRapp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G4JZMC2GW3;
+				INFOPLIST_FILE = LaoQRapp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.oktss.LaoQRapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C3ACA1DD2526BC3F00F2CC51 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5351F89B737653FEB4A78DC2 /* Pods-LaoQRapp.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = LaoQRapp/LaoQRapp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G4JZMC2GW3;
+				INFOPLIST_FILE = LaoQRapp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.oktss.LaoQRapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C3ACA1BF2526BC3E00F2CC51 /* Build configuration list for PBXProject "LaoQRapp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C3ACA1D92526BC3F00F2CC51 /* Debug */,
+				C3ACA1DA2526BC3F00F2CC51 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C3ACA1DB2526BC3F00F2CC51 /* Build configuration list for PBXNativeTarget "LaoQRapp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C3ACA1DC2526BC3F00F2CC51 /* Debug */,
+				C3ACA1DD2526BC3F00F2CC51 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		C3ACA1D02526BC3E00F2CC51 /* LaoQRapp.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				C3ACA1D12526BC3E00F2CC51 /* LaoQRapp.xcdatamodel */,
+			);
+			currentVersion = C3ACA1D12526BC3E00F2CC51 /* LaoQRapp.xcdatamodel */;
+			path = LaoQRapp.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = C3ACA1BC2526BC3E00F2CC51 /* Project object */;
+}
