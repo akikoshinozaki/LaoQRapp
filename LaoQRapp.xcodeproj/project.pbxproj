@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		7B78E0E9EBC457D02E109C46 /* Pods_LaoQRapp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E380D639552C658E90D8F116 /* Pods_LaoQRapp.framework */; };
+		C34F2B4B252C34A200766763 /* SSListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34F2B4A252C34A200766763 /* SSListViewController.swift */; };
+		C34F2B4D252C359D00766763 /* myTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34F2B4C252C359D00766763 /* myTableViewCell.swift */; };
 		C3ACA1C82526BC3E00F2CC51 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA1C72526BC3E00F2CC51 /* AppDelegate.swift */; };
 		C3ACA1CC2526BC3E00F2CC51 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA1CB2526BC3E00F2CC51 /* ViewController.swift */; };
 		C3ACA1CF2526BC3E00F2CC51 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1CD2526BC3E00F2CC51 /* Main.storyboard */; };
@@ -48,6 +50,8 @@
 
 /* Begin PBXFileReference section */
 		5351F89B737653FEB4A78DC2 /* Pods-LaoQRapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LaoQRapp.release.xcconfig"; path = "Target Support Files/Pods-LaoQRapp/Pods-LaoQRapp.release.xcconfig"; sourceTree = "<group>"; };
+		C34F2B4A252C34A200766763 /* SSListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSListViewController.swift; sourceTree = "<group>"; };
+		C34F2B4C252C359D00766763 /* myTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = myTableViewCell.swift; sourceTree = "<group>"; };
 		C3ACA1C42526BC3E00F2CC51 /* LaoQRapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LaoQRapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3ACA1C72526BC3E00F2CC51 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C3ACA1CB2526BC3E00F2CC51 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -150,6 +154,7 @@
 				C3ACA1CB2526BC3E00F2CC51 /* ViewController.swift */,
 				C3ACA2172526F8A600F2CC51 /* EnrollViewController.swift */,
 				C3B6FBE2252AFA0A007397E1 /* InquiryViewController.swift */,
+				C34F2B4A252C34A200766763 /* SSListViewController.swift */,
 				C3ACA2192526FB0400F2CC51 /* SettingView.swift */,
 				C3ACA21A2526FB0400F2CC51 /* SettingView.xib */,
 				C3ACA1CD2526BC3E00F2CC51 /* Main.storyboard */,
@@ -196,6 +201,7 @@
 				C3ACA2042526BEBF00F2CC51 /* Common.swift */,
 				C3ACA2052526BEBF00F2CC51 /* IBM.swift */,
 				C3ACA2132526BF0800F2CC51 /* SimpleAlert.swift */,
+				C34F2B4C252C359D00766763 /* myTableViewCell.swift */,
 			);
 			path = Object;
 			sourceTree = "<group>";
@@ -338,6 +344,8 @@
 				C3ACA2092526BEBF00F2CC51 /* EntryDataBase.swift in Sources */,
 				C3ACA2142526BF0800F2CC51 /* SimpleAlert.swift in Sources */,
 				C3ACA2162526C1A200F2CC51 /* HostConnect.swift in Sources */,
+				C34F2B4D252C359D00766763 /* myTableViewCell.swift in Sources */,
+				C34F2B4B252C34A200766763 /* SSListViewController.swift in Sources */,
 				C3ACA1D22526BC3E00F2CC51 /* LaoQRapp.xcdatamodeld in Sources */,
 				C3B6FBE1252ABAB0007397E1 /* SerialNumber.swift in Sources */,
 				C3ACA1C82526BC3E00F2CC51 /* AppDelegate.swift in Sources */,

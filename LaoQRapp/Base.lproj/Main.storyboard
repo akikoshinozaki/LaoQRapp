@@ -53,7 +53,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ut8-ev-u8y" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="947" y="-624"/>
+            <point key="canvasLocation" x="274" y="32"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="D3Z-Hh-TQR">
@@ -113,17 +113,17 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ALW-zU-FqO">
-                                <rect key="frame" x="284" y="86" width="200" height="50"/>
+                                <rect key="frame" x="284" y="126" width="200" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" image="enroll.png"/>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OkK-rL-Zho">
-                                <rect key="frame" x="284" y="175" width="200" height="50"/>
+                                <rect key="frame" x="284" y="215" width="200" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" image="inquiry.png"/>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LYZ-ra-uDO">
-                                <rect key="frame" x="284" y="267" width="200" height="50"/>
+                                <rect key="frame" x="284" y="307" width="200" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" image="listbutton.png" backgroundImage="listbutton.png"/>
                             </button>
@@ -148,8 +148,8 @@
                     <navigationItem key="navigationItem" id="Qm0-Gy-GNz"/>
                     <connections>
                         <outlet property="enroll" destination="ALW-zU-FqO" id="x7B-ma-asf"/>
-                        <outlet property="entryList" destination="LYZ-ra-uDO" id="Moh-y0-gn8"/>
                         <outlet property="inquiry" destination="OkK-rL-Zho" id="ek2-l4-RSS"/>
+                        <outlet property="listBtn" destination="LYZ-ra-uDO" id="8hc-Vl-Yey"/>
                         <outlet property="versionLabel" destination="CGr-43-wJb" id="RiC-cE-Zfw"/>
                         <outletCollection property="buttons" destination="ALW-zU-FqO" collectionClass="NSMutableArray" id="qKN-Ta-3WW"/>
                         <outletCollection property="buttons" destination="OkK-rL-Zho" collectionClass="NSMutableArray" id="MkF-je-hGm"/>
@@ -1097,9 +1097,13 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="maz-eI-0TM">
-                                        <rect key="frame" x="254" y="408" width="192" height="30"/>
+                                        <rect key="frame" x="284" y="408" width="200" height="45"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <state key="normal" title="登録"/>
+                                        <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="25"/>
+                                        <state key="normal" title="登 録">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
                                         <connections>
                                             <action selector="postToIBM:" destination="Xdr-QR-2UJ" eventType="touchUpInside" id="Mi1-zh-gEq"/>
                                         </connections>
@@ -1622,14 +1626,16 @@
                                 </connections>
                             </button>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Vge-rZ-IOb">
-                                <rect key="frame" x="259" y="77" width="250" height="31"/>
+                                <rect key="frame" x="209" y="77" width="350" height="31"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="250" id="4Ga-bo-MAp"/>
+                                    <constraint firstAttribute="width" constant="350" id="4Ga-bo-MAp"/>
                                     <constraint firstAttribute="height" constant="30" id="9r9-A9-SsV"/>
                                 </constraints>
                                 <segments>
-                                    <segment title="当日分"/>
-                                    <segment title="全選択"/>
+                                    <segment title="当日"/>
+                                    <segment title="前日"/>
+                                    <segment title="当月"/>
+                                    <segment title="前月"/>
                                 </segments>
                                 <connections>
                                     <action selector="changeDate:" destination="T7F-MQ-1ci" eventType="valueChanged" id="Z5q-o5-bdp"/>
@@ -1714,7 +1720,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="79h-xK-sbA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1578.75" y="31.690140845070424"/>
+            <point key="canvasLocation" x="945" y="-625"/>
         </scene>
     </scenes>
     <resources>

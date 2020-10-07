@@ -151,8 +151,7 @@ extension String {
 typealias CompletionClosure = ((_ resultString:String?,_ resultJson:NSDictionary?, _ err:Error?) -> Void)
 
 //GAS APIのURL
-let apiUrl = "https://script.google.com/macros/s/AKfycbzo7SQFMFqc6BXTvjxxiQgqUB08vT263oT-Df2WAWedb1lxEQU/exec" //本番
-    
+let apiUrl = "https://script.google.com/macros/s/AKfycbzo7SQFMFqc6BXTvjxxiQgqUB08vT263oT-Df2WAWedb1lxEQU/exec" //本番    
 
 //Japan
 let SS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQkYoPN1G4Gi1wPy0lLK2paJaXREuHafv_wojeNQYRSZ4-I6rwdX0_sd9KZmJ8LxFbZp4y_7wh8g-cs/pub?gid="

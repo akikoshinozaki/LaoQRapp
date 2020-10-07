@@ -12,7 +12,7 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var enroll: UIButton!
     @IBOutlet weak var inquiry: UIButton!
-    @IBOutlet weak var entryList: UIButton!
+    @IBOutlet weak var listBtn: UIButton!
     @IBOutlet weak var inputBtn: UIButton!
     @IBOutlet weak var versionLabel: UILabel!
     
@@ -64,8 +64,8 @@ class ViewController: UIViewController {
             next = "enroll"
         case inquiry:
             next = "inquiry"
-        case entryList:
-            next = "entryList"
+        case listBtn:
+            next = "ssList"
         case inputBtn:
             next = "input"
         default:

@@ -16,15 +16,12 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
     
     var inq_UKE_TYPE: String!
     var inq_UKE_CDD: String!
-    var inq_PRODUCT_SN: String!
-
     var inq_SYAIN_CD: String!
     var inq_SYAIN_NM: String!
     var inq_LOCAT_CD: String!
     var inq_LOCAT_NM: String!
     var inq_SYOHIN_CD: String!
     var inq_SYOHIN_NM: String!
-    
     var inq_ORDER_SPEC: String!
     var inq_CUSTOMER_NM: String!
     
@@ -42,6 +39,8 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
     ]
     
     var qrScanner:QRScannerView!
+    var serialNO:String = ""
+    var postAlert:UIAlertController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -97,7 +96,7 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
     }
     
     func getData(data: String) {
-        
+        serialNO = data
         let param = ["PRODUCT_SN":data]
         
         rtnData.text = ""
@@ -106,39 +105,37 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         
         IBM().hostRequest(type: "INQUIRY", param: param, completionClosure: {
             (str, json,err) in
-            if err != nil {
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                if err != nil {
                     //アラートを表示
                     let alert = UIAlertController(title: "エラー", message: err?.localizedDescription, preferredStyle: .alert)
                     //ボタン追加
                     alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler:nil))
-                    print("err no nil")
                     self.present(alert,animated: true,completion:nil)
-                }
-                return
-            }
-            
-            if json != nil {
-                print(json!)
-                let json_ = json!
-                if json_["RTNCD"] as! String == "000" {
-                    self.display(json: json_)
-
-                }else {
-
-                    //IBMからエラー戻り
-                    //print(json_["RTNMSG"] as? [String] ?? [])
-                    var errStr =  ""
-                    for err in json_["RTNMSG"] as? [String] ?? [] {
-                        errStr += err+"\n"
-                    }
                     
-                    DispatchQueue.main.async {
+                    return
+                }
+                
+                if json != nil {
+                    print(json!)
+                    let json_ = json!
+                    if json_["RTNCD"] as! String == "000" {
+                        self.display(json: json_)
+                        
+                    }else {
+                        //IBMからエラー戻り
+                        //print(json_["RTNMSG"] as? [String] ?? [])
+                        var errStr =  ""
+                        for err in json_["RTNMSG"] as? [String] ?? [] {
+                            errStr += err+"\n"
+                        }
+                        
                         //アラートを表示
                         let alert = UIAlertController(title: "エラー", message: errStr, preferredStyle: .alert)
                         //ボタン追加
                         alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler:nil))
                         self.present(alert,animated: true,completion:nil)
+                        
                     }
                 }
             }
@@ -152,7 +149,7 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         var str = ""
         inq_UKE_TYPE = json["UKE_TYPE"]! as? String
         inq_UKE_CDD = json["UKE_CDD"]! as? String
-        inq_PRODUCT_SN = json["PRODUCT_SN"]! as? String
+        serialNO = json["PRODUCT_SN"]! as? String ?? ""
         
         inq_SYAIN_CD = json["SYAIN_CD"]! as? String
         inq_SYAIN_NM = json["SYAIN_NM"]! as? String
@@ -164,7 +161,7 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         inq_ORDER_SPEC = json["ORDER_SPEC"]! as? String
         inq_CUSTOMER_NM = json["CUSTOMER_NM"]! as? String
         tourokuDate = String(describing: json["ENTRY_DATE"]!)
-        str = "製造番号: \(inq_PRODUCT_SN!)\n" +
+        str = "製造番号: \(serialNO)\n" +
             "製造場所: \(inq_LOCAT_NM!)\n" +
             "登録日: \(tourokuDate!)\n" +
             "登録者: \(inq_SYAIN_CD!) \(inq_SYAIN_NM!)\n\n" +
@@ -190,8 +187,7 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
 
     @objc func deleteData() {
         //print("削除")
-        let param = ["PRODUCT_SN":inq_PRODUCT_SN!]
-        
+        let param = ["PRODUCT_SN":serialNO]
         let alert = UIAlertController(title: "削除してよろしいですか？", message: nil, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "削除", style: .destructive, handler: {
             Void in
@@ -204,25 +200,32 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
                 }
                 
                 if json != nil {
-                    //print(json!)
                     let json_ = json!
-                    if json_["RTNCD"] as! String == "000" {
-                        SimpleAlert.make(title: "削除完了", message: "")
-
-                    }else {
-
-                        //IBMからエラー戻り
-                        print(json_["RTNMSG"] as? [String] ?? [])
-                        var errStr =  ""
-                        for err in json_["RTNMSG"] as? [String] ?? [] {
-                            errStr += err+"\n"
+                    DispatchQueue.main.async {
+                        if json_["RTNCD"] as! String == "000" {
+                            SimpleAlert.make(title: "削除完了", message: "")
+                            //スプレッドシートからも削除
+                            self.ssDelete()
+                            //削除成功
+                            //MARK: - 削除したらenrolltypeを変更
+                            
+                            //let entry = EntryDataBase(db: _db!)
+                            //entry.changeStatus(serial:self.inq_PRODUCT_SN!, type: "delete", msg: "削除完了")
+                            
+                        }else {
+                            //IBMからエラー戻り
+                            print(json_["RTNMSG"] as? [String] ?? [])
+                            var errStr =  ""
+                            for err in json_["RTNMSG"] as? [String] ?? [] {
+                                errStr += err+"\n"
+                            }
+                            let alert = UIAlertController(title: "登録エラー", message: errStr, preferredStyle: .alert)
+                            //ボタン追加
+                            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler:nil))
+                            
+                            //アラートを表示
+                            self.present(alert,animated: true,completion:nil)
                         }
-                        let alert = UIAlertController(title: "登録エラー", message: errStr, preferredStyle: .alert)
-                        //ボタン追加
-                        alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler:nil))
-                        
-                        //アラートを表示
-                        self.present(alert,animated: true,completion:nil)
                     }
                 }
             })
@@ -232,70 +235,77 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         self.present(alert,animated: true)
         
     }
-    
-    @objc func delChk() {
+
+    func ssDelete() {
+//        postAlert = UIAlertController(title: "削除中", message: "", preferredStyle: .alert)
+//        self.present(postAlert, animated: true, completion: nil)
         
-        //Notificationを解除しておく
-        NotificationCenter.default.removeObserver(self)
-        //print(inquiryJson_)
-        if IBMResponse {
-            //エラーの時はエラーメッセージを表示
-            if(inquiryJson_["RTNCD"] as! String != "000"){
-                let rtnMSG = inquiryJson_["RTNMSG"]!
-                var errMSG:String? = ""
-                //エラーメッセージの内容を抽出
-                for val in rtnMSG as! NSArray{
-                    errMSG = errMSG?.appending("\n\(val)")
-                }
-                
-                let alert = UIAlertController(title: "登録エラー", message: errMSG, preferredStyle: .alert)
-                //ボタン追加
-                alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler:{
-                    (action) -> Void in
-                    inquiryJson_ = nil
-                    
-                }))
-                
-                //アラートを表示
-                self.present(alert,animated: true,completion:nil)
-                
-            }else{
-                //削除成功
-                //MARK: - 削除したらenrolltypeを変更
-
-                let entry = EntryDataBase(db: _db!)
-                entry.changeStatus(serial:self.inq_PRODUCT_SN!, type: "delete", msg: "削除完了")
-                
-                
-                let alert = UIAlertController(title: "削除しました", message: nil, preferredStyle: .alert)
-
-                alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler:{
-                    (action) -> Void in
-                    inquiryJson_ = nil
-                    self.rtnData.text = ""
-                    self.delButton.isEnabled = false
-                    self.delButton.setTitleTextAttributes(self.notDelete, for: .normal)
-                    
-                }))
-                
-                //アラートを表示
-                self.present(alert,animated: true,completion:nil)
-                
-            }
-        }else {
-            let alert = UIAlertController(title: "ホストから応答がありません", message: "接続を確認してください", preferredStyle: .alert)
-            //ボタン追加
-            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler:{
-                (action) -> Void in
-                inquiryJson_ = nil
-                
-            }))
-            
-            //アラートを表示
-            self.present(alert,animated: true,completion:nil)
+        //スプレッドシートから削除
+        sheetId = "1Ps2oJPkjXp0F2VDEG-39H-DSJD1AFjB6Lhuka3vJu6w"
+        sheetName = "detail"
+        
+        let param = [
+            "operation":"delete",
+            "sheetID":sheetId,
+            "shName":sheetName,
+            "serial":serialNO
+        ]
+        
+        var url = apiUrl+"?"
+        for p in param {
+            url += "\(p.key)=\(p.value)&"
         }
+
+        let request = URLRequest(url: URL(string: url)!)
         
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 20.0
+        let session = URLSession(configuration: config)
+
+        //var json:NSDictionary!
+        var title = ""
+        var msg = ""
+        let task = session.dataTask(with: request as URLRequest, completionHandler: {(data,response,err) -> Void in
+            DispatchQueue.main.async {
+                if err == nil {
+                    if data != nil {
+                        
+                        do{
+                            print(data!)
+                            if let json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary {
+                                //json = dic
+//                                print(dic)
+                                title = "削除しました"
+                                if json["value"] as? String != nil, json["value"] as? String == "error" {
+                                    //IBMから削除したが、SSに存在しない場合
+                                    msg = "スプレッドシートに存在しません"
+                                }
+                            }
+                            
+                        }catch{
+                            //スプレッドシートに接続できない
+                            title = "Error:2003"
+                            msg = "スプレッドシートに接続できません"
+                        }
+                        
+                    }else {
+                        //GASからの戻りがない
+                        title = "Error:2004"
+                        msg = "サーバーから応答がありません"
+                    }
+                    
+                }else {
+                    title = "Error:2001"
+                    msg = err!.localizedDescription
+                }
+                let okAction = UIAlertAction(title: "OK", style: .default, handler: {
+                    Void in
+                    self.navigationController?.popViewController(animated: true)
+                })
+                SimpleAlert.make(title: title, message: msg, action: [okAction])
+            }
+        })
+        task.resume()
     }
-    
 
 }

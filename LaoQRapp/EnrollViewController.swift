@@ -68,10 +68,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         for v in views {
             v.layer.cornerRadius = 10
         }
-        
-//        itemCD_ = "222222"
-//        serialNO = "123456789012345678"
-        
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -502,9 +499,6 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         
         print(orderStr)
         
-        self.postSS()
-        
-        
         let param:[String:Any] = [
             "SYAIN_CD":syainCD_,
             "LOCAT_CD":locateCD_,
@@ -522,7 +516,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                     //エラーの処理
                     let action = UIAlertAction(title: "OK", style: .default, handler: {
                         Void in
-                        self.dismiss(animated: true, completion: nil)
+                        //self.dismiss(animated: true, completion: nil)
                     })
                     SimpleAlert.make(title: "エラー", message: err?.localizedDescription, action: [action])
                     return
@@ -533,14 +527,14 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                     let json_ = json!
 
                     if json!["RTNCD"] as! String == "000" {
-                        
+                        DispatchQueue.main.async {
                         //スプレッドシート登録
                         self.postSS()
                         //FMDB登録
                         
                         
                         //登録完了
-                        DispatchQueue.main.async {
+                        
                             let alert = UIAlertController(title: "登録完了", message: "", preferredStyle: .alert)
                             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
                                 Void in
@@ -587,14 +581,13 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         //新規登録
         postAlert = UIAlertController(title: "データ登録中", message: "", preferredStyle: .alert)
         self.present(postAlert, animated: true, completion: nil)
-        let url = "https://script.google.com/macros/s/AKfycbzo7SQFMFqc6BXTvjxxiQgqUB08vT263oT-Df2WAWedb1lxEQU/exec"
         
         let param = [
             "sheetid":sheetId,
             "sheetName":sheetName,
             "operation":"input",
             "loc":locateCD_,
-            "itemCD":itemCD_,
+            "itemCD":SYOHIN_CD,
             "uv":UVField.text!,
             "uh":UHField.text!,
             "lv":LVField.text!,
@@ -603,10 +596,11 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
             "ht":HTField.text!,
             "serial":serialNO,
             "staff":syainCD_,
+            "device":iPadName,
             "date":Date().entryDate
         ]
 
-        var request = URLRequest(url: URL(string: url)!)
+        var request = URLRequest(url: URL(string: apiUrl)!)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -633,10 +627,8 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                             
                             if status == "success" { //登録成功
                                 str1 = "正常に登録できました"
+                                self.resetQR()
 //                                self.dbUpdate()
-//                                DispatchQueue.main.async {
-//                                    self.back()
-//                                }
                             }else { //その他のエラー
                                 str1 = "Error:2002"
                                 str2 = rtnMsg
@@ -687,10 +679,12 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         ORDER_SPEC = ""
         serialNO = ""
         orderStr = ""
-        serialDataLabel.text = ""
         
-        for field in fields {
-            field.text = ""
+        DispatchQueue.main.async {
+            self.serialDataLabel.text = ""
+            for field in self.fields {
+                field.text = ""
+            }
         }
     }
 
