@@ -132,6 +132,16 @@ extension Date {
 
 //String → Date
 extension String {
+    
+    func toDate(format:String) -> Date?{
+        let df = DateFormatter()
+        df.locale = Locale(identifier: "en_US_POSIX")
+        df.calendar = Calendar(identifier: .gregorian)
+        df.timeZone = TimeZone(identifier: "Asia/Tokyo")
+        df.dateFormat = format
+        return df.date(from: self)
+    }
+    
     var date: Date {
         let df = DateFormatter()
         df.calendar = Calendar(identifier: .gregorian)

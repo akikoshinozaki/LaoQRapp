@@ -70,7 +70,6 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         }
 
     }
-    
     override func viewDidAppear(_ animated: Bool) {
         self.btnSetting(isEnabled:isHostConnected)
         setUserDefaults()

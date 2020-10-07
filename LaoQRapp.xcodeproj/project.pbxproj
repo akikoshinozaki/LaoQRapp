@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E646AC3252DA3E800A1A62E /* InquiryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E646AC2252DA3E800A1A62E /* InquiryTableViewCell.swift */; };
+		4E646AC5252DBA1F00A1A62E /* DetailListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E646AC4252DBA1F00A1A62E /* DetailListViewController.swift */; };
 		7B78E0E9EBC457D02E109C46 /* Pods_LaoQRapp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E380D639552C658E90D8F116 /* Pods_LaoQRapp.framework */; };
 		C34F2B4B252C34A200766763 /* SSListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34F2B4A252C34A200766763 /* SSListViewController.swift */; };
 		C34F2B4D252C359D00766763 /* myTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34F2B4C252C359D00766763 /* myTableViewCell.swift */; };
@@ -49,6 +51,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4E646AC2252DA3E800A1A62E /* InquiryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InquiryTableViewCell.swift; sourceTree = "<group>"; };
+		4E646AC4252DBA1F00A1A62E /* DetailListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DetailListViewController.swift; path = LaoQRapp/DetailListViewController.swift; sourceTree = SOURCE_ROOT; };
 		5351F89B737653FEB4A78DC2 /* Pods-LaoQRapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LaoQRapp.release.xcconfig"; path = "Target Support Files/Pods-LaoQRapp/Pods-LaoQRapp.release.xcconfig"; sourceTree = "<group>"; };
 		C34F2B4A252C34A200766763 /* SSListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSListViewController.swift; sourceTree = "<group>"; };
 		C34F2B4C252C359D00766763 /* myTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = myTableViewCell.swift; sourceTree = "<group>"; };
@@ -155,6 +159,7 @@
 				C3ACA2172526F8A600F2CC51 /* EnrollViewController.swift */,
 				C3B6FBE2252AFA0A007397E1 /* InquiryViewController.swift */,
 				C34F2B4A252C34A200766763 /* SSListViewController.swift */,
+				4E646AC4252DBA1F00A1A62E /* DetailListViewController.swift */,
 				C3ACA2192526FB0400F2CC51 /* SettingView.swift */,
 				C3ACA21A2526FB0400F2CC51 /* SettingView.xib */,
 				C3ACA1CD2526BC3E00F2CC51 /* Main.storyboard */,
@@ -202,6 +207,7 @@
 				C3ACA2052526BEBF00F2CC51 /* IBM.swift */,
 				C3ACA2132526BF0800F2CC51 /* SimpleAlert.swift */,
 				C34F2B4C252C359D00766763 /* myTableViewCell.swift */,
+				4E646AC2252DA3E800A1A62E /* InquiryTableViewCell.swift */,
 			);
 			path = Object;
 			sourceTree = "<group>";
@@ -340,6 +346,7 @@
 			files = (
 				C3ACA2082526BEBF00F2CC51 /* DBBackUp.swift in Sources */,
 				C3ACA1CC2526BC3E00F2CC51 /* ViewController.swift in Sources */,
+				4E646AC5252DBA1F00A1A62E /* DetailListViewController.swift in Sources */,
 				C3ACA20C2526BEBF00F2CC51 /* Common.swift in Sources */,
 				C3ACA2092526BEBF00F2CC51 /* EntryDataBase.swift in Sources */,
 				C3ACA2142526BF0800F2CC51 /* SimpleAlert.swift in Sources */,
@@ -351,6 +358,7 @@
 				C3ACA1C82526BC3E00F2CC51 /* AppDelegate.swift in Sources */,
 				C3ACA21B2526FB0400F2CC51 /* SettingView.swift in Sources */,
 				C3ACA2182526F8A600F2CC51 /* EnrollViewController.swift in Sources */,
+				4E646AC3252DA3E800A1A62E /* InquiryTableViewCell.swift in Sources */,
 				C3ACA20D2526BEBF00F2CC51 /* IBM.swift in Sources */,
 				C3B6FBE3252AFA0A007397E1 /* InquiryViewController.swift in Sources */,
 				C3ACA2122526BEED00F2CC51 /* QRScannerView.swift in Sources */,

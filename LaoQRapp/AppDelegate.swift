@@ -32,7 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, HostConnectDelegate {
         }
         /* iPadNameとidfvを取得して保存 */
         #if targetEnvironment(simulator)//シュミレーターの場合
-        iPadName = "PODI34"
+        iPadName = "PADE48"
         #else
         iPadName = UIDevice.current.name.uppercased()
         #endif

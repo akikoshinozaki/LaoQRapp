@@ -12,18 +12,26 @@ struct GASList {
     var loc:String = ""
     var item:String = ""
     var staff:String = ""
-    
-    
+    var date:String = ""
+    var serial:String = ""
+    var UV:String = ""
+    var UH:String = ""
+    var LV:String = ""
+    var LH:String = ""
+    var WT:String = ""
+    var HT:String = ""
+    var count:Int = 0
 }
 
-class SSListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+
+class SSListViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var sheetLabel: UILabel!
     @IBOutlet weak var listSelector: UISegmentedControl!
-
+    var receivedData:[GASList] = []
     
-    var gasList:[GASList] = []
+    var gasList:[[GASList]] = []
     let entry = EntryDataBase(db: _db!)
     var backBtn:UIBarButtonItem!
     //var postBtn:UIBarButtonItem!
@@ -106,22 +114,47 @@ class SSListViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     if data != nil {
                         print(data!)
                         do{
+//                            if let j = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary  {
+//                                print(j)
+//                                //エラーメッセージ
+//                            }
+                            
                             if let json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? [NSDictionary] {
-                                print(json)
+                                //print(json)
                                 
                                 for j in json {
-                                
-                                let l = GASList(loc: j["loc"] as? String ?? "",
-                                                item: j["item"] as? String ?? "",
-                                                staff: j["staff"] as? String ?? "")
+                                    var createDate = ""
+                                    //print(j["Create Date"])
+                                    if let str = j["Create Date"] as? String {
+                                        //print(str)
+                                        if let date = str.toDate(format: "yyyy-MM-dd HH:mm:ss"){
+                                            createDate = date.toString(format: "yyyy/MM/dd")
+                                        }else {
+                                            createDate = str
+                                        }
+                                    }
                                     
-                                    list.append(l)
+                                    //print(createDate)
+                                    
+                                    let val = GASList(loc: j["Location"] as? String ?? "",
+                                                      item: j["item"] as? String ?? "",
+                                                      staff: j["staff"] as? String ?? "",
+                                                      date: createDate,
+                                                      serial: j["Serial"] as? String ?? "",
+                                                      UV: j["UV"] as? String ?? "",
+                                                      UH: j["UH"] as? String ?? "",
+                                                      LV: j["LV"] as? String ?? "",
+                                                      LH: j["LH"] as? String ?? "",
+                                                      WT: j["WT"] as? String ?? "",
+                                                      HT: j["HT"] as? String ?? "")
+                                    
+                                    list.append(val)
                                 }
                                 
                                 DispatchQueue.main.async {
                                     //listを渡してtableView更新
-                                    self.gasList = list
-                                    self.tableView.reloadData()
+                                    list = list.sorted(by: {($0.date < $1.date)})
+                                    self.dispTable(type:select, list:list)
                                 }
                                                         
                             }
@@ -143,13 +176,112 @@ class SSListViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     msg = err!.localizedDescription
                 }
                 
-                if title != "" {
+                if title != "" { //エラーがあった場合の処理
                     SimpleAlert.make(title: title, message: msg)
+                    DispatchQueue.main.async {
+                        //listを渡してtableView更新
+                        self.gasList = []
+                        self.tableView.reloadData()
+                    }
                 }
             }
         })
         
         task.resume()
+    }
+    
+    func dispTable(type:Int,list:[GASList]) {
+        receivedData = list
+        if list.count == 0 { return }
+        
+        var _list:[[GASList]] = []
+        var arr:[GASList] = []
+        
+        //print("list.cnt= \(list.count)")
+        if type == 0 || type == 1 {
+            //当日・前日分は日付のソートはしない
+            
+            arr = list.sorted(by: {$0.item<$1.item})
+            print(arr.count)
+            var groupArr:[GASList] = []
+            var item = ""
+            for a in arr {
+                if a.item != item {
+                    item = a.item
+                    let group = arr.filter{$0.item == item}
+                    
+                    groupArr.append(GASList(loc: a.loc,
+                                            item: a.item,
+                                            date: a.date,
+                                            count: group.count))
+                }
+            }
+            _list = [groupArr]
+            
+        }else {
+            //日付ごとに配列に入れる
+            var date = ""
+            for obj in list {
+                if date != obj.date {
+                    if arr.count > 0 {
+                        arr = arr.sorted(by: {$0.item<$1.item})
+                        var groupArr:[GASList] = []
+                        var item = ""
+                        for a in arr {
+                            if a.item != item {
+                                item = a.item
+                                let group = arr.filter{$0.item == item}
+                                groupArr.append(GASList(loc: a.loc,
+                                                        item: a.item,
+                                                        date: a.date,
+                                                        count: group.count))
+                            }
+                            
+                        }
+                        _list.append(groupArr)
+                        groupArr = []
+                        arr = []
+                    }
+                    
+                    arr.append(obj)
+                    date = obj.date
+                }else {
+                    arr.append(obj)
+                }
+                
+            }
+            //最後の要素を配列に入れる
+            if arr.count > 0 {
+                arr = arr.sorted(by: {$0.item<$1.item})
+                var groupArr:[GASList] = []
+                var item = ""
+                for a in arr {
+                    if a.item != item {
+                        item = a.item
+                        let group = arr.filter{$0.item == item}
+                        groupArr.append(GASList(loc: a.loc,
+                                                item: a.item,
+                                                date: a.date,
+                                                count: group.count))
+                    }
+                    
+                }
+                _list.append(groupArr)
+                groupArr = []
+            }
+            
+        }
+        /*
+        var cnt = 0
+        for li in _list {
+            for l in li {
+                cnt += l.count
+            }
+        }
+        print(cnt)
+        */
+        self.gasList = _list
+        self.tableView.reloadData()
     }
     
     
@@ -238,28 +370,73 @@ class SSListViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
 
-    // MARK: - TableViewDelegate
-     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+
+    //前の画面へ戻る
+    @objc func back() {
+        gasList = []
+        self.navigationController?.popViewController(animated: true)
+    }
+
+    
+}
+
+// MARK: - TableViewDelegate
+extension SSListViewController:UITableViewDelegate, UITableViewDataSource {
+    /*
+    //カスタムヘッダ-
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = tableView.dequeueReusableHeaderFooterView(withClass: SectionHeaderView.self)
+        header.setup(titleText: "Section title")
+        return header
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return SectionHeaderView.height
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return CGFloat.leastNormalMagnitude
+    }
+    */
+    func numberOfSections(in tableView: UITableView) -> Int {
         return gasList.count
-     }
-     
-     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! myTableViewCell
-        let data = gasList[indexPath.row]
-        print(data)
-        //cell.textLabel?.text = data.uuid
-        cell.itemCDLabel.text = data.loc
-        cell.itemNameLabel.text = data.item
-//        cell.dataCountLabel.text = data.qty
-        /*
-        if data.err {
-            cell.contentView.backgroundColor = #colorLiteral(red: 1, green: 0.8409949541, blue: 0.8371030092, alpha: 1)
-        }else {
-            cell.contentView.backgroundColor = .none
-        }*/
+    }
+
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return gasList[section].count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "InquiryTableViewCell", for: indexPath) as! InquiryTableViewCell
+        let data = gasList[indexPath.section][indexPath.row]
+        //print(data)
+        cell.dateLabel.text = data.date
+        cell.locLabel.text = data.loc
+        cell.itemLabel.text = data.item
+        cell.countLabel.text = String(data.count)
         
         return cell
-     }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //セルをタップしたときの処理（詳細表示）
+        let obj = gasList[indexPath.section][indexPath.row]
+        print(obj)
+        
+        detailList = receivedData.filter{$0.date==obj.date && $0.item==obj.item}
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let detail = storyboard.instantiateViewController(withIdentifier: "detail")
+        self.navigationController?.pushViewController(detail, animated: true)
+        
+        //print(aaa)
+//        print(aaa.count )
+        
+    
+    }
+    
+    
     /*
     //削除
     //セルの編集許可
@@ -271,7 +448,7 @@ class SSListViewController: UIViewController, UITableViewDelegate, UITableViewDa
             return false
         }
     }
-
+    
     //スワイプしたセルを削除
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if list[indexPath.row].type == "inputList" {
@@ -286,201 +463,6 @@ class SSListViewController: UIViewController, UITableViewDelegate, UITableViewDa
             }
         }
     }
-*/
-    //前の画面へ戻る
-    @objc func back() {
-        gasList = []
-        self.navigationController?.popViewController(animated: true)
-    }
-    /*
-    @objc func post() {
-        if sheetId=="" || sheetName=="" {
-            SimpleAlert.make(title: "登録するシートを選択してください", message: "")
-            return
-        }
-        
-        self.backBtn.isEnabled = false
-        self.postBtn.isEnabled = false
-        
-        let alert = UIAlertController(title: "登録してよろしいですか", message: "", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
-            Void in
-            self.sendData()
-        }))
-        
-        alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: {
-            Void in
-            self.backBtn.isEnabled = true
-            self.postBtn.isEnabled = true
-        }))
-        
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func sendData(){
-        //登録
-//        sheetId = "1HBz1HDS-aUMkPnFwYOuV7DSyxUIu6VeKI08J_L4S_Ag"
-//        sheetName = "iPad"
-        print(sheetId)
-        print(sheetName)
-       
-        //新規登録
-        postAlert = UIAlertController(title: "データ登録中", message: "", preferredStyle: .alert)
-        self.present(postAlert, animated: true, completion: nil)
-        let url = apiUrl
-        
-        var params:[String:Any] = ["element":list.count, "sheetid":sheetId, "sheetName":sheetName]
-        
-        for (i,item) in list.enumerated() {
-            print(item)
-            
-            let param:[String:Any] = [
-                "date": Date().entryDate,
-                "loc": item.locate,
-                "rack": item.rack,
-                "floor": item.floor,
-                "cd": item.itemCD,
-                "name": item.itemName,
-                "qty": item.qty,
-                "unit": "",
-                "seq": item.seqNo,
-                "staff": item.syainCD,
-                "uuid": item.uuid,
-                "start":item.startTM,
-                "end":item.endTM,
-                "work":item.workTM
-            ]
-            params["object\(i)"] = param
-        }
-        
-
-        var request = URLRequest(url: URL(string: url)!)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 20.0
-        let session = URLSession(configuration: config)
-        
-        do{
-            request.httpBody = try JSONSerialization.data(withJSONObject: params, options: .prettyPrinted)
-            
-            let task = session.dataTask(with: request as URLRequest, completionHandler: {(data,response,err) -> Void in
-                var str1 = ""
-                var str2 = ""
-                if err == nil {
-                    if(data != nil){
-                        do{
-                            let json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary ?? [:]
-                            print(json)
-                            let status = json["status"] as? String ?? ""
-                            let rtnMsg = json["rtnMsg"] as? String ?? ""
-                            let errNO = json["errNO"] as? [Int] ?? []
-                            let error = json["error"] as? String ?? ""
-                            print(rtnMsg)
-                            print(error)
-                            if errNO.count > 0 { //重複エラー
-                                str1 = "登録完了"
-                                str2 = "重複しているデータは登録されません"
-                                self.tableReload(arr: errNO)
-                                self.dbUpdate()
-//                                DispatchQueue.main.async {
-//                                    self.back()
-//                                }
-                                
-                            }else if status == "success" { //登録成功
-                                str1 = "正常に登録できました"
-                                self.dbUpdate()
-                                DispatchQueue.main.async {
-                                    self.back()
-                                }
-                            }else { //その他のエラー
-                                str1 = "Error:2002"
-                                str2 = rtnMsg
-                            }
-                            
-                        }catch{
-                            //スプレッドシートに接続できない
-                            str1 = "Error:2003"
-                            str2 = "スプレッドシートに登録できません"
-                            
-                        }
-                        
-                    }else {
-                        //GASからの戻りがない
-                        str1 = "Error:2004"
-                        str2 = "スプレッドシートに接続できませんでした"
-                    }
-                }else {
-                    //接続エラー
-                    str1 = "Error"
-                    str2 = err!.localizedDescription
-                }
-                DispatchQueue.main.async {
-                    self.postAlert.title = str1
-                    self.postAlert.message = str2
-                    self.postAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    
-                    self.backBtn.isEnabled = true
-                    self.postBtn.isEnabled = true
-                }
-                
-            })
-            task.resume()
-        }catch{
-            //json解析エラー
-            print("Error:\(error)")
-            DispatchQueue.main.async {
-                self.postAlert.title = "Error"
-                self.postAlert.message = error.localizedDescription
-                self.postAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                self.backBtn.isEnabled = true
-                self.postBtn.isEnabled = true
-            }
-            
-            return
-            
-        }
-        
-    }
-    
-    func tableReload(arr:[Int]) {
-        //重複エラーを受け取ったセルを色付け
-        var updID:[Int] = [] //entry
-        var updID2:[Int] = [] //input
-        for i in arr {
-            list[i].err = true
-            if list[i].type == "serialList" {
-                updID.append(list[i].id)
-            }else {
-                updID2.append(list[i].id)
-            }
-        }
-        
-        self.entry.inputUpdate(id: updID, post: Date().timeStamp, tbName:"entryList")
-        if self.entry.inputDelete(deleteID: updID2) {
-            print("削除完了")
-        }
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-        }
-    }
-    
-    func dbUpdate() {
-        //inputListはDELETE
-        if entry.inputDelete(deleteID: []) {
-            print("inputList削除成功")
-        }
-        //entryListは更新
-        var updID:[Int] = []
-        for item in list {
-            if item.type == "serialList" {
-                updID.append(item.id)
-            }
-        }
-        
-        self.entry.inputUpdate(id: updID, post: Date().timeStamp, tbName:"serialList")
-        
-    }
     */
+    
 }
