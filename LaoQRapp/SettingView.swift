@@ -168,7 +168,6 @@ class SettingView: UIView, UITableViewDelegate, UITableViewDataSource, UITextFie
         //5桁の数字が入力されたら、社員CDと認識
         syainLabel.text = ""
         syainCD_ = ""
-        //if(syainCDField.text?.characters.count == 5){
         if(syainCDField.text?.count == 5){
             IBM().entCHK(param: "SYAIN_CD", value: syainCDField.text!)
             //urlSessionでデータ受信が完了したら通知を受け取る
@@ -180,7 +179,7 @@ class SettingView: UIView, UITableViewDelegate, UITableViewDataSource, UITextFie
                 self.syainCDField.text = ""
                 self.syainLabel.text = ""
             })
-            
+
             //アラートを表示
             SimpleAlert.make(title: "社員CDエラー", message: "5桁の社員CDを入力してください", action: [action])
         }
@@ -192,32 +191,41 @@ class SettingView: UIView, UITableViewDelegate, UITableViewDataSource, UITextFie
     @objc func searchName() {
         //Notificationを解除しておく
         NotificationCenter.default.removeObserver(self)
-        
-        if IBMResponse {
-            
-            let rtnCD:String = json_["RTNCD"]! as! String
-            let rtnMSG = json_["RTNMSG"]!
-            var errMSG:String? = ""
-            
-            if(rtnCD == "000"){
-                syainName_ = (json_["SYAIN_NM"]! as? String)!
-                syainLabel.text = " \(syainName_)"
-                //IBMから帰ってきた値がエラーだった時
-            }else{
-                //エラーメッセージの内容を抽出
-                for val in rtnMSG as! NSArray{
-                    errMSG = errMSG?.appending("\n\(val)")
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "", message: "", preferredStyle: .alert)
+            if IBMResponse {
+                
+                let rtnCD:String = json_["RTNCD"]! as! String
+                let rtnMSG = json_["RTNMSG"]!
+                var errMSG:String? = ""
+                
+                if(rtnCD == "000"){
+                    syainName_ = (json_["SYAIN_NM"]! as? String)!
+                    self.syainLabel.text = " \(syainName_)"
+                    
+                    return
+                }else{ //IBMから帰ってきた値がエラーだった時
+                    //エラーメッセージの内容を抽出
+                    for val in rtnMSG as! NSArray{
+                        errMSG = errMSG?.appending("\n\(val)")
+                    }
+                    //アラートを表示
+                    alert.title = "社員CD取得エラー"
+                    alert.message = errMSG!
+                    //AppDelegateのsyainCDを削除
+                    syainCD_ = ""
+                    self.syainLabel.text = ""
                 }
-                //アラートを表示
-                SimpleAlert.make(title: "社員CD取得エラー", message: errMSG!)
-                //AppDelegateのsyainCDを削除
-                syainCD_ = ""
-                syainLabel.text = ""
+            }else{
+                //IBMからのレスポンスがなかったら
+                alert.title =  "ホストから応答がありません"
+                alert.message = "接続を確認してください"
             }
-        }else{
-            //IBMからのレスポンスがなかったら
-            SimpleAlert.make(title: "ホストから応答がありません", message: "接続を確認してください")
+            //エラーメッセージ表示
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            SimpleAlert.getTopViewController()!.present(alert, animated: true, completion: nil)
         }
+        
     }
     
     

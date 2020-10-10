@@ -13,6 +13,7 @@ class InquiryTableViewCell: UITableViewCell {
     
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var itemLabel: UILabel!
+    @IBOutlet weak var itemNameLabel: UILabel!
     @IBOutlet weak var locLabel: UILabel!
     @IBOutlet weak var countLabel: UILabel!
 

@@ -18,8 +18,6 @@
 		C3ACA1D22526BC3E00F2CC51 /* LaoQRapp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA1D02526BC3E00F2CC51 /* LaoQRapp.xcdatamodeld */; };
 		C3ACA1D42526BC3F00F2CC51 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1D32526BC3F00F2CC51 /* Assets.xcassets */; };
 		C3ACA1D72526BC3F00F2CC51 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1D52526BC3F00F2CC51 /* LaunchScreen.storyboard */; };
-		C3ACA1EF2526BEAA00F2CC51 /* arrow_nextのコピー.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1E02526BEA900F2CC51 /* arrow_nextのコピー.png */; };
-		C3ACA1F02526BEAA00F2CC51 /* arrow_backのコピー.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1E12526BEA900F2CC51 /* arrow_backのコピー.png */; };
 		C3ACA1F12526BEAA00F2CC51 /* arrow_back.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1E22526BEA900F2CC51 /* arrow_back.png */; };
 		C3ACA1F22526BEAA00F2CC51 /* offline.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1E32526BEA900F2CC51 /* offline.png */; };
 		C3ACA1F32526BEAA00F2CC51 /* arrow_next.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1E42526BEA900F2CC51 /* arrow_next.png */; };
@@ -65,8 +63,6 @@
 		C3ACA1D62526BC3F00F2CC51 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C3ACA1D82526BC3F00F2CC51 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3ACA1DE2526BCBB00F2CC51 /* LaoQRapp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LaoQRapp.entitlements; sourceTree = "<group>"; };
-		C3ACA1E02526BEA900F2CC51 /* arrow_nextのコピー.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_nextのコピー.png"; sourceTree = "<group>"; };
-		C3ACA1E12526BEA900F2CC51 /* arrow_backのコピー.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_backのコピー.png"; sourceTree = "<group>"; };
 		C3ACA1E22526BEA900F2CC51 /* arrow_back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_back.png; sourceTree = "<group>"; };
 		C3ACA1E32526BEA900F2CC51 /* offline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = offline.png; sourceTree = "<group>"; };
 		C3ACA1E42526BEA900F2CC51 /* arrow_next.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_next.png; sourceTree = "<group>"; };
@@ -174,11 +170,9 @@
 		C3ACA1DF2526BEA900F2CC51 /* img */ = {
 			isa = PBXGroup;
 			children = (
-				C3ACA1E02526BEA900F2CC51 /* arrow_nextのコピー.png */,
-				C3ACA1E12526BEA900F2CC51 /* arrow_backのコピー.png */,
 				C3ACA1E22526BEA900F2CC51 /* arrow_back.png */,
-				C3ACA1E32526BEA900F2CC51 /* offline.png */,
 				C3ACA1E42526BEA900F2CC51 /* arrow_next.png */,
+				C3ACA1E32526BEA900F2CC51 /* offline.png */,
 				C3ACA1E52526BEA900F2CC51 /* inquiry.png */,
 				C3ACA1E62526BEA900F2CC51 /* print.png */,
 				C3ACA1E72526BEA900F2CC51 /* enroll.png */,
@@ -272,7 +266,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3ACA1EF2526BEAA00F2CC51 /* arrow_nextのコピー.png in Resources */,
 				C3ACA1D72526BC3F00F2CC51 /* LaunchScreen.storyboard in Resources */,
 				C3ACA1F62526BEAA00F2CC51 /* enroll.png in Resources */,
 				C3ACA1F32526BEAA00F2CC51 /* arrow_next.png in Resources */,
@@ -290,7 +283,6 @@
 				C3ACA1F92526BEAA00F2CC51 /* input.png in Resources */,
 				C3ACA1F12526BEAA00F2CC51 /* arrow_back.png in Resources */,
 				C3ACA1F82526BEAA00F2CC51 /* QRbutton.png in Resources */,
-				C3ACA1F02526BEAA00F2CC51 /* arrow_backのコピー.png in Resources */,
 				C3ACA2112526BEED00F2CC51 /* QRScannerView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

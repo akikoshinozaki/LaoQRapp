@@ -13,11 +13,11 @@ import AudioToolbox
 
 protocol QRScannerViewDelegate{
     func removeView()
-    func getData(data:String)
+    func getData(type:String, data:String)
 }
 
 class QRScannerView: UIView, AVCaptureMetadataOutputObjectsDelegate {
-
+    
     var delegate:QRScannerViewDelegate?
     let session = AVCaptureSession()
     var videoLayer: AVCaptureVideoPreviewLayer?
@@ -136,7 +136,7 @@ class QRScannerView: UIView, AVCaptureMetadataOutputObjectsDelegate {
                         AudioServicesPlaySystemSound(1000)
                         cautionLabel.isHidden = true
                         self.session.stopRunning()
-                        delegate?.getData(data: _serialNo)
+                        delegate?.getData(type:"QR",data: _serialNo)
                         self.close()
                         
                     }else {
@@ -145,10 +145,36 @@ class QRScannerView: UIView, AVCaptureMetadataOutputObjectsDelegate {
                     }
                     
                 }
-            //QRデータではなかった時
+            }else if metadata.type == .ean13 {
+                //EAN13の時・・・プライスカード
+                // 検出データを取得
+                let result = metadata.stringValue!
+
+                //読み込んだコードがプライスカードの書式かどうかチェックする(1,5,6文字目が「2,0,0」)
+                let strArr = Array(result).map{String($0)}
+                let check = strArr[0]+strArr[4]+strArr[5]
+                print(check)
+                
+                if check == "200" || result.hasPrefix("2300") {
+                    //check:200 生産品, result:2300 リフレッシュのTAG
+                    AudioServicesPlaySystemSound(1106)
+                    AudioServicesPlaySystemSound(4095) //バイブ(iPhoneのみ)
+                    
+                    cautionLabel.isHidden = true
+                    self.session.stopRunning()
+                    delegate?.getData(type:"EAN13",data: result)
+                    self.close()
+                
+                    
+                }else {
+                    cautionLabel.isHidden = false
+                    cautionLabel.text = "このバーコードは認識できません"
+                }
+                
+            //QR・EAN13ではなかった時
             }else {
                 cautionLabel.isHidden = false
-                cautionLabel.text = "QRコードを読み取ってください"
+                cautionLabel.text = "読み取りできません"
             }
         }
     }

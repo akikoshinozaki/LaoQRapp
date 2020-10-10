@@ -46,6 +46,7 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        /*
         //ツールバーの設定
         self.navigationController?.setToolbarHidden(false, animated: false)
         delButton = UIBarButtonItem(title: "削除", style: .plain, target: self, action: #selector(self.deleteData))
@@ -54,6 +55,15 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         
         let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         self.setToolbarItems([backButton, flexSpace, delButton], animated: true)
+        */
+        
+        
+        self.navigationController?.setNavigationBarHidden(false, animated: false)
+        let backButton = UIBarButtonItem(title: "＜ 戻る", style: .plain, target: self, action: #selector(self.goToMenu))
+        delButton = UIBarButtonItem(title: "削除", style: .plain, target: self, action: #selector(self.deleteData))
+        self.navigationItem.leftBarButtonItem = backButton
+        self.navigationItem.rightBarButtonItem = delButton
+        self.navigationItem.title = "照会・削除"
         
         QRButton.addTarget(self, action: #selector(showScanView(_:)), for: .touchUpInside)
         rtnData.layer.borderColor = UIColor.gray.cgColor
@@ -95,7 +105,7 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         print(#function)
     }
     
-    func getData(data: String) {
+    func getData(type:String, data: String) {
         serialNO = data
         let param = ["PRODUCT_SN":data]
         

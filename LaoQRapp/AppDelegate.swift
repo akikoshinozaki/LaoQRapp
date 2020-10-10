@@ -114,7 +114,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, HostConnectDelegate {
             firstVC.btnSetting(isEnabled:isHostConnected)
         }
         if currentView == "enrollView", enrollVC != nil {
-            enrollVC.btnSetting(isEnabled:isHostConnected)
+            //enrollVC.btnSetting(isEnabled:isHostConnected)
         }
     }
     
@@ -125,7 +125,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, HostConnectDelegate {
             firstVC.btnSetting(isEnabled:isHostConnected)
         }
         if currentView == "enrollView", enrollVC != nil {
-            enrollVC.btnSetting(isEnabled:isHostConnected)
+            //enrollVC.btnSetting(isEnabled:isHostConnected)
         }
         
         var errStr = ""

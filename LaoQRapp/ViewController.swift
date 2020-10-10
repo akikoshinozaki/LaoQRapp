@@ -26,11 +26,12 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        self.navigationController?.setToolbarHidden(true, animated: true)
+        
         apd.firstVC = self
         
         for btn in buttons {
             btn.addTarget(self, action: #selector(goToNext(_:)), for: .touchUpInside)
+            btn.titleLabel?.numberOfLines = 0
         }
         //アプリのバージョンを取得
         versionLabel.text = "Ver. " + bundleVersion
@@ -40,6 +41,8 @@ class ViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        self.navigationController?.setToolbarHidden(true, animated: false)
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
         print(isHostConnected)
         self.btnSetting(isEnabled: isHostConnected)
     }

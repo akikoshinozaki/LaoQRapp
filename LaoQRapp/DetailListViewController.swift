@@ -15,6 +15,7 @@ class DetailListViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var itemLabel: UILabel!
+    @IBOutlet weak var itemNameLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,26 +25,45 @@ class DetailListViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         
+        //tableView.separatorStyle = .none
+
+        //setupTableView()
+        
         dateLabel.text = detailList[0].date
         itemLabel.text = detailList[0].item
+        itemNameLabel.text = detailList[0].itemName
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    @IBAction func closeView(_ sender: UIButton) {
+        self.dismiss(animated: true, completion: nil)
     }
-    */
+    
 
 }
 
 
 // MARK: - TableViewDelegate
 extension DetailListViewController:UITableViewDelegate, UITableViewDataSource {
+     //カスタムヘッダ-
+    /*
+     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+         //let header = tableView.dequeueReusableHeaderFooterView(withClass: SectionHeaderView.self)
+        let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "SectionHeaderView") as! SectionHeaderView
+         header.setup(titleText: "Section title")
+         return header
+     }
+     
+     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+         return SectionHeaderView.height
+     }
+     
+//     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+//         return CGFloat.leastNormalMagnitude
+//     }
+    
+    */
+    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return detailList.count

@@ -11,6 +11,7 @@ import UIKit
 struct GASList {
     var loc:String = ""
     var item:String = ""
+    var itemName:String = ""
     var staff:String = ""
     var date:String = ""
     var serial:String = ""
@@ -36,7 +37,7 @@ class SSListViewController: UIViewController {
     var backBtn:UIBarButtonItem!
     //var postBtn:UIBarButtonItem!
     let param:GASURL = GASURL(id: "sheetID", url: apiUrl+"?operation=idList")
-    var alert1 = UIAlertController()
+    var refreshAlert = UIAlertController()
     //var postAlert = UIAlertController()
     
     var index = 0
@@ -52,12 +53,11 @@ class SSListViewController: UIViewController {
         
         selectBtn.layer.cornerRadius = 5
         //list = entry.inputRead(select:index)
-        self.navigationController?.setToolbarHidden(false, animated: false)
-        
-        backBtn = UIBarButtonItem(title: "戻る", style: .plain, target: self, action: #selector(self.back))
-        //postBtn = UIBarButtonItem(title: "送信", style: .plain, target: self, action: #selector(self.post))
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        self.setToolbarItems([backBtn, flexSpace], animated: true)
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+        self.navigationItem.title = "登録済み一覧"
+
+        backBtn = UIBarButtonItem(title: "＜ 戻る", style: .plain, target: self, action: #selector(self.back))
+        self.navigationItem.leftBarButtonItem = backBtn
 
         sheetId = ""
         sheetName = ""
@@ -82,13 +82,17 @@ class SSListViewController: UIViewController {
     }
     
     func getGasList(select: Int) {
+        refreshAlert = UIAlertController(title: "データ取得中", message: "", preferredStyle: .alert)
+        
+        self.present(refreshAlert, animated: true, completion: nil)
+        
         var list:[GASList] = []
         let param = [
             "operation":"search",
             "sheetID":sheetId,
             "shName":sheetName,
-            "device":iPadName,
             "term":String(select)
+//            "device":iPadName,
 //            "date1":"",
 //            "date2":"",
 //            "location":""
@@ -110,18 +114,28 @@ class SSListViewController: UIViewController {
         var msg = ""
         let task = session.dataTask(with: request as URLRequest, completionHandler: {(data,response,err) -> Void in
             DispatchQueue.main.async {
+                
                 if err == nil {
                     if data != nil {
                         print(data!)
                         do{
-//                            if let j = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary  {
-//                                print(j)
-//                                //エラーメッセージ
-//                            }
+                            if let j = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary  {
+                                print(j)
+                                //エラーメッセージ
+                                self.refreshAlert.title = "エラー"
+                                self.refreshAlert.message = "データ取得できません"
+                                self.refreshAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
+                                    Void in
+                                    DispatchQueue.main.async {
+                                        self.gasList = []
+                                        self.tableView.reloadData()
+                                    }
+                                }))
+                            }
                             
                             if let json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? [NSDictionary] {
                                 //print(json)
-                                
+                                self.refreshAlert.dismiss(animated: true, completion: nil)
                                 for j in json {
                                     var createDate = ""
                                     //print(j["Create Date"])
@@ -133,11 +147,10 @@ class SSListViewController: UIViewController {
                                             createDate = str
                                         }
                                     }
-                                    
                                     //print(createDate)
-                                    
                                     let val = GASList(loc: j["Location"] as? String ?? "",
                                                       item: j["item"] as? String ?? "",
+                                                      itemName: j["itemName"] as? String ?? "",
                                                       staff: j["staff"] as? String ?? "",
                                                       date: createDate,
                                                       serial: j["Serial"] as? String ?? "",
@@ -177,8 +190,10 @@ class SSListViewController: UIViewController {
                 }
                 
                 if title != "" { //エラーがあった場合の処理
-                    SimpleAlert.make(title: title, message: msg)
                     DispatchQueue.main.async {
+                        self.refreshAlert.dismiss(animated: true, completion: nil)
+                        SimpleAlert.make(title: title, message: msg)
+                        
                         //listを渡してtableView更新
                         self.gasList = []
                         self.tableView.reloadData()
@@ -192,102 +207,129 @@ class SSListViewController: UIViewController {
     
     func dispTable(type:Int,list:[GASList]) {
         receivedData = list
-        if list.count == 0 { return }
-        
-        var _list:[[GASList]] = []
-        var arr:[GASList] = []
-        
-        //print("list.cnt= \(list.count)")
-        if type == 0 || type == 1 {
-            //当日・前日分は日付のソートはしない
-            
-            arr = list.sorted(by: {$0.item<$1.item})
-            print(arr.count)
-            var groupArr:[GASList] = []
-            var item = ""
-            for a in arr {
-                if a.item != item {
-                    item = a.item
-                    let group = arr.filter{$0.item == item}
-                    
-                    groupArr.append(GASList(loc: a.loc,
-                                            item: a.item,
-                                            date: a.date,
-                                            count: group.count))
-                }
-            }
-            _list = [groupArr]
-            
+        if list.count == 0 {
+            //データがない時
+            self.gasList = []
         }else {
-            //日付ごとに配列に入れる
-            var date = ""
-            for obj in list {
-                if date != obj.date {
-                    if arr.count > 0 {
-                        arr = arr.sorted(by: {$0.item<$1.item})
-                        var groupArr:[GASList] = []
-                        var item = ""
-                        for a in arr {
-                            if a.item != item {
-                                item = a.item
-                                let group = arr.filter{$0.item == item}
-                                groupArr.append(GASList(loc: a.loc,
-                                                        item: a.item,
-                                                        date: a.date,
-                                                        count: group.count))
-                            }
-                            
-                        }
-                        _list.append(groupArr)
-                        groupArr = []
-                        arr = []
-                    }
-                    
-                    arr.append(obj)
-                    date = obj.date
-                }else {
-                    arr.append(obj)
-                }
-                
-            }
-            //最後の要素を配列に入れる
-            if arr.count > 0 {
-                arr = arr.sorted(by: {$0.item<$1.item})
+            var _list:[[GASList]] = []
+            var arr:[GASList] = []
+            
+            //print("list.cnt= \(list.count)")
+            if type == 0 || type == 1 { //当日・前日分は日付のソートはしない
+                var groupArr = self.createGroup(arr: list)
+/*
+                arr = list.sorted(by: {$0.item<$1.item})
+                print(arr.count)
                 var groupArr:[GASList] = []
                 var item = ""
                 for a in arr {
                     if a.item != item {
                         item = a.item
-                        let group = arr.filter{$0.item == item}
+                        let group = arr.filter{$0.item == item} //item別の数量出す
                         groupArr.append(GASList(loc: a.loc,
                                                 item: a.item,
+                                                itemName: a.itemName,
                                                 date: a.date,
                                                 count: group.count))
                     }
+                }*/
+                _list = [groupArr]
+                
+            }else {
+                //日付ごとに配列に入れる
+                var date = ""
+                for obj in list {
+                    if date != obj.date {
+                        if arr.count > 0 {
+                            let groupArr = self.createGroup(arr: arr)
+                            /*
+                            arr = arr.sorted(by: {$0.item<$1.item})
+                            var groupArr:[GASList] = []
+                            var item = ""
+                            for a in arr {
+                                if a.item != item {
+                                    item = a.item
+                                    let group = arr.filter{$0.item == item}
+                                    groupArr.append(GASList(loc: a.loc,
+                                                            item: a.item,
+                                                            itemName: a.itemName,
+                                                            date: a.date,
+                                                            count: group.count))
+                                }
+                                
+                            }*/
+                            _list.append(groupArr)
+                            //groupArr = []
+                            arr = []
+                        }
+                        
+                        arr.append(obj)
+                        date = obj.date
+                    }else {
+                        arr.append(obj)
+                    }
                     
                 }
-                _list.append(groupArr)
-                groupArr = []
+                //最後の要素を配列に入れる
+                if arr.count > 0 {
+                    //arr = arr.sorted(by: {$0.item<$1.item})
+                    let groupArr:[GASList] = self.createGroup(arr: arr)
+//                    var item = ""
+//                    for a in arr {
+//                        if a.item != item {
+//                            item = a.item
+//                            let group = arr.filter{$0.item == item}
+//                            groupArr.append(GASList(loc: a.loc,
+//                                                    item: a.item,
+//                                                    itemName: a.itemName,
+//                                                    date: a.date,
+//                                                    count: group.count))
+//                        }
+//
+//                    }
+                    _list.append(groupArr)
+                    //groupArr = []
+                }
+                
+            }
+            /*
+             var cnt = 0
+             for li in _list {
+             for l in li {
+             cnt += l.count
+             }
+             }
+             print(cnt)
+             */
+            self.gasList = _list
+        }
+        
+        self.tableView.reloadData()
+    }
+    
+    func createGroup(arr:[GASList])->[GASList]{
+        let array = arr.sorted(by: {$0.item<$1.item})
+        var gArray:[GASList] = []
+        var item = ""
+        for a in array {
+            if a.item != item {
+                item = a.item
+                let group = array.filter{$0.item == item}
+                gArray.append(GASList(loc: a.loc,
+                                        item: a.item,
+                                        itemName: a.itemName,
+                                        date: a.date,
+                                        count: group.count))
             }
             
         }
-        /*
-        var cnt = 0
-        for li in _list {
-            for l in li {
-                cnt += l.count
-            }
-        }
-        print(cnt)
-        */
-        self.gasList = _list
-        self.tableView.reloadData()
+        return gArray
     }
     
     
     @IBAction func refreshBtnTap(_ sender: Any) {
-        alert1 = UIAlertController(title: "リスト更新中", message: "", preferredStyle: .alert)
-        self.present(alert1, animated: true, completion: nil)
+        refreshAlert = UIAlertController(title: "リスト更新中", message: "", preferredStyle: .alert)
+        self.present(refreshAlert, animated: true, completion: nil)
         self.listRefresh()
     }
     
@@ -357,7 +399,7 @@ class SSListViewController: UIViewController {
             }
             
         }
-        print(idList)
+        //print(idList)
         
         if idList.count == 1 {
             sheetName = idList[0].sheet
@@ -366,7 +408,7 @@ class SSListViewController: UIViewController {
         }
         
         DispatchQueue.main.async {
-            self.alert1.dismiss(animated: true, completion: nil)
+            self.refreshAlert.dismiss(animated: true, completion: nil)
         }
     }
 
@@ -414,6 +456,7 @@ extension SSListViewController:UITableViewDelegate, UITableViewDataSource {
         cell.dateLabel.text = data.date
         cell.locLabel.text = data.loc
         cell.itemLabel.text = data.item
+        cell.itemNameLabel.text = data.itemName
         cell.countLabel.text = String(data.count)
         
         return cell
@@ -428,12 +471,8 @@ extension SSListViewController:UITableViewDelegate, UITableViewDataSource {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let detail = storyboard.instantiateViewController(withIdentifier: "detail")
-        self.navigationController?.pushViewController(detail, animated: true)
-        
-        //print(aaa)
-//        print(aaa.count )
-        
-    
+        //self.navigationController?.pushViewController(detail, animated: true)
+        self.present(detail, animated: true, completion: nil)
     }
     
     

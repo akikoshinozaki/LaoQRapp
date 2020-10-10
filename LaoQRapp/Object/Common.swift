@@ -185,7 +185,7 @@ var idfv:String = ""
 var pingResponse:Bool = true
 var IBMResponse:Bool!
 
-let defaultLocate = [("IW01", "磐田ファートン工場"), ("IW04", "磐田物流センター"), ("KZ01", "小沢渡羽毛工場"), ("OK01", "大久保羊毛工場"), ("OK02", "大久保カーテン工場"), ("OK03", "大久保羊毛第一工場")]
+let defaultLocate = [("IW01", "磐田ファートン工場"), ("IW04", "磐田物流センター"), ("KZ01", "小沢渡羽毛工場"), ("LA01", "ラオス工場"),  ("OK01", "大久保羊毛工場"), ("OK02", "大久保カーテン工場"), ("OK03", "大久保羊毛第一工場")]
 
 var locateArr_ : [(String, String)] = []
 var syainCD_:String = "" //社員CD

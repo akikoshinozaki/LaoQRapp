@@ -19,7 +19,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     @IBOutlet var syainLabel: UILabel!
     @IBOutlet var itemDataLabel: UILabel!
     @IBOutlet var serialDataLabel: UILabel!
-    @IBOutlet weak var label1: UILabel!
+    //@IBOutlet weak var label1: UILabel!
     @IBOutlet weak var settingBtn: UIButton!
     //@IBOutlet weak var dbBtn: UIButton!
     @IBOutlet weak var step3View: UIView!
@@ -29,6 +29,14 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     var cautionLabel:UILabel! = UILabel(frame: CGRect(x: 0, y: 0, width: 250, height: 250))
     var nextButton_ : UIBarButtonItem!
     var backButton_ : UIBarButtonItem!
+    //キーボードアクセサリ
+    var toolBar:UIToolbar!
+    var nextFieldBtn:UIButton!
+    var backFieldBtn:UIButton!
+    var activeField:UITextField!
+
+//    var scrollView:UIScrollView!
+    @IBOutlet weak var contentView: UIView!
     
     @IBOutlet var fields:[UITextField]!
     @IBOutlet var views:[UIView]!
@@ -40,6 +48,8 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     @IBOutlet weak var WTField:UITextField!
     @IBOutlet weak var HTField:UITextField!
     
+    
+    
     var serialNO:String = ""
     var orderStr:String = ""
 
@@ -47,19 +57,19 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         apd.enrollVC = self
+
         step3View.isHidden = true
-        //ツールバーの設定
-        self.navigationController?.setToolbarHidden(false, animated: false)
-        nextButton_ = UIBarButtonItem(title: "次へ", style: .plain, target: self, action: #selector(self.tapNextButton))
         
-        backButton_ = UIBarButtonItem(title: "戻る", style: .plain, target: self, action: #selector(self.goToMenu))
-        
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        self.setToolbarItems([backButton_, flexSpace, nextButton_], animated: true)
+        backButton_ = UIBarButtonItem(title: "＜ 戻る", style: .plain, target: self, action: #selector(self.goToMenu))
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+        navigationItem.title = "登録"
+        navigationItem.leftBarButtonItem = backButton_
+
         
         settingBtn.layer.borderWidth = 2
         settingBtn.layer.borderColor = standardBlue_.cgColor
         settingBtn.layer.cornerRadius = 8
+        settingBtn.titleLabel?.numberOfLines = 0
         
         for field in fields {
             field.delegate = self
@@ -68,18 +78,33 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         for v in views {
             v.layer.cornerRadius = 10
         }
+        
+        //キーボードのツールバーに表示するボタンの設定
+        nextFieldBtn = UIButton(type: .custom)
+        backFieldBtn = UIButton(type: .custom)
+        
+        let fieldBtns:[UIButton] = [nextFieldBtn, backFieldBtn]
+        let images:[String] = ["arrow_next", "arrow_back"]
+        
+        for (i,btn) in fieldBtns.enumerated() {
+            btn.frame = CGRect(x: 0, y: 0, width: 25, height: 25)
+            btn.addTarget(self, action: #selector(moveField(_:)), for: .touchUpInside)
+            btn.tag = 998+i
+            btn.setImage(UIImage(contentsOfFile: Bundle.main.path(forResource: images[i], ofType: "png")!), for: .normal)
+        }
 
     }
+    
     override func viewDidAppear(_ animated: Bool) {
-        self.btnSetting(isEnabled:isHostConnected)
+        //self.btnSetting(isEnabled:isHostConnected)
         setUserDefaults()
         //QRdata選択済みだったらラベルに表示する
         setData()
     }
     
-    func btnSetting(isEnabled:Bool) {
-        nextButton_.isEnabled = isEnabled
-    }
+//    func btnSetting(isEnabled:Bool) {
+//        nextButton_.isEnabled = isEnabled
+//    }
     
     func setData(){
         print(itemCD_)
@@ -106,16 +131,17 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         }
     }
     
+    
     //MARK: -SettingViewDelegate
     func removeView() {
         setUserDefaults()
         backButton_.isEnabled = true
-        nextButton_.isEnabled = true
+        //nextButton_.isEnabled = true
     }
     
     func cancelLocation() {
         backButton_.isEnabled = true
-        nextButton_.isEnabled = true
+        //nextButton_.isEnabled = true
     }
     
     func setUserDefaults(){
@@ -134,7 +160,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         let setting = SettingView(frame: self.view.frame)
         setting.delegate = self
         backButton_.isEnabled = false
-        nextButton_.isEnabled = false
+        //nextButton_.isEnabled = false
         setting.backgroundColor = UIColor.black.withAlphaComponent(0.4)
         self.view.addSubview(setting)
 
@@ -291,6 +317,62 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         }
         
     }
+    
+    func readItem(result:String) {
+        itemName_ = ""
+        itemCD_ = result
+        
+        let param = ["UKE_CD":itemCD_]
+        IBM().hostRequest(type: "ENTCHK", param: param, completionClosure: {
+            (str, json,err) in
+            if err != nil {
+                //エラーの処理
+                let action = UIAlertAction(title: "OK", style: .default, handler: {
+                    Void in
+                    self.dismiss(animated: true, completion: nil)
+                })
+                SimpleAlert.make(title: "エラー", message: err?.localizedDescription, action: [action])
+                return
+            }
+            
+            if json != nil {
+                print(json!)
+                let json_ = json!
+                
+                if json!["RTNCD"] as! String == "000" {
+                    itemName_ = json_["SYOHIN_NM"]! as! String
+                    ORDER_SPEC = json_["ORDER_SPEC"]! as? String
+                    UKE_TYPE = json_["UKE_TYPE"]! as? String
+                    UKE_CDD = json_["UKE_CDD"]! as? String
+                    CUSTOMER_NM = json_["CUSTOMER_NM"]! as? String
+                    SYOHIN_CD = json_["SYOHIN_CD"]! as? String
+                    
+                    self.setData()
+                    DispatchQueue.main.async {
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                    
+                    
+                }else {
+                    //IBMからエラー戻り
+                    print(json_["RTNMSG"] as? [String] ?? [])
+                    var errStr =  ""
+                    for err in json_["RTNMSG"] as? [String] ?? [] {
+                        errStr += err+"\n"
+                    }
+                    //print(errStr)
+                    
+                    let action = UIAlertAction(title: "OK", style: .default, handler: {
+                        Void in
+                        DispatchQueue.main.async {
+                            self.dismiss(animated: true, completion: nil)
+                        }
+                    })
+                    SimpleAlert.make(title: "エラー", message: errStr, action: [action])
+                }
+            }
+        })
+    }
 
     func readJANCode(result:String){
         //print(resultString)
@@ -386,69 +468,72 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
 
     }
     
-    func getData(data: String) {
-        print(data)
-        for field in fields {
-            field.text = ""
-        }
-        //QRチェック
-        let param = ["PRODUCT_SN":data]
-        IBM().hostRequest(type: "INQUIRY", param: param, completionClosure: {
-            (str, json,err) in
-            if err != nil {
-                //エラーの処理
-                let action = UIAlertAction(title: "OK", style: .default, handler: {
-                    Void in
-                    self.dismiss(animated: true, completion: nil)
-                })
-                SimpleAlert.make(title: "エラー", message: err?.localizedDescription, action: [action])
-                return
+    func getData(type:String, data: String) {
+        if type == "EAN13" {
+            self.readJANCode(result: data)
+        }else if type == "QR" {
+            print(data)
+            for field in fields {
+                field.text = ""
             }
-            
-            if json != nil {
-                print(json!)
-                let json_ = json!
-                self.serialNO = ""
-                if json!["RTNCD"] as? String == "000" {
-                    self.serialNO = data
-                    if let order = json_["ORDER_SPEC"] as? String {
-                        //ORDER_SPECの有無を確認
-                        print(order)
-                        self.qrInquiry(order: order)
-                    }
-                    DispatchQueue.main.async {
+            //QRチェック
+            let param = ["PRODUCT_SN":data]
+            IBM().hostRequest(type: "INQUIRY", param: param, completionClosure: {
+                (str, json,err) in
+                if err != nil {
+                    //エラーの処理
+                    let action = UIAlertAction(title: "OK", style: .default, handler: {
+                        Void in
                         self.dismiss(animated: true, completion: nil)
-                    }
-                }else {
-                    //IBMからエラー戻り
-//                    print(json_["RTNMSG"] as? [String] ?? [])
-                    var errStr =  ""
-                    for err in json_["RTNMSG"] as? [String] ?? [] {
-                        errStr += err+"\n"
-                    }
-
-                    if errStr.contains("E0043") {
-                        //E0043:未登録エラーはそのまま新規登録
-                        self.serialNO = data
-                        
-                    }else {
-                        //E0043:未登録エラー 以外はアラート表示
-                        let action = UIAlertAction(title: "OK", style: .default, handler: {
-                            Void in
-                            DispatchQueue.main.async {
-                                self.dismiss(animated: true, completion: nil)
-                            }
-                        })
-                        SimpleAlert.make(title: "エラー", message: errStr, action: [action])
-                    }
-                }
-                DispatchQueue.main.async {
-                    self.serialDataLabel.text = self.serialNO
+                    })
+                    SimpleAlert.make(title: "エラー", message: err?.localizedDescription, action: [action])
+                    return
                 }
                 
-            }
-        })
-        
+                if json != nil {
+                    print(json!)
+                    let json_ = json!
+                    self.serialNO = ""
+                    if json!["RTNCD"] as? String == "000" {
+                        self.serialNO = data
+                        if let order = json_["ORDER_SPEC"] as? String {
+                            //ORDER_SPECの有無を確認
+                            print(order)
+                            self.qrInquiry(order: order)
+                        }
+                        DispatchQueue.main.async {
+                            self.dismiss(animated: true, completion: nil)
+                        }
+                    }else {
+                        //IBMからエラー戻り
+                        //                    print(json_["RTNMSG"] as? [String] ?? [])
+                        var errStr =  ""
+                        for err in json_["RTNMSG"] as? [String] ?? [] {
+                            errStr += err+"\n"
+                        }
+                        
+                        if errStr.contains("E0043") {
+                            //E0043:未登録エラーはそのまま新規登録
+                            self.serialNO = data
+                            
+                        }else {
+                            //E0043:未登録エラー 以外はアラート表示
+                            let action = UIAlertAction(title: "OK", style: .default, handler: {
+                                Void in
+                                DispatchQueue.main.async {
+                                    self.dismiss(animated: true, completion: nil)
+                                }
+                            })
+                            SimpleAlert.make(title: "エラー", message: errStr, action: [action])
+                        }
+                    }
+                    DispatchQueue.main.async {
+                        self.serialDataLabel.text = self.serialNO
+                    }
+                    
+                }
+            })
+        }
     }
     
     //MARK:-シリアル読み取った後の処理
@@ -587,6 +672,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
             "operation":"input",
             "loc":locateCD_,
             "itemCD":SYOHIN_CD,
+            "itemName":itemName_,
             "uv":UVField.text!,
             "uh":UHField.text!,
             "lv":LVField.text!,
@@ -691,8 +777,60 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
 }
 
 extension EnrollViewController: UITextFieldDelegate {
+
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        activeField = textField
+        // UIToolBarの設定
+        toolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.size.height/6, width: self.view.frame.size.width, height: 40.0))
+        toolBar.layer.position = CGPoint(x: self.view.frame.size.width/2, y: self.view.frame.size.height-20.0)
+        
+        let doneBtn = UIBarButtonItem(title: "完了", style: .plain, target: self, action: #selector(keyboardCommit))
+        
+        let backBtn = UIBarButtonItem(customView: backFieldBtn)
+        let nxtBtn = UIBarButtonItem(customView: nextFieldBtn)
+        
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        
+        //toolBar.items = [backBtn,nxtBtn, flexSpace]
+        toolBar.items = [backBtn,nxtBtn, flexSpace, doneBtn]
+        textField.inputAccessoryView = toolBar
+        
+        let tag = textField.tag
+        if self.view.viewWithTag(tag+1) == nil {
+            nxtBtn.isEnabled = false
+        }
+        if self.view.viewWithTag(tag-1) == nil {
+            backBtn.isEnabled = false
+        }
+        
+        return true
+    }
+    
+    @objc func moveField(_ sender:UIButton) {
+        print(sender.tag)
+        
+        let tag = activeField.tag
+        var next:Int = 0
+        if sender.tag == 999 {
+            next = activeField.tag - 1
+        }else {
+            next = activeField.tag + 1
+        }
+        print(tag)
+        if let move = self.view.viewWithTag(next) {
+            move.becomeFirstResponder()
+        }
+        
+    }
+    
+    @objc func keyboardCommit(){
+        self.view.endEditing(true)
+    }
+    
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
         //tag...201:UV, 202:UH, 203:LV, 204:LH, 205:WT, 206:HT
+        if textField.text! == "" {return}
         
         if Double(textField.text!) == nil {
             DispatchQueue.main.async {
