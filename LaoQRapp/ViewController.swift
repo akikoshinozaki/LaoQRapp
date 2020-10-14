@@ -136,13 +136,11 @@ class ViewController: UIViewController {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             //アラートが出なくなるので、遅延処理を入れる
-            
             self.DL_errMsg = ""
             
-            for param in parameters{
-                let data = DL.getCSV(parameter: param)
-                self.DL_errMsg += data.err
-            }
+            let data = DL.getCSV(parameter: parameter)
+            self.DL_errMsg = data.err
+            
             
             if self.DL_errMsg == ""{
                 //更新できたら最終更新日を変更
@@ -155,7 +153,7 @@ class ViewController: UIViewController {
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             }
             
-            DL.csvToArr()
+            idList = DL.getIdList()
             //tableView.reloadData()
         }
     }

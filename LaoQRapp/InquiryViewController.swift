@@ -46,17 +46,7 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        /*
-        //ツールバーの設定
-        self.navigationController?.setToolbarHidden(false, animated: false)
-        delButton = UIBarButtonItem(title: "削除", style: .plain, target: self, action: #selector(self.deleteData))
-        
-        let backButton = UIBarButtonItem(title: "戻る", style: .plain, target: self, action: #selector(self.goToMenu))
-        
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        self.setToolbarItems([backButton, flexSpace, delButton], animated: true)
-        */
-        
+
         
         self.navigationController?.setNavigationBarHidden(false, animated: false)
         let backButton = UIBarButtonItem(title: "＜ 戻る", style: .plain, target: self, action: #selector(self.goToMenu))
@@ -83,7 +73,7 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
     
     @objc func showScanView(_ sender: Any) {
         self.view.endEditing(true)
-
+        btnID = 888 //Tagを追加
         qrScanner = QRScannerView(frame: self.view.frame)
 
         qrScanner.delegate = self

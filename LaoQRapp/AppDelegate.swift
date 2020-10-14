@@ -59,11 +59,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, HostConnectDelegate {
         if defaults.object(forKey: "startUpCount") != nil {
             startUpCount = defaults.object(forKey: "startUpCount") as! Int
         }
-        
-
-        //entryListを作成
-//        let entry = EntryDataBase(db: _db!)
-//        entry.create()
 
         return true
     }
@@ -82,18 +77,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, HostConnectDelegate {
             print("enrollView")
             currentView = "enrollView"
         }
-        /*
-         }else if(currentVC?.isKind(of: ListViewController.classForCoder()))! {
-             //ListViewもオフラインの時に使用するので、"offline"としておく
-             print("ListView")
-             currentView = "offline"
-         }else if(currentVC?.isKind(of: SerialViewController.classForCoder()))! {
-             print("SerialView")
-             currentView = "SerialView"
-         }*/
+
         //IBMと通信可能かチェック
         hostConnect.delegate = self
         hostConnect.start(hostName: hostName)
+        
+        //スプレッドシートの最終更新日が変更されていたら、データ更新
+        
+        let upd = defaults.string(forKey: "lastUpdate")
+        
+        if self.getUpdateDate() != upd {
+            //価格表が更新されていたら取得する
+            
+            let data = DL.getCSV(parameter: parameter)
+            
+            if data.err == ""{
+                //更新できたら最終更新日を変更
+                defaults.set(Date().string, forKey: "lastDataDownload")
+            }
+        }
+        idList = DL.getIdList()
         
     }
 
@@ -158,6 +161,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, HostConnectDelegate {
         if let url = URL(string:"App-Prefs:root") {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
+    }
+    
+    //価格表の最終更新日を調べる
+    func getUpdateDate()->String {
+        let url = apiUrl + "?upd=update"
+        var str = ""
+        //サーバー上のファイルのパス
+        if let path = URL(string: url) {
+            do {
+                str = try String(contentsOf: path, encoding: .utf8)
+                print(str)
+                defaults.set(str, forKey: "lastUpdate")
+                
+            } catch let error as NSError {
+                print(error.localizedDescription)
+                print("更新日取得失敗")
+                //errMsg = error.localizedDescription
+            }
+        }
+        
+        return str
     }
 
 }

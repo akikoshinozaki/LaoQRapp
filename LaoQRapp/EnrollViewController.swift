@@ -11,6 +11,7 @@ import UIKit
 import AVFoundation
 import ZBarSDK
 
+var btnID:Int = 0
 class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationControllerDelegate, SettingViewDelegate, QRScannerViewDelegate {
     
     @IBOutlet var ZBarScanButton: UIButton!
@@ -22,7 +23,8 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     //@IBOutlet weak var label1: UILabel!
     @IBOutlet weak var settingBtn: UIButton!
     //@IBOutlet weak var dbBtn: UIButton!
-    @IBOutlet weak var step3View: UIView!
+    @IBOutlet weak var step4View: UIView!
+    @IBOutlet weak var enrollBtn: UIButton!
     var qrScanner:QRScannerView!
     
     let apd = UIApplication.shared.delegate as! AppDelegate
@@ -48,6 +50,8 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     @IBOutlet weak var WTField:UITextField!
     @IBOutlet weak var HTField:UITextField!
     
+    @IBOutlet weak var selectBtn: UIButton!
+    @IBOutlet weak var sheetLabel: UILabel!
     
     
     var serialNO:String = ""
@@ -58,18 +62,18 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         // Do any additional setup after loading the view.
         apd.enrollVC = self
 
-        step3View.isHidden = true
+        step4View.isHidden = true
         
-        backButton_ = UIBarButtonItem(title: "＜ 戻る", style: .plain, target: self, action: #selector(self.goToMenu))
+        backButton_ = UIBarButtonItem(title: "＜Back(ກັບຄືນໄປບ່ອນ)", style: .plain, target: self, action: #selector(self.goToMenu))
         self.navigationController?.setNavigationBarHidden(false, animated: true)
-        navigationItem.title = "登録"
+        navigationItem.title = "ລົງທະບຽນ/登　録"
         navigationItem.leftBarButtonItem = backButton_
-
+        let btns:[UIButton] = [selectBtn,settingBtn,enrollBtn]
         
-        settingBtn.layer.borderWidth = 2
-        settingBtn.layer.borderColor = standardBlue_.cgColor
-        settingBtn.layer.cornerRadius = 8
-        settingBtn.titleLabel?.numberOfLines = 0
+        for btn in btns {
+            btn.layer.cornerRadius = 8
+            btn.titleLabel?.numberOfLines = 0
+        }
         
         for field in fields {
             field.delegate = self
@@ -92,7 +96,16 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
             btn.tag = 998+i
             btn.setImage(UIImage(contentsOfFile: Bundle.main.path(forResource: images[i], ofType: "png")!), for: .normal)
         }
-
+        
+        sheetId = ""
+        sheetName = ""
+        sheetLabel.text = ""
+        if idList.count == 1 {
+            sheetId = idList[0].id
+            sheetName = idList[0].sheet
+            sheetLabel.text = idList[0].name
+        }
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -102,9 +115,38 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         setData()
     }
     
-//    func btnSetting(isEnabled:Bool) {
-//        nextButton_.isEnabled = isEnabled
-//    }
+    func btnSetting(isEnabled:Bool) {
+        backButton_.isEnabled = isEnabled
+        enrollBtn.isEnabled = isEnabled
+    }
+    
+    @IBAction func selectSheet(_ sender: Any) {
+        print(idList)
+        if idList.count > 1 {
+            let alert = UIAlertController(title: "ເລືອກສະຖານທີ່ລົງທະບຽນ", message: "Select Sheet", preferredStyle: .alert)
+            
+            for id in idList{
+                alert.addAction(UIAlertAction(title: id.name, style: .default, handler: {
+                    Void in
+                    sheetId = id.id
+                    sheetName = id.sheet
+                    DispatchQueue.main.async {
+                        self.sheetLabel.text = id.name
+                    }
+                    
+                }))
+            }
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            
+            DispatchQueue.main.async {
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
+        
+        
+        
+    }
+    
     
     func setData(){
         print(itemCD_)
@@ -126,7 +168,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         
         DispatchQueue.main.async {
             self.itemDataLabel.text = str
-            self.step3View.isHidden = (itemCD_ == "")
+            self.step4View.isHidden = (itemCD_ == "")
             
         }
     }
@@ -134,14 +176,13 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     
     //MARK: -SettingViewDelegate
     func removeView() {
+        print(#function)
         setUserDefaults()
-        backButton_.isEnabled = true
-        //nextButton_.isEnabled = true
+        btnSetting(isEnabled: true)
     }
     
     func cancelLocation() {
-        backButton_.isEnabled = true
-        //nextButton_.isEnabled = true
+        btnSetting(isEnabled: true)
     }
     
     func setUserDefaults(){
@@ -159,7 +200,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     @IBAction func tapSetting(_ sender: UIButton) {
         let setting = SettingView(frame: self.view.frame)
         setting.delegate = self
-        backButton_.isEnabled = false
+        btnSetting(isEnabled: false)
         //nextButton_.isEnabled = false
         setting.backgroundColor = UIColor.black.withAlphaComponent(0.4)
         self.view.addSubview(setting)
@@ -177,6 +218,9 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         SYOHIN_CD = ""
         CUSTOMER_NM = ""
         ORDER_SPEC = ""
+        btnID = 0
+        sheetId = ""
+        sheetName = ""
 
     }
     
@@ -221,107 +265,17 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
             self.present(alert,animated: true,completion:nil)
         }
     }
-    /*
-    @IBAction func tapQRScan(_ sender: UIButton) {
-        //どのボタンを押したのか判別するためにタグを登録
-        buttonTag_ = sender.tag
-        //社員CD入力フィールドを空白にする
-        //inputSyainCD.text = ""
-        let storyboard: UIStoryboard = self.storyboard!
-        let scan = storyboard.instantiateViewController(withIdentifier: "scan")
-        scan.modalPresentationStyle = .fullScreen
-        self.present(scan, animated: true, completion: nil)
-    }
-    */
-    //スキャンボタンを押した時の処理(zbar)
-    @IBAction func tapScanButton(_ sender: UIButton) {
-        
-        let addView:UIView! = UIView(frame: self.view.frame)
-        addView.backgroundColor = UIColor.clear
-        let label2:UILabel! = UILabel(frame: CGRect(x: 0, y: 0, width: addView.frame.width, height: 25))
-        
-        label2.backgroundColor = standardBlue_
-        label2.text = "商品CDをスキャンしてください"
-        label2.textColor = UIColor .white
-        label2.textAlignment = .center
-        label2.font = UIFont.boldSystemFont(ofSize: 20)
-        
-        addView.addSubview(label2)
-        
-        //ビューに重ねるラベルの定義
-        cautionLabel.frame = CGRect(x: 0, y: 40, width: self.view.frame.size.width, height: 60)
-        cautionLabel.textColor = UIColor .yellow
-        cautionLabel.textAlignment = .center
-        cautionLabel.numberOfLines = 2
-        cautionLabel.font = UIFont.boldSystemFont(ofSize: 20)
-        cautionLabel.backgroundColor = UIColor .clear
-        cautionLabel.text = "プライスカードのバーコード\nを読み取ってください"
-        cautionLabel.isHidden = true
-        
-        addView.addSubview(cautionLabel)
-        
-        //ZBarReaderViewControllerのオブジェクトを生成
-        let reader = ZBarReaderViewController()
-        reader.readerDelegate = self
-        reader.cameraOverlayView = addView
-        let scanner:ZBarImageScanner = reader.scanner
-        scanner.setSymbology(ZBAR_I25, config: ZBAR_CFG_ENABLE, to: 0)
-
-        reader.modalPresentationStyle = .fullScreen
-//        if #available(iOS 13.0, *) {
-//            reader.isModalInPresentation = true
-//        }
-        
-        self.present(reader, animated: true, completion: nil)
-        reader.showsZBarControls = false
-        reader.showsCameraControls = false
-        
-        let toolbar:UIToolbar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.size.height-44, width: self.view.frame.size.width, height: 44))
-        let cancelButton = UIBarButtonItem(title: "キャンセル", style: .plain, target: self, action: #selector(self.cancelButtonTapped))
-        toolbar.items = [cancelButton]
-        addView.addSubview(toolbar)
-        
-    }
     
     @objc func cancelButtonTapped(){
         dismiss(animated: true, completion: nil)
     }
- 
-    //バーコードを読み取った後の処理(ZBar)
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        // Local variable inserted by Swift 4.2 migrator.
-        //let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
-        
-        var symbol : ZBarSymbol? = nil
-        if let symbolset = info[UIImagePickerController.InfoKey(rawValue: "ZBarReaderControllerResults")] as? ZBarSymbolSet {
-            print(symbolset)
-            var iterator = NSFastEnumerationIterator(symbolset)
-            
-            while let value = iterator.next() {
-                //print(value)
-                if let sym = value as? ZBarSymbol {
-                    symbol = sym
-                    break
-                }
-            }
-        }
-        
-        if symbol == nil {
-            return
-        }
-        let resultString = symbol!.data as String
+
+    func readJANCode(result:String){
         //print(resultString)
-        //商品コードを読み込んだらresultStringに格納
-        if(symbol!.typeName! == "EAN-13"){
-            self.readJANCode(result: resultString)
-        }
         
-    }
-    
-    func readItem(result:String) {
         itemName_ = ""
         itemCD_ = result
-        
+
         let param = ["UKE_CD":itemCD_]
         IBM().hostRequest(type: "ENTCHK", param: param, completionClosure: {
             (str, json,err) in
@@ -352,7 +306,6 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                         self.dismiss(animated: true, completion: nil)
                     }
                     
-                    
                 }else {
                     //IBMからエラー戻り
                     print(json_["RTNMSG"] as? [String] ?? [])
@@ -373,86 +326,16 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
             }
         })
     }
-
-    func readJANCode(result:String){
-        //print(resultString)
-        cautionLabel.isHidden = true
-        //読み込んだコードがプライスカードの書式かどうかチェックする(1,5,6文字目が「2,0,0」)
-        let strArr = Array(result).map{String($0)}
-        let check = strArr[0]+strArr[4]+strArr[5]
-        print(check)
-        
-        if check == "200" || result.hasPrefix("2300") {
-            //check:200 生産品, result:2300 リフレッシュのTAG
-            AudioServicesPlaySystemSound(1106)
-            AudioServicesPlaySystemSound(4095) //バイブ(iPhoneのみ)
-            itemName_ = ""
-            itemCD_ = result
-
-            let param = ["UKE_CD":itemCD_]
-            IBM().hostRequest(type: "ENTCHK", param: param, completionClosure: {
-                (str, json,err) in
-                if err != nil {
-                    //エラーの処理
-                    let action = UIAlertAction(title: "OK", style: .default, handler: {
-                        Void in
-                        self.dismiss(animated: true, completion: nil)
-                    })
-                    SimpleAlert.make(title: "エラー", message: err?.localizedDescription, action: [action])
-                    return
-                }
-                
-                if json != nil {
-                    print(json!)
-                    let json_ = json!
-
-                    if json!["RTNCD"] as! String == "000" {
-                        itemName_ = json_["SYOHIN_NM"]! as! String
-                        ORDER_SPEC = json_["ORDER_SPEC"]! as? String
-                        UKE_TYPE = json_["UKE_TYPE"]! as? String
-                        UKE_CDD = json_["UKE_CDD"]! as? String
-                        CUSTOMER_NM = json_["CUSTOMER_NM"]! as? String
-                        SYOHIN_CD = json_["SYOHIN_CD"]! as? String
-                        
-                        self.setData()
-                        DispatchQueue.main.async {
-                            self.dismiss(animated: true, completion: nil)
-                        }
-                        
-                        
-                    }else {
-                        //IBMからエラー戻り
-                        print(json_["RTNMSG"] as? [String] ?? [])
-                        var errStr =  ""
-                        for err in json_["RTNMSG"] as? [String] ?? [] {
-                            errStr += err+"\n"
-                        }
-                        //print(errStr)
-                        
-                        let action = UIAlertAction(title: "OK", style: .default, handler: {
-                            Void in
-                            DispatchQueue.main.async {
-                                self.dismiss(animated: true, completion: nil)
-                            }
-                        })
-                        SimpleAlert.make(title: "エラー", message: errStr, action: [action])
-                    }
-                }
-            })
-            
-        }else{
-            cautionLabel.text = "このバーコードは認識できません"
-            cautionLabel.isHidden = false
-        }
-    }
     
     
-    //MARK: - SerialInput
-    @IBAction func showScanView(_ sender: Any) {
+    //MARK: - ScanView起動
+    @IBAction func showScanView(_ sender: UIButton) {
+        btnSetting(isEnabled: false)
         self.view.endEditing(true)
+        btnID = sender.tag
+        print(sender.tag)
 
         qrScanner = QRScannerView(frame: self.view.frame)
-
         qrScanner.delegate = self
         qrScanner.backgroundColor = UIColor.black.withAlphaComponent(0.4)
         qrScanner.frame = self.view.frame
@@ -570,8 +453,23 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     
     @IBAction func postToIBM(_ sender:UIButton){
         self.view.endEditing(true)
+        let errAlert = UIAlertController(title: "", message: "", preferredStyle: .alert)
+        errAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        
+        if sheetId == "" || sheetName == "" {
+            DispatchQueue.main.async {
+                errAlert.title = "ບໍ່ມີການຄັດເລືອກເອກະສານ"
+                errAlert.message = "シートが選択されていません"
+                self.present(errAlert, animated: true, completion: nil)
+            }
+            return
+        }
         if serialNO == "" {
-            SimpleAlert.make(title: "シリアル番号を読み取れません", message: "")
+            DispatchQueue.main.async {
+                errAlert.title = "ບໍ່ສາມາດອ່ານເລກ ລຳ ດັບ"
+                errAlert.message = "シリアル番号を読み取れません"
+                self.present(errAlert, animated: true, completion: nil)
+            }
             return
         }
         orderStr = "UV=\(UVField.text!);" +
@@ -591,7 +489,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
             "ORDER_SPEC":orderStr
         ]
         
-        let alert = UIAlertController(title: "登録してよろしいですか", message: "S/N:\(serialNO)", preferredStyle: .alert)
+        let alert = UIAlertController(title: "ທ່ານຕ້ອງການລົງທະບຽນບໍ?\n登録してよろしいですか", message: "S/N:\(serialNO)", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
             Void in
             IBM().hostRequest(type: "ENTRY", param: param, completionClosure: {
@@ -619,7 +517,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                         
                         //登録完了
                         
-                            let alert = UIAlertController(title: "登録完了", message: "", preferredStyle: .alert)
+                            let alert = UIAlertController(title: "ລົງທະບຽນ ສຳ ເລັດ", message: "登録完了", preferredStyle: .alert)
                             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
                                 Void in
                                 //データリセット
@@ -644,13 +542,13 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                                 self.dismiss(animated: true, completion: nil)
                             }
                         })
-                        SimpleAlert.make(title: "エラー", message: errStr, action: [action])
+                        SimpleAlert.make(title: "Error", message: errStr, action: [action])
                     }
                 }
             })
                         
         }))
-        alert.addAction(UIAlertAction(title: "やり直す", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         //アラートを表示
         self.present(alert,animated: true)
  
@@ -659,11 +557,10 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     var postAlert:UIAlertController!
     func postSS(){
         //登録
-        sheetId = "1Ps2oJPkjXp0F2VDEG-39H-DSJD1AFjB6Lhuka3vJu6w"
-        sheetName = "detail"
-        
+//        print(sheetId)
+//        print(sheetName)
         //新規登録
-        postAlert = UIAlertController(title: "データ登録中", message: "", preferredStyle: .alert)
+        postAlert = UIAlertController(title: "ຂໍ້ມູນ ກຳ ລັງລົງທະບຽນຢູ່", message: "データ登録中", preferredStyle: .alert)
         self.present(postAlert, animated: true, completion: nil)
         
         let param = [

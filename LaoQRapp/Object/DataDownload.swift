@@ -42,50 +42,35 @@ class DataDownload: NSObject {
         
     }
     
-    public func csvToArr() {
-        //print(parameters)
-        for (i,param) in parameters.enumerated() {
-            var arr:[[String]] = []
-            //商品リスト
-            if let itemArr = defaults.object(forKey: param.id) as? String {
-                //カンマ区切りでデータを分割して配列に格納する。
-                itemArr.enumerateLines { (line, stop) -> () in
-                    arr.append(line.components(separatedBy: ","))
-                }
-                
-                if i == 0 { //location
-                    arr.removeFirst()
-                    locArray = []
-                    for item in arr {
-                        if item.count > 2 {
-                            locArray.append((cd:item[0],name:item[1]))
-                        }
-                    }
-
-                }else if i == 1 { //sheetID
-                    //print(arr)
-                    idList = []
-                    for item in arr {
-                        if item.count > 5 {
-                            if item[5] == "ON" {
-                                idList.append((name:item[0], id:item[1], sheet:item[2]))
-                            }
-                        }else {
-                            idList.append((name:item[0], id:item[1], sheet:item[2]))
-                        }
-                    }
-                }
-
-            }else {
-                let alert = UIAlertController(title: "リスト取得に失敗", message: "アプリを終了します", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
-                    Void in
-                    exit(3)
-                }))
-        
+    public func getIdList() -> [(name: String, id: String, sheet: String)]{
+        var arr:[[String]] = []
+        var list:[(name: String, id: String, sheet: String)] = []
+        //商品リスト
+        if let array = defaults.object(forKey: "sheetID") as? String {
+            //カンマ区切りでデータを分割して配列に格納する。
+            array.enumerateLines { (line, stop) -> () in
+                arr.append(line.components(separatedBy: ","))
             }
-
+            for item in arr {
+                if item.count > 5 {
+                    if item[5] == "ON" {
+                        list.append((name:item[0], id:item[1], sheet:item[2]))
+                    }
+                }else {
+                    list.append((name:item[0], id:item[1], sheet:item[2]))
+                }
+            }
+            
+        }else {
+            let alert = UIAlertController(title: "リスト取得に失敗", message: "アプリを終了します", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
+                Void in
+                exit(3)
+            }))
+            
         }
+        
+        return list
         
     }
     

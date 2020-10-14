@@ -161,15 +161,18 @@ extension String {
 typealias CompletionClosure = ((_ resultString:String?,_ resultJson:NSDictionary?, _ err:Error?) -> Void)
 
 //GAS APIのURL
-let apiUrl = "https://script.google.com/macros/s/AKfycbzo7SQFMFqc6BXTvjxxiQgqUB08vT263oT-Df2WAWedb1lxEQU/exec" //本番    
+//TEST
+//let apiUrl = "https://script.google.com/macros/s/AKfycbzo7SQFMFqc6BXTvjxxiQgqUB08vT263oT-Df2WAWedb1lxEQU/exec"
+
+//本番
+let apiUrl = "https://script.google.com/macros/s/AKfycbw7BTNIdwXwyCZHi0IiHtLqIXioC4nQXfP228YflCxkgO55XKQ/exec"
 
 //Japan
 let SS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQkYoPN1G4Gi1wPy0lLK2paJaXREuHafv_wojeNQYRSZ4-I6rwdX0_sd9KZmJ8LxFbZp4y_7wh8g-cs/pub?gid="
 
 //Japan (location,sheetIDのみ使用)
-let parameters:[GASURL] = [GASURL(id: "location", url: SS_URL+"1036071740&single=true&output=csv"),
-                           GASURL(id: "sheetID", url: apiUrl+"?operation=idList&location=japan") //日本用にLocation入れる
-]
+let parameter:GASURL = GASURL(id: "sheetID", url: apiUrl+"?operation=idList")
+
 
 //var itemArray:[(cd:String,name:String,unit:String)] = [] //unit:単位
 var locArray:[(cd:String,name:String)] = []

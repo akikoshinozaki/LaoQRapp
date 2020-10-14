@@ -108,6 +108,7 @@ class QRScannerView: UIView, AVCaptureMetadataOutputObjectsDelegate {
     
     // xibファイルを読み込んでviewに重ねる
     fileprivate func nibInit() {
+        print(btnID)
         // File's OwnerをXibViewにしたので ownerはself になる
         guard let view = UINib(nibName: "QRScannerView", bundle: nil).instantiate(withOwner: self, options: nil).first as? UIView else {
             return
@@ -122,60 +123,66 @@ class QRScannerView: UIView, AVCaptureMetadataOutputObjectsDelegate {
     func metadataOutput(_ captureOutput: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         // 複数のメタデータを検出
         for metadata in metadataObjects as! [AVMetadataMachineReadableCodeObject] {
-            // QRコードのデータかどうかの確認
-            if metadata.type == .qr {
-                if metadata.stringValue != nil {
-                    // 検出データを取得
-                    let QRdata = metadata.stringValue!
-                    //特定の文字列が含まれていないと認識しない
-                    //print(QRdata)
+            if btnID == 777 {
+                //プライスカード読み込み
+                if metadata.type == .ean13 {
+                    //EAN13の時・・・プライスカード
+                    let result = metadata.stringValue!
+                    //読み込んだコードがプライスカードの書式かどうかチェックする(1,5,6文字目が「2,0,0」)
+                    let strArr = Array(result).map{String($0)}
+                    let check = strArr[0]+strArr[4]+strArr[5]
+                    print(check)
                     
-                    let hantei = SerialNumber.make(QRdata)
-                    if hantei.isSerial {
-                        _serialNo = hantei.serialNo
+                    if check == "200" || result.hasPrefix("2300") {
+                        //check:200 生産品, result:2300 リフレッシュのTAG
                         AudioServicesPlaySystemSound(1000)
+                        
                         cautionLabel.isHidden = true
                         self.session.stopRunning()
-                        delegate?.getData(type:"QR",data: _serialNo)
+                        delegate?.getData(type:"EAN13",data: result)
                         self.close()
                         
                     }else {
                         cautionLabel.isHidden = false
-                        cautionLabel.text = "シリアル番号を読み取ってください"
+                        cautionLabel.text = "このバーコードは認識できません"
                     }
-                    
+                }else if metadata.type == .qr {
+                    cautionLabel.isHidden = false
+                    cautionLabel.text = "プライスカードを読み取ってください"
+                }else { //QR・EAN13ではなかった時
+                    cautionLabel.isHidden = false
+                    cautionLabel.text = "読み取りできません"
                 }
-            }else if metadata.type == .ean13 {
-                //EAN13の時・・・プライスカード
-                // 検出データを取得
-                let result = metadata.stringValue!
 
-                //読み込んだコードがプライスカードの書式かどうかチェックする(1,5,6文字目が「2,0,0」)
-                let strArr = Array(result).map{String($0)}
-                let check = strArr[0]+strArr[4]+strArr[5]
-                print(check)
-                
-                if check == "200" || result.hasPrefix("2300") {
-                    //check:200 生産品, result:2300 リフレッシュのTAG
-                    AudioServicesPlaySystemSound(1106)
-                    AudioServicesPlaySystemSound(4095) //バイブ(iPhoneのみ)
-                    
-                    cautionLabel.isHidden = true
-                    self.session.stopRunning()
-                    delegate?.getData(type:"EAN13",data: result)
-                    self.close()
-                
-                    
+            }else {//シリアル読み込み
+                // QRコードのデータかどうかの確認
+                if metadata.type == .qr {
+                    if metadata.stringValue != nil {
+                        // 検出データを取得
+                        let QRdata = metadata.stringValue!
+                        //特定の文字列が含まれていないと認識しない
+                        //print(QRdata)
+                        
+                        let hantei = SerialNumber.make(QRdata)
+                        if hantei.isSerial {
+                            _serialNo = hantei.serialNo
+                            AudioServicesPlaySystemSound(1000)
+                            cautionLabel.isHidden = true
+                            self.session.stopRunning()
+                            delegate?.getData(type:"QR",data: _serialNo)
+                            self.close()
+                            
+                        }else {
+                            cautionLabel.isHidden = false
+                            cautionLabel.text = "シリアル番号を読み取ってください"
+                        }
+                    }
                 }else {
                     cautionLabel.isHidden = false
-                    cautionLabel.text = "このバーコードは認識できません"
+                    cautionLabel.text = "QRコードを読み取ってください"
                 }
-                
-            //QR・EAN13ではなかった時
-            }else {
-                cautionLabel.isHidden = false
-                cautionLabel.text = "読み取りできません"
             }
+            
         }
     }
     

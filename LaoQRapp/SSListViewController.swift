@@ -36,7 +36,7 @@ class SSListViewController: UIViewController {
     let entry = EntryDataBase(db: _db!)
     var backBtn:UIBarButtonItem!
     //var postBtn:UIBarButtonItem!
-    let param:GASURL = GASURL(id: "sheetID", url: apiUrl+"?operation=idList")
+    //let param:GASURL = GASURL(id: "sheetID", url: apiUrl+"?operation=idList")
     var refreshAlert = UIAlertController()
     //var postAlert = UIAlertController()
     
@@ -54,35 +54,49 @@ class SSListViewController: UIViewController {
         selectBtn.layer.cornerRadius = 5
         //list = entry.inputRead(select:index)
         self.navigationController?.setNavigationBarHidden(false, animated: true)
-        self.navigationItem.title = "登録済み一覧"
+        self.navigationItem.title = "ບັນຊີລາຍຊື່ລົງທະບຽນ/登録済み一覧"
 
-        backBtn = UIBarButtonItem(title: "＜ 戻る", style: .plain, target: self, action: #selector(self.back))
+        backBtn = UIBarButtonItem(title: "＜Back(ກັບຄືນໄປບ່ອນ)", style: .plain, target: self, action: #selector(self.back))
         self.navigationItem.leftBarButtonItem = backBtn
 
-        sheetId = ""
-        sheetName = ""
-        sheetLabel.text = ""
-        
-        self.getList()
-        
         if idList.count == 0 {
-            self.listRefresh()
+            self.refreshBtnTap(self)
+        }
+        if sheetId != "", sheetName != "" {
+            let name = idList.first(where: {$0.id==sheetId})?.name ?? ""
+            self.sheetLabel.text = name
+            getGasList(select: 0)
         }
         
         listSelector.selectedSegmentIndex = 0
-        getGasList(select: 0)
+        //segmentedControlのタイトルラベルの設定
+        for list in listSelector.subviews {
+            for li in list.subviews {
+                if let label = li as? UILabel {
+                    print(label.text!)
+                    label.numberOfLines = 0
+                    label.minimumScaleFactor = 0.5
+                }
+            }
+        }
+
+
 
     }
     
     @IBAction func changeDate(_ sender: UISegmentedControl) {
+        if sheetId == "" {
+            let alert = UIAlertController(title: "ເລືອກເອກະສານ", message: "シートを選択してください", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+            return
+        }
         index = sender.selectedSegmentIndex
-        //list = entry.inputRead(select: index)
         getGasList(select: index)
-        //self.tableView.reloadData()
     }
     
     func getGasList(select: Int) {
-        refreshAlert = UIAlertController(title: "データ取得中", message: "", preferredStyle: .alert)
+        refreshAlert = UIAlertController(title: "ຂໍ້ມູນ ກຳ ລັງໄດ້ຮັບ", message: "データ取得中", preferredStyle: .alert)
         
         self.present(refreshAlert, animated: true, completion: nil)
         
@@ -122,8 +136,8 @@ class SSListViewController: UIViewController {
                             if let j = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary  {
                                 print(j)
                                 //エラーメッセージ
-                                self.refreshAlert.title = "エラー"
-                                self.refreshAlert.message = "データ取得できません"
+                                self.refreshAlert.title = "ຂໍ້ຜິດພາດ/Error"
+                                self.refreshAlert.message = "ຄວາມລົ້ມເຫລວໃນການຊອກຫາຂໍ້ມູນ\nデータ取得失敗"
                                 self.refreshAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
                                     Void in
                                     DispatchQueue.main.async {
@@ -175,13 +189,13 @@ class SSListViewController: UIViewController {
                         }catch{
                             //スプレッドシートに接続できない
                             title = "Error:2003"
-                            msg = "スプレッドシートに接続できません"
+                            msg = "ບໍ່ສາມາດເຂົ້າເຖິງເອກະສານ\nスプレッドシートに接続できません"
                         }
                         
                     }else {
                         //GASからの戻りがない
                         title = "Error:2004"
-                        msg = "サーバーから応答がありません"
+                        msg = "ບໍ່ມີການຕອບຮັບຈາກເຊີເວີ\nサーバーから応答がありません"
                     }
                     
                 }else {
@@ -216,7 +230,7 @@ class SSListViewController: UIViewController {
             
             //print("list.cnt= \(list.count)")
             if type == 0 || type == 1 { //当日・前日分は日付のソートはしない
-                var groupArr = self.createGroup(arr: list)
+                let groupArr = self.createGroup(arr: list)
 /*
                 arr = list.sorted(by: {$0.item<$1.item})
                 print(arr.count)
@@ -328,40 +342,28 @@ class SSListViewController: UIViewController {
     
     
     @IBAction func refreshBtnTap(_ sender: Any) {
-        refreshAlert = UIAlertController(title: "リスト更新中", message: "", preferredStyle: .alert)
+        refreshAlert = UIAlertController(title: "ປັບປຸງລາຍຊື່", message: "リスト更新中", preferredStyle: .alert)
         self.present(refreshAlert, animated: true, completion: nil)
-        self.listRefresh()
-    }
-    
-    @objc func listRefresh() {
-        print(#function)
-        
-        var csvStr = ""
-        //var errMsg = ""
-        //サーバー上のcsvファイルのパス
-        if let csvPath = URL(string: param.url) {
-            do {
-                //CSVファイルのデータを取得する。
-                let str = try String(contentsOf: csvPath, encoding: .utf8)
-                csvStr = str
-                defaults.set(csvStr, forKey: param.id)
-                print("csvの保存に成功")
-                
-            } catch let error as NSError {
-                print(error.localizedDescription)
-                print("csv取得失敗")
-                //errMsg = error.localizedDescription
+        //self.listRefresh()
+        let data = DL.getCSV(parameter: parameter)
+        if data.err == "" {
+            idList = DL.getIdList()
+            
+            DispatchQueue.main.async {
+                if idList.count == 1 {
+                    sheetName = idList[0].sheet
+                    sheetId = idList[0].id
+                    self.sheetLabel.text = idList[0].name
+                }
+                self.refreshAlert.dismiss(animated: true, completion: nil)
             }
-        }else {
-            print("csv取得できません")
-            //errMsg = "サーバー上のファイルにアクセスできません"
+            
         }
         
-        self.getList()
     }
     
     @IBAction func selectSheet(_ sender: Any) {
-        let alert = UIAlertController(title: "登録先選択", message: "", preferredStyle: .alert)
+        let alert = UIAlertController(title: "ເລືອກເອກະສານ", message: "SelectSheet", preferredStyle: .alert)
         
         for id in idList{
             alert.addAction(UIAlertAction(title: id.name, style: .default, handler: {
@@ -370,52 +372,24 @@ class SSListViewController: UIViewController {
                     sheetName = id.sheet
                     sheetId = id.id
                     self.sheetLabel.text = id.name
+                    
+                    let i = self.listSelector.selectedSegmentIndex
+                    self.getGasList(select: i)
                 }
             }))
         }
-        alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
         self.present(alert, animated: true, completion: nil)
 
     }
+
     
-    func getList(){
-        //idList取得
-        var arr:[[String]] = []
-        if let itemArr = defaults.object(forKey: param.id) as? String {
-            //カンマ区切りでデータを分割して配列に格納する。
-            itemArr.enumerateLines { (line, stop) -> () in
-                arr.append(line.components(separatedBy: ","))
-            }
-        }
-        idList = []
-        for item in arr {
-            if item.count > 5 {
-                if item[5] == "ON" {
-                    idList.append((name:item[0], id:item[1], sheet:item[2]))
-                }
-            }else {
-                idList.append((name:item[0], id:item[1], sheet:item[2]))
-            }
-            
-        }
-        //print(idList)
-        
-        if idList.count == 1 {
-            sheetName = idList[0].sheet
-            sheetId = idList[0].id
-            self.sheetLabel.text = idList[0].name
-        }
-        
-        DispatchQueue.main.async {
-            self.refreshAlert.dismiss(animated: true, completion: nil)
-        }
-    }
-
-
     //前の画面へ戻る
     @objc func back() {
         gasList = []
+        sheetId = ""
+        sheetName = ""
         self.navigationController?.popViewController(animated: true)
     }
 

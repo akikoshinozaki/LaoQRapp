@@ -154,10 +154,13 @@ class SettingView: UIView, UITableViewDelegate, UITableViewDataSource, UITextFie
   //MARK: -TextFieldDelegate
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool{
-        self.keyboardCommitButton()
+        textField.endEditing(true)
         return true
     }
     
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        self.keyboardCommitButton()
+    }
     //キーボードのcancelボタンを押した時の処理
     @objc func keyboardCancelButton(){
         self.syainCDField.resignFirstResponder()
@@ -165,6 +168,12 @@ class SettingView: UIView, UITableViewDelegate, UITableViewDataSource, UITextFie
     
     //自作した完了ボタンを押した時の処理
     @objc func keyboardCommitButton (){
+        if syainCDField.text! == "" {
+            return
+        }
+
+        let str = syainCDField.text!.uppercased()
+        syainCDField.text = str
         //5桁の数字が入力されたら、社員CDと認識
         syainLabel.text = ""
         syainCD_ = ""
