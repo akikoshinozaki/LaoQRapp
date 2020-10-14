@@ -14,6 +14,12 @@ class SimpleAlert: NSObject {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             let action1 = UIAlertAction(title: "OK", style: .default, handler: nil)
             alert.addAction(action1)
+            
+            if let topViewController: UIViewController = SimpleAlert.getTopViewController(){
+                //topViewController.view.addSubview(customView)
+                topViewController.present(alert, animated: true, completion: nil)
+            }
+            /*
             if window_.rootViewController?.presentedViewController != nil ||
                 window_.rootViewController?.presentingViewController != nil{
                 window_.rootViewController?.dismiss(animated: false, completion: {
@@ -21,7 +27,7 @@ class SimpleAlert: NSObject {
                 })
             } else {
                window_.rootViewController?.present(alert, animated: true, completion: nil)
-            }
+            }*/
         }
     }
     
