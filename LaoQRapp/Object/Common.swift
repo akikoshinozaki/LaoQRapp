@@ -79,6 +79,12 @@ struct GASURL {
     var url : String = ""
 }
 
+struct Employee {
+    var syainCD:String = ""
+    var name_en:String = ""
+    var name_lo:String = ""
+}
+
 //Date → String
 extension Date {
     func toString(format:String) -> String{
@@ -169,6 +175,7 @@ extension String {
 
 typealias CompletionClosure = ((_ resultString:String?,_ resultJson:NSDictionary?, _ err:Error?) -> Void)
 
+//typealias CompletionClosure = ((_ result:NSDictionary?, _ err:Error?) -> Void)
 //GAS APIのURL
 //TEST
 //let apiUrl = "https://script.google.com/macros/s/AKfycbzo7SQFMFqc6BXTvjxxiQgqUB08vT263oT-Df2WAWedb1lxEQU/exec"
@@ -179,9 +186,11 @@ let apiUrl = "https://script.google.com/macros/s/AKfycbw7BTNIdwXwyCZHi0IiHtLqIXi
 var translate:Dictionary<String, String> = [:]
 let SS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSYsk2S-W-gH9usc2qC0qtBTch8VnFxp1gn1Kmt4_5gSRKj7gHxRge9Q9rjmDn2n8Pl99Garq9sJ55N/pub?gid="
 
-let parameters:[GASURL] = [GASURL(id: "itemArr", url: SS_URL+"1270331495&single=true&output=csv"),
-                           GASURL(id: "errMessage", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT_VIqCdRpHyjvV3dDyLRn9eonLWqDIHjYaiHQAxqe27SXXKUBH-t0CEOd4w7KGWbELl3KIYVEsphaU/pub?gid=1456474335&single=true&output=csv"),
-                           GASURL(id: "translate", url: SS_URL+"550904518&single=true&output=csv")
+let parameters:[GASURL] = [
+    GASURL(id: "itemArr", url: SS_URL+"1270331495&single=true&output=csv"),
+    GASURL(id: "employee", url: SS_URL+"1920248299&single=true&output=csv"),
+    GASURL(id: "errMessage", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT_VIqCdRpHyjvV3dDyLRn9eonLWqDIHjYaiHQAxqe27SXXKUBH-t0CEOd4w7KGWbELl3KIYVEsphaU/pub?gid=1456474335&single=true&output=csv"),
+    GASURL(id: "translate", url: SS_URL+"550904518&single=true&output=csv")
 ]
 
 //idList
@@ -191,6 +200,7 @@ let idListParam:GASURL = GASURL(id: "sheetID", url: apiUrl+"?operation=idList")
 //var itemArray:[(cd:String,name:String,unit:String)] = [] //unit:単位
 var locArray:[(cd:String,name:String)] = []
 var itemArray:[(cd:String,name:String,unit:String)] = [] //unit:単位
+var employee:[Employee] = []
 var errFromIBM:[(cd:String,jp:String,lo:String)] = []
 var idList:[(name:String, id:String, sheet:String)] = []
 var fileName = ""

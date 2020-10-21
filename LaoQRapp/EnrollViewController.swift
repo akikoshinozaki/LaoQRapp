@@ -38,6 +38,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     var activeField:UITextField!
 
     @IBOutlet weak var syainField: UITextField!
+    @IBOutlet weak var itemField: UITextField!
     //    var scrollView:UIScrollView!
     @IBOutlet weak var contentView: UIView!
     
@@ -53,10 +54,10 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     
     @IBOutlet weak var selectBtn: UIButton!
     @IBOutlet weak var sheetLabel: UILabel!
-    
-    
+    var postAlert:UIAlertController!
+
     var serialNO:String = ""
-    var orderStr:String = ""
+    //var orderStr:String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -80,6 +81,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
             field.delegate = self
         }
         syainField.delegate = self
+        itemField.delegate = self
         
         for v in views {
             v.layer.cornerRadius = 10
@@ -101,11 +103,13 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         
         sheetId = ""
         sheetName = ""
+        fileName = ""
         sheetLabel.text = ""
         if idList.count == 1 {
             sheetId = idList[0].id
             sheetName = idList[0].sheet
-            sheetLabel.text = idList[0].name
+            fileName = idList[0].name
+            sheetLabel.text = fileName
         }
         
         self.setLocation()
@@ -151,8 +155,9 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                     Void in
                     sheetId = id.id
                     sheetName = id.sheet
+                    fileName = id.name
                     DispatchQueue.main.async {
-                        self.sheetLabel.text = id.name
+                        self.sheetLabel.text = fileName
                     }
                     
                 }))
@@ -170,10 +175,6 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     func setData(){ //バーコードをスキャンして、取得した情報をセット
         print(itemCD_)
         var str = ""
-        //itemCDからitemNameを取得
-        
-        
-        
         if itemCD_ != "" {
             
             if itemName_ != "" {
@@ -244,6 +245,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         btnID = 0
         sheetId = ""
         sheetName = ""
+        fileName = ""
 
     }
     
@@ -380,10 +382,15 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     }
     
     func getData(type:String, data: String) {
+        //QRコードを読んだ後の処理
         if type == "EAN13" {
             self.readJANCode(result: data)
         }else if type == "QR" {
-            print(data)
+            self.serialNO = data
+            DispatchQueue.main.async {
+                self.serialDataLabel.text = self.serialNO
+            }
+            /*
             for field in fields {
                 field.text = ""
             }
@@ -441,6 +448,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                     
                 }
             })
+             */
         }
     }
     
@@ -476,7 +484,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         }
     }
     
-    @IBAction func postToIBM(_ sender:UIButton){
+    @IBAction func postToSheet(_ sender:UIButton){
         self.view.endEditing(true)
         let errAlert = UIAlertController(title: "", message: "", preferredStyle: .alert)
         errAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -497,77 +505,13 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
             }
             return
         }
-        orderStr = "UV=\(UVField.text!);" +
-            "UH=\(UHField.text!);" +
-            "LV=\(LVField.text!);" +
-            "LH=\(LHField.text!);" +
-            "WT=\(WTField.text!);" +
-            "HT=\(HTField.text!)"
-        
-        print(orderStr)
-        
-        let param:[String:Any] = [
-            "SYAIN_CD":ibmUser,
-            "LOCAT_CD":locateCD_,
-            "UKE_CD":itemCD_,
-            "PRODUCT_SN":serialNO,
-            "ORDER_SPEC":orderStr
-        ]
-        
+
         let alert = UIAlertController(title: "ທ່ານຕ້ອງການລົງທະບຽນບໍ?\n登録してよろしいですか", message: "S/N:\(serialNO)", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
             Void in
-            IBM().hostRequest(type: "ENTRY", param: param, completionClosure: {
-                (str, json,err) in
-                if err != nil {
-                    //エラーの処理
-                    let action = UIAlertAction(title: "OK", style: .default, handler: {
-                        Void in
-                        //self.dismiss(animated: true, completion: nil)
-                    })
-                    SimpleAlert.make(title: "エラー", message: err?.localizedDescription, action: [action])
-                    return
-                }
-                
-                if json != nil {
-                    print(json!)
-                    let json_ = json!
-
-                    if json!["RTNCD"] as! String == "000" {
-                        DispatchQueue.main.async {
-                        //スプレッドシート登録
-                        self.postSS()
-                        //FMDB登録
-                        
-                        
-                        //登録完了
-                        
-                            let alert = UIAlertController(title: "ລົງທະບຽນ ສຳ ເລັດ", message: "登録完了", preferredStyle: .alert)
-                            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
-                                Void in
-                                //データリセット
-                                self.resetQR()
-                            }))
-                        
-                            self.present(alert, animated: true, completion: nil)
-                        }
-                        
-                    }else {
-                        //IBMからエラー戻り
-                        let rtnMSG = json_["RTNMSG"] as? [String] ?? []
-                        let errStr =  errMsgFromIBM(rtnMSG: rtnMSG)
-                        
-                        let action = UIAlertAction(title: "OK", style: .default, handler: {
-                            Void in
-                            DispatchQueue.main.async {
-                                self.dismiss(animated: true, completion: nil)
-                            }
-                        })
-                        SimpleAlert.make(title: "Error", message: errStr, action: [action])
-                    }
-                }
-            })
-                        
+            self.saveID()
+            self.postSS()
+            
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         //アラートを表示
@@ -575,12 +519,41 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
  
     }
     
-    var postAlert:UIAlertController!
+//    @IBAction func getSerial(_ sender:Any){
+//        //MySQL().getID(serial: serialNO, completionClosure: {
+//        MySQL().getID(serial: "123456789012345678", completionClosure: {
+//            (str, json,err) in
+//            if err == nil, json != nil {
+//                print(json!)
+//                let status = json!["status"] as? String ?? ""
+//                if status == "success" {
+//                    sheetId = json!["sheetID"] as? String ?? ""
+//                    sheetName = json!["sheetName"] as? String ?? ""
+//                    fileName = json!["fileName"] as? String ?? ""
+//
+//                }else {
+//                    print(str!)
+//                }
+//            }
+//        })
+//    }
+    
+    func saveID(){
+        let param:NSDictionary = [
+            "serial":serialNO,
+            "sheetID":sheetId,
+            "sheetName":sheetName,
+            "fileName":fileName,
+            "staff":syainCD_,
+            "date":Date().entryDate
+        ]
+        
+        MySQL().insert(dic: param)
+        
+    }
+    
     func postSS(){
         //登録
-//        print(sheetId)
-//        print(sheetName)
-        //新規登録
         postAlert = UIAlertController(title: "ຂໍ້ມູນ ກຳ ລັງລົງທະບຽນຢູ່", message: "データ登録中", preferredStyle: .alert)
         self.present(postAlert, animated: true, completion: nil)
         
@@ -631,7 +604,6 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                             if status == "success" { //登録成功
                                 str1 = "正常に登録できました"
                                 self.resetQR()
-//                                self.dbUpdate()
                             }else { //その他のエラー
                                 str1 = "Error:2002"
                                 str2 = rtnMsg
@@ -671,9 +643,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                 self.postAlert.message = error.localizedDescription
                 self.postAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             }
-            
             return
-            
         }
         
     }
@@ -681,7 +651,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     func resetQR() {
         ORDER_SPEC = ""
         serialNO = ""
-        orderStr = ""
+        //orderStr = ""
         
         DispatchQueue.main.async {
             self.serialDataLabel.text = ""
@@ -751,12 +721,12 @@ extension EnrollViewController: UITextFieldDelegate {
         if textField.text! == "" {return}
         
         if textField.tag == 100 { //社員CDから社員名を取得
-            print(textField.text!)
-            let str = textField.text!.uppercased()
-            textField.text = str
-            //5桁の数字が入力されたら、社員CDと認識
             syainLabel.text = ""
             syainCD_ = ""
+            
+            /*
+             let str = textField.text!.uppercased()
+             textField.text = str
             if str.count == 6, str.hasPrefix("14") {
                 syainCD_ = str
                 ibmUser = str.replacingOccurrences(of: "14", with: "L")
@@ -770,7 +740,27 @@ extension EnrollViewController: UITextFieldDelegate {
             
             if ibmUser.count == 5 {
                 self.searchName()
+            }*/
+            
+            if Int(textField.text!) != nil {
+                let cd = textField.text!
+                if cd.count == 6 {
+                    self.searchName(cd:cd)
+                }else {
+                    SimpleAlert.make(title: "桁数が正しくありません", message: "")
+                    textField.text = ""
+                }
+            }else {
+                SimpleAlert.make(title: "数字で入力してください", message: "")
+                textField.text = ""
             }
+            
+        }else if textField.tag == 101 { //商品CDから商品名を取得
+            itemName_ = ""
+            itemCD_ = ""
+            let cd = textField.text!.uppercased()
+            textField.text = cd
+            self.searchItem(cd: cd)
             
         }else {
             if Double(textField.text!) == nil {
@@ -797,48 +787,146 @@ extension EnrollViewController: UITextFieldDelegate {
     }
     
     //textFieldに入力された社員CDから社員名を取得
-    @objc func searchName() {
-        
-        let param = ["SYAIN_CD":ibmUser]
-        IBM().hostRequest(type: "ENTCHK", param: param, completionClosure: {
-            (str, json,err) in
-            DispatchQueue.main.async {
-                if err != nil {
-                    syainCD_ = ""
-                    ibmUser = ""
-                    self.syainField.text = ""
-                    SimpleAlert.make(title: "Error", message: err?.localizedDescription)
-                    return
-                }
-                if json == nil {
-                    syainCD_ = ""
-                    ibmUser = ""
-                    self.syainField.text = ""
-                    SimpleAlert.make(title: "Error", message: "ホストから応答がありません")
-                    return
-                }
-                
-                if json!["RTNCD"] as! String == "000" {
-                    syainName_ = json!["SYAIN_NM"] as? String ?? ""
-                    self.syainLabel.text = syainCD_+":"+syainName_
-                    //ユーザーデフォルトにセット
-                    defaults.set(syainCD_, forKey: "syainCD")
-                    defaults.set(syainName_, forKey: "syainName")
-                    
-                }else {
-                    //IBMからエラー戻り
-                    syainCD_ = ""
-                    ibmUser = ""
-                    self.syainField.text = ""
-                    let rtnMSG = json!["RTNMSG"] as? [String] ?? []
-                    let errStr =  errMsgFromIBM(rtnMSG: rtnMSG)
-                    SimpleAlert.make(title: "エラー", message: errStr)
-                }
-            }
+    @objc func searchName(cd:String) {
+
+        if let idx = employee.firstIndex(where: {$0.syainCD == cd}) {
+            //print(idx)
+            syainCD_ = employee[idx].syainCD
+            syainName_ = employee[idx].name_en
+
+            //ユーザーデフォルトにセット
+            defaults.set(syainCD_, forKey: "syainCD")
+            defaults.set(syainName_, forKey: "syainName")
             
-        })
+        }else {
+            SimpleAlert.make(title: "Error(ຂໍ້ຜິດພາດ)", message: "社員CDが存在しません".loStr)
+            syainCD_ = ""
+            syainName_ = ""
+        }
+        
+        self.syainLabel.text = syainCD_+":"+syainName_
+    }
+    
+    func searchItem(cd:String) {
+        if let idx = itemArray.firstIndex(where: {$0.cd == cd}) {
+            //print(idx)
+            itemCD_ = itemArray[idx].cd
+            itemName_ = itemArray[idx].name
+           
+        }else {
+            SimpleAlert.make(title: "Error(ຂໍ້ຜິດພາດ)", message: "商品CDが存在しません".loStr)
+            //print("cdが存在しません")
+            itemCD_ = ""
+            itemName_ = ""
+        }
+        
+        DispatchQueue.main.async {
+            self.itemDataLabel.text = "\(itemCD_) :\(itemName_)"
+            self.step4View.isHidden = (itemCD_ == "")
+        }
         
     }
     
 }
 
+extension EnrollViewController { //IBM関係のメソッド（後で使うかも・・・）
+    /*
+       @IBAction func postToIBM(_ sender:UIButton){
+           self.view.endEditing(true)
+           let errAlert = UIAlertController(title: "", message: "", preferredStyle: .alert)
+           errAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+           
+           if sheetId == "" || sheetName == "" {
+               DispatchQueue.main.async {
+                   errAlert.title = "ບໍ່ມີການຄັດເລືອກເອກະສານ"
+                   errAlert.message = "シートが選択されていません"
+                   self.present(errAlert, animated: true, completion: nil)
+               }
+               return
+           }
+           if serialNO == "" {
+               DispatchQueue.main.async {
+                   errAlert.title = "ບໍ່ສາມາດອ່ານເລກ ລຳ ດັບ"
+                   errAlert.message = "シリアル番号を読み取れません"
+                   self.present(errAlert, animated: true, completion: nil)
+               }
+               return
+           }
+           orderStr = "UV=\(UVField.text!);" +
+               "UH=\(UHField.text!);" +
+               "LV=\(LVField.text!);" +
+               "LH=\(LHField.text!);" +
+               "WT=\(WTField.text!);" +
+               "HT=\(HTField.text!)"
+           
+           print(orderStr)
+           
+           let param:[String:Any] = [
+               "SYAIN_CD":ibmUser,
+               "LOCAT_CD":locateCD_,
+               "UKE_CD":itemCD_,
+               "PRODUCT_SN":serialNO,
+               "ORDER_SPEC":orderStr
+           ]
+           
+           let alert = UIAlertController(title: "ທ່ານຕ້ອງການລົງທະບຽນບໍ?\n登録してよろしいですか", message: "S/N:\(serialNO)", preferredStyle: .alert)
+           alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
+               Void in
+               IBM().hostRequest(type: "ENTRY", param: param, completionClosure: {
+                   (str, json,err) in
+                   if err != nil {
+                       //エラーの処理
+                       let action = UIAlertAction(title: "OK", style: .default, handler: {
+                           Void in
+                           //self.dismiss(animated: true, completion: nil)
+                       })
+                       SimpleAlert.make(title: "エラー", message: err?.localizedDescription, action: [action])
+                       return
+                   }
+                   
+                   if json != nil {
+                       print(json!)
+                       let json_ = json!
+
+                       if json!["RTNCD"] as! String == "000" {
+                           DispatchQueue.main.async {
+                           //スプレッドシート登録
+                           self.postSS()
+                           //FMDB登録
+                           
+                           
+                           //登録完了
+                           
+                               let alert = UIAlertController(title: "ລົງທະບຽນ ສຳ ເລັດ", message: "登録完了", preferredStyle: .alert)
+                               alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
+                                   Void in
+                                   //データリセット
+                                   self.resetQR()
+                               }))
+                           
+                               self.present(alert, animated: true, completion: nil)
+                           }
+                           
+                       }else {
+                           //IBMからエラー戻り
+                           let rtnMSG = json_["RTNMSG"] as? [String] ?? []
+                           let errStr =  errMsgFromIBM(rtnMSG: rtnMSG)
+                           
+                           let action = UIAlertAction(title: "OK", style: .default, handler: {
+                               Void in
+                               DispatchQueue.main.async {
+                                   self.dismiss(animated: true, completion: nil)
+                               }
+                           })
+                           SimpleAlert.make(title: "Error", message: errStr, action: [action])
+                       }
+                   }
+               })
+                           
+           }))
+           alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+           //アラートを表示
+           self.present(alert,animated: true)
+    
+       }*/
+}

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4E646AC3252DA3E800A1A62E /* InquiryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E646AC2252DA3E800A1A62E /* InquiryTableViewCell.swift */; };
 		4E646AC5252DBA1F00A1A62E /* DetailListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E646AC4252DBA1F00A1A62E /* DetailListViewController.swift */; };
+		4EA60F8D25402704008AD0D6 /* MySQL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA60F8C25402704008AD0D6 /* MySQL.swift */; };
 		7B78E0E9EBC457D02E109C46 /* Pods_LaoQRapp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E380D639552C658E90D8F116 /* Pods_LaoQRapp.framework */; };
 		C34F2B4B252C34A200766763 /* SSListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34F2B4A252C34A200766763 /* SSListViewController.swift */; };
 		C34F2B4D252C359D00766763 /* myTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34F2B4C252C359D00766763 /* myTableViewCell.swift */; };
@@ -52,6 +53,7 @@
 /* Begin PBXFileReference section */
 		4E646AC2252DA3E800A1A62E /* InquiryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InquiryTableViewCell.swift; sourceTree = "<group>"; };
 		4E646AC4252DBA1F00A1A62E /* DetailListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DetailListViewController.swift; path = LaoQRapp/DetailListViewController.swift; sourceTree = SOURCE_ROOT; };
+		4EA60F8C25402704008AD0D6 /* MySQL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MySQL.swift; sourceTree = "<group>"; };
 		5351F89B737653FEB4A78DC2 /* Pods-LaoQRapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LaoQRapp.release.xcconfig"; path = "Target Support Files/Pods-LaoQRapp/Pods-LaoQRapp.release.xcconfig"; sourceTree = "<group>"; };
 		C34F2B4A252C34A200766763 /* SSListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSListViewController.swift; sourceTree = "<group>"; };
 		C34F2B4C252C359D00766763 /* myTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = myTableViewCell.swift; sourceTree = "<group>"; };
@@ -196,6 +198,7 @@
 				C3B6FBE0252ABAB0007397E1 /* SerialNumber.swift */,
 				C3ACA2152526C1A200F2CC51 /* HostConnect.swift */,
 				C3ACA2102526BEED00F2CC51 /* QRScannerView.swift */,
+				4EA60F8C25402704008AD0D6 /* MySQL.swift */,
 				C3ACA20F2526BEED00F2CC51 /* QRScannerView.xib */,
 				C3ACA2002526BEBF00F2CC51 /* DBBackUp.swift */,
 				C3ACA2012526BEBF00F2CC51 /* EntryDataBase.swift */,
@@ -346,6 +349,7 @@
 				C3ACA20C2526BEBF00F2CC51 /* Common.swift in Sources */,
 				C3ACA2092526BEBF00F2CC51 /* EntryDataBase.swift in Sources */,
 				C3ACA2142526BF0800F2CC51 /* SimpleAlert.swift in Sources */,
+				4EA60F8D25402704008AD0D6 /* MySQL.swift in Sources */,
 				C3ACA2162526C1A200F2CC51 /* HostConnect.swift in Sources */,
 				C34F2B4D252C359D00766763 /* myTableViewCell.swift in Sources */,
 				C34F2B4B252C34A200766763 /* SSListViewController.swift in Sources */,

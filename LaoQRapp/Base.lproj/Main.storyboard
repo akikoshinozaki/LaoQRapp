@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AVx-GH-KDA">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AVx-GH-KDA">
     <device id="ipad9_7" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -235,6 +235,14 @@
                                     <action selector="deleteData" destination="UgH-j7-sqL" eventType="touchUpInside" id="dqv-J6-L2D"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gZv-Sb-oWi">
+                                <rect key="frame" x="558" y="75" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="test:" destination="UgH-j7-sqL" eventType="touchUpInside" id="N1Z-BY-und"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -350,22 +358,17 @@
                                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XzQ-ia-q5v">
-                                                <rect key="frame" x="170" y="391" width="558" height="80"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XzQ-ia-q5v">
+                                                <rect key="frame" x="170" y="416" width="558" height="80"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="80" id="B99-xU-oDh"/>
-                                                </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <button opaque="NO" tag="777" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uih-sG-aS6">
-                                                <rect key="frame" x="50" y="391" width="80" height="80"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="80" id="F9z-QM-XyI"/>
-                                                    <constraint firstAttribute="width" constant="80" id="yIa-WI-AAP"/>
-                                                </constraints>
+                                            <button opaque="NO" tag="777" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uih-sG-aS6">
+                                                <rect key="frame" x="50" y="416" width="80" height="80"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                                                 <state key="normal" backgroundImage="barcode.png">
                                                     <color key="titleColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -717,7 +720,7 @@
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         </state>
                                                         <connections>
-                                                            <action selector="postToIBM:" destination="TLI-uu-Xfi" eventType="touchUpInside" id="ycs-OO-v6s"/>
+                                                            <action selector="postToSheet:" destination="TLI-uu-Xfi" eventType="touchUpInside" id="Ra4-de-klG"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
@@ -841,6 +844,20 @@
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <textInputTraits key="textInputTraits"/>
                                             </textField>
+                                            <textField opaque="NO" tag="101" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8QE-c1-nxo">
+                                                <rect key="frame" x="50" y="374" width="176" height="34"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
+                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hcA-QK-CX4">
+                                                <rect key="frame" x="564" y="65" width="164" height="30"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <state key="normal" title="テスト"/>
+                                                <connections>
+                                                    <action selector="getSerial:" destination="TLI-uu-Xfi" eventType="touchUpInside" id="BFE-Vg-97h"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                         <constraints>
@@ -860,20 +877,15 @@
                                             <constraint firstItem="sof-HO-8p6" firstAttribute="leading" secondItem="9pf-Ju-e7c" secondAttribute="leading" id="OAy-AC-vhE"/>
                                             <constraint firstItem="t9Z-xJ-p8L" firstAttribute="leading" secondItem="3mD-0q-P6h" secondAttribute="leading" id="Phl-kb-FeD"/>
                                             <constraint firstItem="t9Z-xJ-p8L" firstAttribute="top" secondItem="eDB-Zf-S15" secondAttribute="top" id="QgK-Ia-Qv9"/>
-                                            <constraint firstAttribute="trailing" secondItem="XzQ-ia-q5v" secondAttribute="trailing" constant="40" id="SEs-Z4-CYc"/>
                                             <constraint firstItem="85E-wv-T0O" firstAttribute="leading" secondItem="9pf-Ju-e7c" secondAttribute="leading" id="Xhq-1N-UUU"/>
                                             <constraint firstItem="CNt-UL-SvX" firstAttribute="centerY" secondItem="SUV-f6-I8e" secondAttribute="centerY" id="aLd-cx-TN0"/>
                                             <constraint firstItem="85E-wv-T0O" firstAttribute="top" secondItem="SUV-f6-I8e" secondAttribute="bottom" constant="30" id="cUk-Xc-oFd"/>
                                             <constraint firstItem="tIl-bB-Hvt" firstAttribute="top" secondItem="t9Z-xJ-p8L" secondAttribute="bottom" constant="50" id="drK-fF-u1O"/>
-                                            <constraint firstItem="XzQ-ia-q5v" firstAttribute="leading" secondItem="uih-sG-aS6" secondAttribute="trailing" constant="40" id="gJO-pY-FCG"/>
                                             <constraint firstItem="3mD-0q-P6h" firstAttribute="leading" secondItem="GLe-jf-ByG" secondAttribute="trailing" constant="40" id="gNA-XZ-6cW"/>
-                                            <constraint firstItem="XzQ-ia-q5v" firstAttribute="top" secondItem="uih-sG-aS6" secondAttribute="top" id="h67-iF-qah"/>
                                             <constraint firstItem="SUV-f6-I8e" firstAttribute="leading" secondItem="9pf-Ju-e7c" secondAttribute="leading" constant="50" id="iRU-hD-3HV"/>
-                                            <constraint firstItem="uih-sG-aS6" firstAttribute="top" secondItem="tIl-bB-Hvt" secondAttribute="bottom" constant="30" id="keQ-f1-TlO"/>
                                             <constraint firstItem="CNt-UL-SvX" firstAttribute="leading" secondItem="SUV-f6-I8e" secondAttribute="trailing" constant="40" id="pt8-WC-9Uj"/>
                                             <constraint firstAttribute="height" constant="1100" id="rf6-aJ-D79"/>
                                             <constraint firstItem="3mD-0q-P6h" firstAttribute="top" secondItem="85E-wv-T0O" secondAttribute="bottom" constant="30" id="vcK-hL-Ez4"/>
-                                            <constraint firstItem="uih-sG-aS6" firstAttribute="leading" secondItem="9pf-Ju-e7c" secondAttribute="leading" constant="50" id="x3d-1D-xh7"/>
                                             <constraint firstItem="SUV-f6-I8e" firstAttribute="top" secondItem="AbG-6q-Azz" secondAttribute="bottom" constant="30" id="zvJ-gf-a4H"/>
                                         </constraints>
                                     </view>
@@ -911,6 +923,7 @@
                         <outlet property="contentView" destination="9pf-Ju-e7c" id="WXX-rf-ho6"/>
                         <outlet property="enrollBtn" destination="e64-l1-2bx" id="Zxu-mv-sQE"/>
                         <outlet property="itemDataLabel" destination="XzQ-ia-q5v" id="KOt-Au-EOg"/>
+                        <outlet property="itemField" destination="8QE-c1-nxo" id="92c-lR-mnV"/>
                         <outlet property="locationLabel" destination="GF7-tv-qSj" id="pMB-L1-98F"/>
                         <outlet property="selectBtn" destination="SUV-f6-I8e" id="oTl-Qc-AgQ"/>
                         <outlet property="serialDataLabel" destination="p7N-TQ-4lb" id="jed-Ld-R0I"/>

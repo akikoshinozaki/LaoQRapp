@@ -73,11 +73,13 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         
         sheetId = ""
         sheetName = ""
+        fileName = ""
         sheetLabel.text = ""
         if idList.count == 1 {
             sheetId = idList[0].id
             sheetName = idList[0].sheet
-            sheetLabel.text = idList[0].name
+            fileName = idList[0].name
+            sheetLabel.text = fileName
         }
 
     }
@@ -141,52 +143,243 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         print(#function)
     }
     
-    func getData(type:String, data: String) {
+    @IBAction func test(_ sender: Any) {
+        self.getData(type:"", data: "53604221619170005")
+    }
+    
+    func getData(type:String, data: String){
         serialNO = data
-        let param = ["PRODUCT_SN":data]
-        
-        rtnData.text = ""
-        
-        IBM().hostRequest(type: "INQUIRY", param: param, completionClosure: {
+        MySQL().getID(serial: serialNO, completionClosure: {
             (str, json,err) in
-            DispatchQueue.main.async {
-                if err != nil {
-                    //アラートを表示
-                    let alert = UIAlertController(title: "エラー", message: err?.localizedDescription, preferredStyle: .alert)
-                    //ボタン追加
-                    alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler:nil))
-                    self.present(alert,animated: true,completion:nil)
+            if err == nil, json != nil {
+                print(json!)
+                let status = json!["status"] as? String ?? ""
+                if status == "success" {
+                    sheetId = json!["sheetID"] as? String ?? ""
+                    sheetName = json!["sheetName"] as? String ?? ""
+                    fileName = json!["fileName"] as? String ?? ""
                     
-                    return
+                }else {
+                    //シートID取得できない
+                    print(str!)
                 }
+            }else {
+                //シートID取得できない
+            }
+            
+            if sheetId != "" {
+                //スプレッドシート検索
+                self.searchSS(serial: self.serialNO)
                 
-                if json != nil {
-                    print(json!)
-                    let json_ = json!
-                    if json_["RTNCD"] as! String == "000" {
-                        self.display(json: json_)
-                        self.deleteBtn.isHidden = false
+            }else {
+                 //シートID取得できないときの処理
+                SimpleAlert.make(title: "エラー", message: "")
+            }
+        })
+    }
+       
+    var getAlert = UIAlertController()
+    func searchSS(serial: String) {
+        DispatchQueue.main.async {
+            self.getAlert = UIAlertController(title: "ຂໍ້ມູນ ກຳ ລັງໄດ້ຮັບ", message: "データ取得中", preferredStyle: .alert)
+            self.present(self.getAlert, animated: true, completion: nil)
+        }
+        
+        let param = [
+            "sheetID":sheetId,
+            "shName":sheetName,
+            "serial":serial
+        ]
+        
+        var url = apiUrl+"?"
+        for p in param {
+            url += "\(p.key)=\(p.value)&"
+        }
+        
+        let request = URLRequest(url: URL(string: url)!)
+        
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 20.0
+        let session = URLSession(configuration: config)
+        
+        var title = ""
+        var msg = ""
+        let task = session.dataTask(with: request as URLRequest, completionHandler: {(data,response,err) -> Void in
+            DispatchQueue.main.async {
+                if err == nil {
+                    if data != nil {
+                        print(data!)
+                        do{
+                            if let j = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary  {
+                                print(j)
+                                //エラーメッセージ
+                                DispatchQueue.main.async {
+                                    self.getAlert.title = "ຂໍ້ຜິດພາດ/Error"
+                                    self.getAlert.message = "ຄວາມລົ້ມເຫລວໃນການຊອກຫາຂໍ້ມູນ\nデータ取得失敗"
+                                    self.getAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                                }
+                            }
+                            
+                            if let json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary {
+                                //print(json)
+                                DispatchQueue.main.async {
+                                    self.getAlert.dismiss(animated: true, completion: nil)
+                                }
+                                //日付を変換
+                                var createDate = ""
+                                if let str = json["Create Date"] as? String {
+                                    if let date = str.toDate(format: "yyyy-MM-dd HH:mm:ss"){
+                                        createDate = date.toString(format: "yyyy/MM/dd")
+                                    }else {
+                                        createDate = str
+                                    }
+                                }
+                                
+                                let val = GASList(loc: json["Location"] as? String ?? "",
+                                                  item: json["item"] as? String ?? "",
+                                                  itemName: json["itemName"] as? String ?? "",
+                                                  staff: json["staff"] as? String ?? "",
+                                                  date: createDate,
+                                                  serial: json["Serial"] as? String ?? "",
+                                                  UV: json["UV"] as? String ?? "",
+                                                  UH: json["UH"] as? String ?? "",
+                                                  LV: json["LV"] as? String ?? "",
+                                                  LH: json["LH"] as? String ?? "",
+                                                  WT: json["WT"] as? String ?? "",
+                                                  HT: json["HT"] as? String ?? "")
+                                
+                                DispatchQueue.main.async {
+                                    //データ表示
+                                    let str = "SerialNumber: \(val.serial)\n" +
+                                        //"製造場所: \(inq_LOCAT_NM!)\n" +
+                                        "entryDate: \(createDate)\n" +
+                                        "staff: \(val.staff)\n\n" +
+                                        "itemCD: \(val.item)\n" +
+                                        "itemName: \(val.itemName)\n" +
+                                    "ORDER_SPEC: UV=\(val.UV), UH=\(val.UH),LV=\(val.LV),LH=\(val.LH),WT=\(val.WT),HT=\(val.HT)"
+                                    self.rtnData.text = str
+                                }
+                                
+                            }
+                            
+                        }catch{
+                            //スプレッドシートに接続できない
+                            title = "Error:2003"
+                            msg = "ບໍ່ສາມາດເຂົ້າເຖິງເອກະສານ\nスプレッドシートに接続できません"
+                        }
                         
                     }else {
-                        self.deleteBtn.isHidden = true
-                        //IBMからエラー戻り
-                        let rtnMSG = json_["RTNMSG"] as? [String] ?? []
-                        let errStr =  errMsgFromIBM(rtnMSG: rtnMSG)
-
-                        //アラートを表示
-                        let alert = UIAlertController(title: "エラー", message: errStr, preferredStyle: .alert)
-                        //ボタン追加
-                        alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler:nil))
-                        self.present(alert,animated: true,completion:nil)
-                        
+                        //GASからの戻りがない
+                        title = "Error:2004"
+                        msg = "ບໍ່ມີການຕອບຮັບຈາກເຊີເວີ\nサーバーから応答がありません"
+                    }
+                    
+                }else {
+                    title = "Error:2001"
+                    msg = err!.localizedDescription
+                }
+                
+                if title != "" { //エラーがあった場合の処理
+                    DispatchQueue.main.async {
+                        self.getAlert.dismiss(animated: true, completion: nil)
+                        SimpleAlert.make(title: title, message: msg)
                     }
                 }
             }
         })
         
+        task.resume()
     }
     
-    
+    @IBAction func deleteData() {
+        ssDelete()
+        /*
+        //print("削除")
+        if sheetId == "" {
+            let alert = UIAlertController(title: "ບໍ່ມີການຄັດເລືອກເອກະສານ", message: "スプレッドシートが選択されていません", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "ສືບຕໍ່/続ける", style: .default, handler: {
+                Void in
+                self.ibmDelete()
+            }))
+            alert.addAction(UIAlertAction(title: "ຍົກເລີກ/Cancel", style: .cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+            
+        }else {
+            ibmDelete()
+        }
+*/
+        
+    }
+
+    func ssDelete() {
+        if sheetId == ""||sheetName==""{return}
+        //スプレッドシートから削除
+        let param = [
+            "operation":"delete",
+            "sheetID":sheetId,
+            "shName":sheetName,
+            "serial":serialNO
+        ]
+        
+        var url = apiUrl+"?"
+        for p in param {
+            url += "\(p.key)=\(p.value)&"
+        }
+
+        let request = URLRequest(url: URL(string: url)!)
+        
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 20.0
+        let session = URLSession(configuration: config)
+
+        //var json:NSDictionary!
+        var title = ""
+        var msg = ""
+        let task = session.dataTask(with: request as URLRequest, completionHandler: {(data,response,err) -> Void in
+            DispatchQueue.main.async {
+                if err == nil {
+                    if data != nil {
+                        
+                        do{
+                            print(data!)
+                            if let json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary {
+                                title = "削除しました"
+                                if json["value"] as? String != nil, json["value"] as? String == "error" {
+                                    //IBMから削除したが、SSに存在しない場合
+                                    msg = "スプレッドシートに存在しません"
+                                }
+                            }
+                            
+                        }catch{
+                            //スプレッドシートに接続できない
+                            title = "Error:2003"
+                            msg = "スプレッドシートに接続できません"
+                        }
+                        
+                    }else {
+                        //GASからの戻りがない
+                        title = "Error:2004"
+                        msg = "サーバーから応答がありません"
+                    }
+                    
+                }else {
+                    title = "Error:2001"
+                    msg = err!.localizedDescription
+                }
+                let okAction = UIAlertAction(title: "OK", style: .default, handler: {
+                    Void in
+                    self.navigationController?.popViewController(animated: true)
+                })
+                SimpleAlert.make(title: title, message: msg, action: [okAction])
+            }
+        })
+        task.resume()
+    }
+
+}
+
+extension InquiryViewController { //IBM関連メソッド
+    /*
     func display(json:NSDictionary!){
         var str = ""
         inq_UKE_TYPE = json["UKE_TYPE"]! as? String
@@ -223,22 +416,47 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         
     }
     
-
-    @IBAction func deleteData() {
-        //print("削除")
-        if sheetId == "" {
-            let alert = UIAlertController(title: "ບໍ່ມີການຄັດເລືອກເອກະສານ", message: "スプレッドシートが選択されていません", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "ສືບຕໍ່/続ける", style: .default, handler: {
-                Void in
-                self.ibmDelete()
-            }))
-            alert.addAction(UIAlertAction(title: "ຍົກເລີກ/Cancel", style: .cancel, handler: nil))
-            self.present(alert, animated: true, completion: nil)
-            
-        }else {
-            ibmDelete()
-        }
-
+    func getData(type:String, data: String) {
+        serialNO = data
+        let param = ["PRODUCT_SN":data]
+        
+        rtnData.text = ""
+        IBM().hostRequest(type: "INQUIRY", param: param, completionClosure: {
+            (str, json,err) in
+            DispatchQueue.main.async {
+                if err != nil {
+                    //アラートを表示
+                    let alert = UIAlertController(title: "エラー", message: err?.localizedDescription, preferredStyle: .alert)
+                    //ボタン追加
+                    alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler:nil))
+                    self.present(alert,animated: true,completion:nil)
+                    
+                    return
+                }
+                
+                if json != nil {
+                    print(json!)
+                    let json_ = json!
+                    if json_["RTNCD"] as! String == "000" {
+                        self.display(json: json_)
+                        self.deleteBtn.isHidden = false
+                        
+                    }else {
+                        self.deleteBtn.isHidden = true
+                        //IBMからエラー戻り
+                        let rtnMSG = json_["RTNMSG"] as? [String] ?? []
+                        let errStr =  errMsgFromIBM(rtnMSG: rtnMSG)
+                        
+                        //アラートを表示
+                        let alert = UIAlertController(title: "エラー", message: errStr, preferredStyle: .alert)
+                        //ボタン追加
+                        alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler:nil))
+                        self.present(alert,animated: true,completion:nil)
+                        
+                    }
+                }
+            }
+        })
         
     }
     
@@ -283,72 +501,5 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         alert.addAction(UIAlertAction(title: "ຍົກເລີກ/Cancel", style: .cancel, handler: nil))
         self.present(alert,animated: true)
     }
-
-    func ssDelete() {
-        if sheetId == ""||sheetName==""{return}
-        //スプレッドシートから削除
-        let param = [
-            "operation":"delete",
-            "sheetID":sheetId,
-            "shName":sheetName,
-            "serial":serialNO
-        ]
-        
-        var url = apiUrl+"?"
-        for p in param {
-            url += "\(p.key)=\(p.value)&"
-        }
-
-        let request = URLRequest(url: URL(string: url)!)
-        
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 20.0
-        let session = URLSession(configuration: config)
-
-        //var json:NSDictionary!
-        var title = ""
-        var msg = ""
-        let task = session.dataTask(with: request as URLRequest, completionHandler: {(data,response,err) -> Void in
-            DispatchQueue.main.async {
-                if err == nil {
-                    if data != nil {
-                        
-                        do{
-                            print(data!)
-                            if let json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary {
-                                //json = dic
-//                                print(dic)
-                                title = "削除しました"
-                                if json["value"] as? String != nil, json["value"] as? String == "error" {
-                                    //IBMから削除したが、SSに存在しない場合
-                                    msg = "スプレッドシートに存在しません"
-                                }
-                            }
-                            
-                        }catch{
-                            //スプレッドシートに接続できない
-                            title = "Error:2003"
-                            msg = "スプレッドシートに接続できません"
-                        }
-                        
-                    }else {
-                        //GASからの戻りがない
-                        title = "Error:2004"
-                        msg = "サーバーから応答がありません"
-                    }
-                    
-                }else {
-                    title = "Error:2001"
-                    msg = err!.localizedDescription
-                }
-                let okAction = UIAlertAction(title: "OK", style: .default, handler: {
-                    Void in
-                    self.navigationController?.popViewController(animated: true)
-                })
-                SimpleAlert.make(title: title, message: msg, action: [okAction])
-            }
-        })
-        task.resume()
-    }
-
+ */
 }

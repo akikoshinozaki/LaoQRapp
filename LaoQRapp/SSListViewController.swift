@@ -63,8 +63,8 @@ class SSListViewController: UIViewController {
             self.refreshBtnTap(self)
         }
         if sheetId != "", sheetName != "" {
-            let name = idList.first(where: {$0.id==sheetId})?.name ?? ""
-            self.sheetLabel.text = name
+            fileName = idList.first(where: {$0.id==sheetId})?.name ?? ""
+            self.sheetLabel.text = fileName
             getGasList(select: 0)
         }
         
@@ -231,22 +231,6 @@ class SSListViewController: UIViewController {
             //print("list.cnt= \(list.count)")
             if type == 0 || type == 1 { //当日・前日分は日付のソートはしない
                 let groupArr = self.createGroup(arr: list)
-/*
-                arr = list.sorted(by: {$0.item<$1.item})
-                print(arr.count)
-                var groupArr:[GASList] = []
-                var item = ""
-                for a in arr {
-                    if a.item != item {
-                        item = a.item
-                        let group = arr.filter{$0.item == item} //item別の数量出す
-                        groupArr.append(GASList(loc: a.loc,
-                                                item: a.item,
-                                                itemName: a.itemName,
-                                                date: a.date,
-                                                count: group.count))
-                    }
-                }*/
                 _list = [groupArr]
                 
             }else {
@@ -256,22 +240,7 @@ class SSListViewController: UIViewController {
                     if date != obj.date {
                         if arr.count > 0 {
                             let groupArr = self.createGroup(arr: arr)
-                            /*
-                            arr = arr.sorted(by: {$0.item<$1.item})
-                            var groupArr:[GASList] = []
-                            var item = ""
-                            for a in arr {
-                                if a.item != item {
-                                    item = a.item
-                                    let group = arr.filter{$0.item == item}
-                                    groupArr.append(GASList(loc: a.loc,
-                                                            item: a.item,
-                                                            itemName: a.itemName,
-                                                            date: a.date,
-                                                            count: group.count))
-                                }
-                                
-                            }*/
+
                             _list.append(groupArr)
                             //groupArr = []
                             arr = []
@@ -288,33 +257,12 @@ class SSListViewController: UIViewController {
                 if arr.count > 0 {
                     //arr = arr.sorted(by: {$0.item<$1.item})
                     let groupArr:[GASList] = self.createGroup(arr: arr)
-//                    var item = ""
-//                    for a in arr {
-//                        if a.item != item {
-//                            item = a.item
-//                            let group = arr.filter{$0.item == item}
-//                            groupArr.append(GASList(loc: a.loc,
-//                                                    item: a.item,
-//                                                    itemName: a.itemName,
-//                                                    date: a.date,
-//                                                    count: group.count))
-//                        }
-//
-//                    }
                     _list.append(groupArr)
                     //groupArr = []
                 }
                 
             }
-            /*
-             var cnt = 0
-             for li in _list {
-             for l in li {
-             cnt += l.count
-             }
-             }
-             print(cnt)
-             */
+
             self.gasList = _list
         }
         
@@ -390,6 +338,7 @@ class SSListViewController: UIViewController {
         gasList = []
         sheetId = ""
         sheetName = ""
+        fileName = ""
         self.navigationController?.popViewController(animated: true)
     }
 

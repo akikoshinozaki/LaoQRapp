@@ -111,9 +111,9 @@ class DataDownload: NSObject {
                     array.append(line.components(separatedBy: ","))
                 }
                 
-                if param.id == "itemArr" {//LaosMaster
-                    //print(arr[0])
-                    var j:Int!
+                switch param.id {
+                case "itemArr" ://LaosMaster
+                                        var j:Int!
                     for (i,str) in array[1].enumerated() {
                         if str == "UNIT" {
                             j = i
@@ -127,7 +127,21 @@ class DataDownload: NSObject {
                         }
                     }
                     //print(itemArray)
-                }else if param.id == "errMessage" { //errorMessage
+                case "employee":
+                    var j:Int!
+                    for (i,str) in array[0].enumerated() {
+                        if str.contains("Laos Name") {
+                            j = i
+                        }
+                    }
+                    
+                    array.removeFirst()
+                    employee = []
+                    for item in array {
+                        let emp = Employee(syainCD: item[0], name_en: item[1], name_lo: item[j])
+                        employee.append(emp)
+                    }
+                case "errMessage" :
                     array.removeFirst()
                     errFromIBM = []
                     for item in array {
@@ -136,24 +150,24 @@ class DataDownload: NSObject {
                         }
                     }
                     //print(errFromIBM)
-                    
-                }else if param.id == "translate" { //translate
+                case "translate" :
                     array.removeFirst()
                     translate = [:]
                     
                     for item in array {
                         translate[item[0]] = item[1]
-                        
-                        //print(translate)
                     }
+                    //print(translate)
+                default:
+                    print("other")
                 }
                 
             }else {
-//                let alert = UIAlertController(title: "リスト取得に失敗".loStr, message: "アプリを終了します".loStr, preferredStyle: .alert)
-//                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
-//                    Void in
-//                    exit(3)
-//                }))
+                let alert = UIAlertController(title: "リスト取得に失敗".loStr, message: "アプリを終了します".loStr, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
+                    Void in
+                    exit(3)
+                }))
                 
             }
             
