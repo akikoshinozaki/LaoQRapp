@@ -45,7 +45,7 @@ class DataDownload: NSObject {
     public func getIdList() -> [(name: String, id: String, sheet: String)]{
         var arr:[[String]] = []
         var list:[(name: String, id: String, sheet: String)] = []
-        //商品リスト
+
         if let array = defaults.object(forKey: "sheetID") as? String {
             //カンマ区切りでデータを分割して配列に格納する。
             array.enumerateLines { (line, stop) -> () in
@@ -74,5 +74,91 @@ class DataDownload: NSObject {
         
     }
     
-
+    public func csvToArr(parameter:GASURL) -> (csv:String,err:String) {
+             var csvStr = ""
+         var errMsg = ""
+         //サーバー上のcsvファイルのパス
+         if let csvPath = URL(string: parameter.url) {
+             do {
+                 //CSVファイルのデータを取得する。
+                 let str = try String(contentsOf: csvPath, encoding: .utf8)
+                 csvStr = str
+                 //print(str)
+                 defaults.set(csvStr, forKey: parameter.id)
+                 print("csvの保存に成功")
+                 
+             } catch let error as NSError {
+                 print(error.localizedDescription)
+                 print("csv取得失敗")
+                 errMsg = error.localizedDescription
+             }
+         }else {
+             print("csv取得できません")
+             errMsg = "サーバー上のファイルにアクセスできません".loStr
+         }
+         
+         return(csvStr,errMsg)
+         
+     }
+     
+    public func csvDL() {
+        //print(parameters)
+        for param in parameters {
+            var array:[[String]] = []
+            if let arr = defaults.object(forKey: param.id) as? String {
+                //カンマ区切りでデータを分割して配列に格納する。
+                arr.enumerateLines { (line, stop) -> () in
+                    array.append(line.components(separatedBy: ","))
+                }
+                
+                if param.id == "itemArr" {//LaosMaster
+                    //print(arr[0])
+                    var j:Int!
+                    for (i,str) in array[1].enumerated() {
+                        if str == "UNIT" {
+                            j = i
+                        }
+                    }
+                    array.removeFirst(2) //もう１行削除
+                    itemArray = []
+                    for item in array {
+                        if item.count > 2 {
+                            itemArray.append((cd:item[0],name:item[2],unit:item[j]))
+                        }
+                    }
+                    //print(itemArray)
+                }else if param.id == "errMessage" { //errorMessage
+                    array.removeFirst()
+                    errFromIBM = []
+                    for item in array {
+                        if item.count > 3 {
+                            errFromIBM.append((cd:item[0],jp:item[2],lo:item[3]))
+                        }
+                    }
+                    //print(errFromIBM)
+                    
+                }else if param.id == "translate" { //translate
+                    array.removeFirst()
+                    translate = [:]
+                    
+                    for item in array {
+                        translate[item[0]] = item[1]
+                        
+                        //print(translate)
+                    }
+                }
+                
+            }else {
+//                let alert = UIAlertController(title: "リスト取得に失敗".loStr, message: "アプリを終了します".loStr, preferredStyle: .alert)
+//                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
+//                    Void in
+//                    exit(3)
+//                }))
+                
+            }
+            
+        }
+        
+    }
 }
+

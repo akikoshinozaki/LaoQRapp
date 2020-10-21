@@ -12,7 +12,7 @@ import AVFoundation
 import ZBarSDK
 
 var btnID:Int = 0
-class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationControllerDelegate, SettingViewDelegate, QRScannerViewDelegate {
+class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationControllerDelegate, QRScannerViewDelegate {
     
     @IBOutlet var ZBarScanButton: UIButton!
     @IBOutlet var QRScanButton: UIButton!
@@ -37,7 +37,8 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     var backFieldBtn:UIButton!
     var activeField:UITextField!
 
-//    var scrollView:UIScrollView!
+    @IBOutlet weak var syainField: UITextField!
+    //    var scrollView:UIScrollView!
     @IBOutlet weak var contentView: UIView!
     
     @IBOutlet var fields:[UITextField]!
@@ -78,6 +79,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         for field in fields {
             field.delegate = self
         }
+        syainField.delegate = self
         
         for v in views {
             v.layer.cornerRadius = 10
@@ -106,14 +108,33 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
             sheetLabel.text = idList[0].name
         }
         
+        self.setLocation()
+        if locateArr_.count == 0 {
+            locateArr_ = defaultLocate
+        }
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        //self.btnSetting(isEnabled:isHostConnected)
-        setUserDefaults()
         //QRdata選択済みだったらラベルに表示する
         setData()
     }
+    
+    func setLocation() {
+        //社員CDとロケーションをユーザーデフォルトから取得
+        syainCD_ = defaults.value(forKey: "syainCD") as? String ?? ""
+        ibmUser = syainCD_
+        if ibmUser.count == 6, syainCD_.hasPrefix("14") {
+            ibmUser = ibmUser.replacingOccurrences(of: "14", with: "L")
+        }
+        syainName_ = defaults.value(forKey: "syainName") as? String ?? ""
+        locateCD_ = defaults.value(forKey: "locateCD") as? String ?? ""
+        locateName_ = defaults.value(forKey: "locateName") as? String ?? ""
+        
+        locationLabel.text = " "+locateName_
+        syainLabel.text = " \(syainCD_): \(syainName_)"
+    }
+
     
     func btnSetting(isEnabled:Bool) {
         backButton_.isEnabled = isEnabled
@@ -143,14 +164,16 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
             }
         }
         
-        
-        
     }
     
     
-    func setData(){
+    func setData(){ //バーコードをスキャンして、取得した情報をセット
         print(itemCD_)
         var str = ""
+        //itemCDからitemNameを取得
+        
+        
+        
         if itemCD_ != "" {
             
             if itemName_ != "" {
@@ -177,7 +200,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     //MARK: -SettingViewDelegate
     func removeView() {
         print(#function)
-        setUserDefaults()
+        //setUserDefaults()
         btnSetting(isEnabled: true)
     }
     
@@ -185,32 +208,32 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         btnSetting(isEnabled: true)
     }
     
-    func setUserDefaults(){
-        //社員CDとロケーションをユーザーデフォルトから取得
-        syainCD_ = defaults.value(forKey: "syainCD") as? String ?? ""
-        syainName_ = defaults.value(forKey: "syainName") as? String ?? ""
-        locateCD_ = defaults.value(forKey: "locateCD") as? String ?? ""
-        locateName_ = defaults.value(forKey: "locateName") as? String ?? ""
+    @IBAction func selectLocation(_ sender: UIButton) {
+        let alert = UIAlertController(title: "ກະລຸນາເລືອກສະຖານທີ່", message: "場所を選択してください", preferredStyle: .alert)
+        for loc in locateArr_ {
+            alert.addAction(UIAlertAction(title: loc.0+":"+loc.1, style: .default, handler: {
+                Void in
+                locateCD_ = loc.0
+                locateName_ = loc.1
+                //ユーザーデフォルトにセット
+                defaults.set(locateCD_, forKey: "locateCD")
+                defaults.set(locateName_, forKey: "locateName")
+                DispatchQueue.main.async {
+                    self.locationLabel.text = locateName_
+                }
+            }))
+        }
         
-        locationLabel.text = "\(locateName_)"
-        syainLabel.text = "\(syainCD_) \(syainName_)"
-    }
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        self.present(alert, animated: true, completion: nil)
         
-
-    @IBAction func tapSetting(_ sender: UIButton) {
-        let setting = SettingView(frame: self.view.frame)
-        setting.delegate = self
-        btnSetting(isEnabled: false)
-        //nextButton_.isEnabled = false
-        setting.backgroundColor = UIColor.black.withAlphaComponent(0.4)
-        self.view.addSubview(setting)
-
     }
     
     func reset() {
         //取得したデータを初期化
         syainCD_ = ""
         syainName_ = ""
+        ibmUser = ""
         itemCD_ = ""
         itemName_ = ""
         UKE_TYPE = ""
@@ -300,7 +323,12 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                     UKE_CDD = json_["UKE_CDD"]! as? String
                     CUSTOMER_NM = json_["CUSTOMER_NM"]! as? String
                     SYOHIN_CD = json_["SYOHIN_CD"]! as? String
-                    
+                    //商品CDから商品名（英語表記）を取得
+                    if let obj = itemArray.first(where: {$0.cd==UKE_CDD!}){
+                        itemName_ = obj.name
+                    }else {
+                        itemName_ = json_["SYOHIN_NM"]! as! String
+                    }
                     self.setData()
                     DispatchQueue.main.async {
                         self.dismiss(animated: true, completion: nil)
@@ -308,7 +336,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                     
                 }else {
                     //IBMからエラー戻り
-                    print(json_["RTNMSG"] as? [String] ?? [])
+
                     var errStr =  ""
                     for err in json_["RTNMSG"] as? [String] ?? [] {
                         errStr += err+"\n"
@@ -389,11 +417,8 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                         }
                     }else {
                         //IBMからエラー戻り
-                        //                    print(json_["RTNMSG"] as? [String] ?? [])
-                        var errStr =  ""
-                        for err in json_["RTNMSG"] as? [String] ?? [] {
-                            errStr += err+"\n"
-                        }
+                        let rtnMSG = json_["RTNMSG"] as? [String] ?? []
+                        let errStr =  errMsgFromIBM(rtnMSG: rtnMSG)
                         
                         if errStr.contains("E0043") {
                             //E0043:未登録エラーはそのまま新規登録
@@ -482,7 +507,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         print(orderStr)
         
         let param:[String:Any] = [
-            "SYAIN_CD":syainCD_,
+            "SYAIN_CD":ibmUser,
             "LOCAT_CD":locateCD_,
             "UKE_CD":itemCD_,
             "PRODUCT_SN":serialNO,
@@ -529,12 +554,8 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                         
                     }else {
                         //IBMからエラー戻り
-                        print(json_["RTNMSG"] as? [String] ?? [])
-                        var errStr =  ""
-                        for err in json_["RTNMSG"] as? [String] ?? [] {
-                            errStr += err+"\n"
-                        }
-                        //print(errStr)
+                        let rtnMSG = json_["RTNMSG"] as? [String] ?? []
+                        let errStr =  errMsgFromIBM(rtnMSG: rtnMSG)
                         
                         let action = UIAlertAction(title: "OK", style: .default, handler: {
                             Void in
@@ -606,7 +627,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
                             let error = json["error"] as? String ?? ""
                             print(rtnMsg)
                             print(error)
-                            
+                                                        
                             if status == "success" { //登録成功
                                 str1 = "正常に登録できました"
                                 self.resetQR()
@@ -729,19 +750,44 @@ extension EnrollViewController: UITextFieldDelegate {
         //tag...201:UV, 202:UH, 203:LV, 204:LH, 205:WT, 206:HT
         if textField.text! == "" {return}
         
-        if Double(textField.text!) == nil {
-            DispatchQueue.main.async {
-                let alert = UIAlertController(title: "入力エラー", message: "使用できない文字が入力されています", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
-                    Void in
-                    textField.text = ""
-                }))
-                
-                
-                self.present(alert, animated: true, completion: nil)
+        if textField.tag == 100 { //社員CDから社員名を取得
+            print(textField.text!)
+            let str = textField.text!.uppercased()
+            textField.text = str
+            //5桁の数字が入力されたら、社員CDと認識
+            syainLabel.text = ""
+            syainCD_ = ""
+            if str.count == 6, str.hasPrefix("14") {
+                syainCD_ = str
+                ibmUser = str.replacingOccurrences(of: "14", with: "L")
+            }else if str.count == 5 {
+                syainCD_ = str
+                ibmUser = str
+            }else {
+                SimpleAlert.make(title: "桁数が正しくありません", message: "")
+                textField.text = ""
             }
+            
+            if ibmUser.count == 5 {
+                self.searchName()
+            }
+            
+        }else {
+            if Double(textField.text!) == nil {
+                DispatchQueue.main.async {
+                    let alert = UIAlertController(title: "入力エラー", message: "使用できない文字が入力されています", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
+                        Void in
+                        textField.text = ""
+                    }))
+                    
+                    
+                    self.present(alert, animated: true, completion: nil)
+                }
+            }
+            
+            print(textField.text!.count)
         }
-
         
     }
     
@@ -750,6 +796,49 @@ extension EnrollViewController: UITextFieldDelegate {
         return true
     }
     
+    //textFieldに入力された社員CDから社員名を取得
+    @objc func searchName() {
+        
+        let param = ["SYAIN_CD":ibmUser]
+        IBM().hostRequest(type: "ENTCHK", param: param, completionClosure: {
+            (str, json,err) in
+            DispatchQueue.main.async {
+                if err != nil {
+                    syainCD_ = ""
+                    ibmUser = ""
+                    self.syainField.text = ""
+                    SimpleAlert.make(title: "Error", message: err?.localizedDescription)
+                    return
+                }
+                if json == nil {
+                    syainCD_ = ""
+                    ibmUser = ""
+                    self.syainField.text = ""
+                    SimpleAlert.make(title: "Error", message: "ホストから応答がありません")
+                    return
+                }
+                
+                if json!["RTNCD"] as! String == "000" {
+                    syainName_ = json!["SYAIN_NM"] as? String ?? ""
+                    self.syainLabel.text = syainCD_+":"+syainName_
+                    //ユーザーデフォルトにセット
+                    defaults.set(syainCD_, forKey: "syainCD")
+                    defaults.set(syainName_, forKey: "syainName")
+                    
+                }else {
+                    //IBMからエラー戻り
+                    syainCD_ = ""
+                    ibmUser = ""
+                    self.syainField.text = ""
+                    let rtnMSG = json!["RTNMSG"] as? [String] ?? []
+                    let errStr =  errMsgFromIBM(rtnMSG: rtnMSG)
+                    SimpleAlert.make(title: "エラー", message: errStr)
+                }
+            }
+            
+        })
+        
+    }
     
 }
 

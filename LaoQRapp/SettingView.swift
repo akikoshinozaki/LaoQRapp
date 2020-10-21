@@ -205,7 +205,6 @@ class SettingView: UIView, UITableViewDelegate, UITableViewDataSource, UITextFie
             if IBMResponse {
                 
                 let rtnCD:String = json_["RTNCD"]! as! String
-                let rtnMSG = json_["RTNMSG"]!
                 var errMSG:String? = ""
                 
                 if(rtnCD == "000"){
@@ -215,9 +214,8 @@ class SettingView: UIView, UITableViewDelegate, UITableViewDataSource, UITextFie
                     return
                 }else{ //IBMから帰ってきた値がエラーだった時
                     //エラーメッセージの内容を抽出
-                    for val in rtnMSG as! NSArray{
-                        errMSG = errMSG?.appending("\n\(val)")
-                    }
+                    let rtnMSG = json_["RTNMSG"] as? [String] ?? []
+                    errMSG =  errMsgFromIBM(rtnMSG: rtnMSG)
                     //アラートを表示
                     alert.title = "社員CD取得エラー"
                     alert.message = errMSG!

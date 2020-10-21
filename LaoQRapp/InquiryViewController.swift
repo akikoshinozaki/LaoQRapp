@@ -14,6 +14,10 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
     @IBOutlet var QRButton: UIButton!
     @IBOutlet var rtnData: UITextView!
     
+    @IBOutlet weak var selectBtn: UIButton!
+    @IBOutlet weak var sheetLabel: UILabel!
+    @IBOutlet weak var deleteBtn: UIButton!
+    
     var inq_UKE_TYPE: String!
     var inq_UKE_CDD: String!
     var inq_SYAIN_CD: String!
@@ -25,7 +29,7 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
     var inq_ORDER_SPEC: String!
     var inq_CUSTOMER_NM: String!
     
-    var delButton:UIBarButtonItem!
+    //var delButton:UIBarButtonItem!
     
     var tourokuDate: String!
     //削除ボタンに設定するAttribute
@@ -50,14 +54,31 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         
         self.navigationController?.setNavigationBarHidden(false, animated: false)
         let backButton = UIBarButtonItem(title: "＜ 戻る", style: .plain, target: self, action: #selector(self.goToMenu))
-        delButton = UIBarButtonItem(title: "削除", style: .plain, target: self, action: #selector(self.deleteData))
+        //delButton = UIBarButtonItem(title: "削除", style: .plain, target: self, action: #selector(self.deleteData))
         self.navigationItem.leftBarButtonItem = backButton
-        self.navigationItem.rightBarButtonItem = delButton
+        //self.navigationItem.rightBarButtonItem = delButton
         self.navigationItem.title = "照会・削除"
         
         QRButton.addTarget(self, action: #selector(showScanView(_:)), for: .touchUpInside)
         rtnData.layer.borderColor = UIColor.gray.cgColor
         rtnData.layer.borderWidth = 2
+        
+        let btns:[UIButton] = [selectBtn, deleteBtn]
+        for btn in btns {
+            btn.layer.cornerRadius = 8
+            btn.titleLabel?.numberOfLines = 0
+        }
+        
+        self.deleteBtn.isHidden = true
+        
+        sheetId = ""
+        sheetName = ""
+        sheetLabel.text = ""
+        if idList.count == 1 {
+            sheetId = idList[0].id
+            sheetName = idList[0].sheet
+            sheetLabel.text = idList[0].name
+        }
 
     }
 
@@ -69,6 +90,31 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
     @objc func goToMenu() {
         inquiryJson_ = nil
         self.navigationController?.popViewController(animated: true)
+    }
+    
+    @IBAction func selectSheet(_ sender: Any) {
+        print(idList)
+        if idList.count > 1 {
+            let alert = UIAlertController(title: "ເລືອກສະຖານທີ່ລົງທະບຽນ", message: "Select Sheet", preferredStyle: .alert)
+            
+            for id in idList{
+                alert.addAction(UIAlertAction(title: id.name, style: .default, handler: {
+                    Void in
+                    sheetId = id.id
+                    sheetName = id.sheet
+                    DispatchQueue.main.async {
+                        self.sheetLabel.text = id.name
+                    }
+                    
+                }))
+            }
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            
+            DispatchQueue.main.async {
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
+        
     }
     
     @objc func showScanView(_ sender: Any) {
@@ -100,8 +146,6 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         let param = ["PRODUCT_SN":data]
         
         rtnData.text = ""
-        delButton.isEnabled = false
-        delButton.setTitleTextAttributes(notDelete, for: .normal)
         
         IBM().hostRequest(type: "INQUIRY", param: param, completionClosure: {
             (str, json,err) in
@@ -121,15 +165,14 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
                     let json_ = json!
                     if json_["RTNCD"] as! String == "000" {
                         self.display(json: json_)
+                        self.deleteBtn.isHidden = false
                         
                     }else {
+                        self.deleteBtn.isHidden = true
                         //IBMからエラー戻り
-                        //print(json_["RTNMSG"] as? [String] ?? [])
-                        var errStr =  ""
-                        for err in json_["RTNMSG"] as? [String] ?? [] {
-                            errStr += err+"\n"
-                        }
-                        
+                        let rtnMSG = json_["RTNMSG"] as? [String] ?? []
+                        let errStr =  errMsgFromIBM(rtnMSG: rtnMSG)
+
                         //アラートを表示
                         let alert = UIAlertController(title: "エラー", message: errStr, preferredStyle: .alert)
                         //ボタン追加
@@ -142,7 +185,6 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         })
         
     }
-    
     
     
     func display(json:NSDictionary!){
@@ -177,25 +219,39 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         
         DispatchQueue.main.async {
             self.rtnData.text = str
-            
-            self.delButton.isEnabled = true
-            self.delButton.setTitleTextAttributes(self.canDelete, for: .normal)
         }
         
     }
     
 
-    @objc func deleteData() {
+    @IBAction func deleteData() {
         //print("削除")
-        let param = ["PRODUCT_SN":serialNO]
-        let alert = UIAlertController(title: "削除してよろしいですか？", message: nil, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "削除", style: .destructive, handler: {
-            Void in
+        if sheetId == "" {
+            let alert = UIAlertController(title: "ບໍ່ມີການຄັດເລືອກເອກະສານ", message: "スプレッドシートが選択されていません", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "ສືບຕໍ່/続ける", style: .default, handler: {
+                Void in
+                self.ibmDelete()
+            }))
+            alert.addAction(UIAlertAction(title: "ຍົກເລີກ/Cancel", style: .cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+            
+        }else {
+            ibmDelete()
+        }
 
+        
+    }
+    
+    func ibmDelete(){
+        let param = ["PRODUCT_SN":serialNO]
+        let alert = UIAlertController(title: "ຕ້ອງການລຶບອອກແມ່ນບໍ່" , message: "削除してよろしいですか？", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "ລົບ/削除", style: .destructive, handler: {
+            Void in
+            
             IBM().hostRequest(type: "DELETE", param: param, completionClosure: {
                 (str, json,err) in
                 if err != nil {
-                    SimpleAlert.make(title: "エラー", message: err?.localizedDescription)
+                    SimpleAlert.make(title: "Error", message: err?.localizedDescription)
                     return
                 }
                 
@@ -203,22 +259,15 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
                     let json_ = json!
                     DispatchQueue.main.async {
                         if json_["RTNCD"] as! String == "000" {
-                            SimpleAlert.make(title: "削除完了", message: "")
+                            SimpleAlert.make(title: "ການລຶບ ສຳ ເລັດແລ້ວ", message: "削除完了")
                             //スプレッドシートからも削除
-                            self.ssDelete()
-                            //削除成功
-                            //MARK: - 削除したらenrolltypeを変更
-                            
-                            //let entry = EntryDataBase(db: _db!)
-                            //entry.changeStatus(serial:self.inq_PRODUCT_SN!, type: "delete", msg: "削除完了")
-                            
+                            if sheetId != "" {
+                                self.ssDelete()
+                            }
                         }else {
                             //IBMからエラー戻り
-                            print(json_["RTNMSG"] as? [String] ?? [])
-                            var errStr =  ""
-                            for err in json_["RTNMSG"] as? [String] ?? [] {
-                                errStr += err+"\n"
-                            }
+                            let rtnMSG = json_["RTNMSG"] as? [String] ?? []
+                            let errStr =  errMsgFromIBM(rtnMSG: rtnMSG)
                             let alert = UIAlertController(title: "登録エラー", message: errStr, preferredStyle: .alert)
                             //ボタン追加
                             alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler:nil))
@@ -230,20 +279,14 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
                 }
             })
         }))
-    
-        alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
-        self.present(alert,animated: true)
         
+        alert.addAction(UIAlertAction(title: "ຍົກເລີກ/Cancel", style: .cancel, handler: nil))
+        self.present(alert,animated: true)
     }
 
     func ssDelete() {
-//        postAlert = UIAlertController(title: "削除中", message: "", preferredStyle: .alert)
-//        self.present(postAlert, animated: true, completion: nil)
-        
+        if sheetId == ""||sheetName==""{return}
         //スプレッドシートから削除
-        sheetId = "1Ps2oJPkjXp0F2VDEG-39H-DSJD1AFjB6Lhuka3vJu6w"
-        sheetName = "detail"
-        
         let param = [
             "operation":"delete",
             "sheetID":sheetId,

@@ -155,8 +155,17 @@ extension String {
         df.dateFormat = "yyyyMMddHHmmss"
         return df.date(from: self)!
     }
+    
+    var loStr:String {
+        if let lao = translate[self], lao != "", language == "lo" {
+            return lao
+        }else {
+            return self
+        }
+    }
 
 }
+
 
 typealias CompletionClosure = ((_ resultString:String?,_ resultJson:NSDictionary?, _ err:Error?) -> Void)
 
@@ -167,16 +176,22 @@ typealias CompletionClosure = ((_ resultString:String?,_ resultJson:NSDictionary
 //本番
 let apiUrl = "https://script.google.com/macros/s/AKfycbw7BTNIdwXwyCZHi0IiHtLqIXioC4nQXfP228YflCxkgO55XKQ/exec"
 
-//Japan
-let SS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQkYoPN1G4Gi1wPy0lLK2paJaXREuHafv_wojeNQYRSZ4-I6rwdX0_sd9KZmJ8LxFbZp4y_7wh8g-cs/pub?gid="
+var translate:Dictionary<String, String> = [:]
+let SS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSYsk2S-W-gH9usc2qC0qtBTch8VnFxp1gn1Kmt4_5gSRKj7gHxRge9Q9rjmDn2n8Pl99Garq9sJ55N/pub?gid="
 
-//Japan (location,sheetIDのみ使用)
-let parameter:GASURL = GASURL(id: "sheetID", url: apiUrl+"?operation=idList")
+let parameters:[GASURL] = [GASURL(id: "itemArr", url: SS_URL+"1270331495&single=true&output=csv"),
+                           GASURL(id: "errMessage", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT_VIqCdRpHyjvV3dDyLRn9eonLWqDIHjYaiHQAxqe27SXXKUBH-t0CEOd4w7KGWbELl3KIYVEsphaU/pub?gid=1456474335&single=true&output=csv"),
+                           GASURL(id: "translate", url: SS_URL+"550904518&single=true&output=csv")
+]
+
+//idList
+let idListParam:GASURL = GASURL(id: "sheetID", url: apiUrl+"?operation=idList")
 
 
 //var itemArray:[(cd:String,name:String,unit:String)] = [] //unit:単位
 var locArray:[(cd:String,name:String)] = []
-
+var itemArray:[(cd:String,name:String,unit:String)] = [] //unit:単位
+var errFromIBM:[(cd:String,jp:String,lo:String)] = []
 var idList:[(name:String, id:String, sheet:String)] = []
 var fileName = ""
 var sheetId:String = ""
@@ -187,8 +202,8 @@ var iPadName:String = ""
 var idfv:String = ""
 var pingResponse:Bool = true
 var IBMResponse:Bool!
-
-let defaultLocate = [("IW01", "磐田ファートン工場"), ("IW04", "磐田物流センター"), ("KZ01", "小沢渡羽毛工場"), ("LA01", "ラオス工場"),  ("OK01", "大久保羊毛工場"), ("OK02", "大久保カーテン工場"), ("OK03", "大久保羊毛第一工場")]
+var language = ""
+let defaultLocate = [("IW01", "磐田ファートン工場"), ("IW04", "磐田物流センター"), ("KZ01", "小沢渡羽毛工場"), ("LA01", "ＬＡＯＳ"),  ("OK01", "大久保羊毛工場"), ("OK02", "大久保カーテン工場"), ("OK03", "大久保羊毛第一工場")]
 
 var locateArr_ : [(String, String)] = []
 var syainCD_:String = "" //社員CD
@@ -198,6 +213,7 @@ var locateName_:String = ""//製造場所
 var QRdata_:String! //スキャンしたデータを格納
 var itemCD_:String = "" //商品CD
 var itemName_:String = "" //商品名
+var ibmUser:String = ""
 
 //var saveDate:String = ""
 var saveTime:String = ""
@@ -221,7 +237,53 @@ var insertCount:Int = 0
 var duplicateCount:Int = 0
 var csvList:[String] = [""]
 let xserverPath = "https://oktss03.xsrv.jp/QRBackUp/"
-let hostURL = "https://maru8ibm.maruhachi.co.jp:4343/HTP2/WAH001CL.PGM?" //開発
-//let hostURL = "https://maru8ibm.maruhachi.co.jp/HTP2/WAH001CL.PGM?" //本番
+//let hostURL = "https://maru8ibm.maruhachi.co.jp:4343/HTP2/WAH001CL.PGM?" //開発
+let hostURL = "https://maru8ibm.maruhachi.co.jp/HTP2/WAH001CL.PGM?" //本番
 var dbInsertSuccess = false
 var autoUpload:Bool = false
+
+//var errID:[(id:Int,cd:String)] = []
+func errMsgFromIBM(rtnMSG:[String]) -> String {
+    var str = ""
+    //errID = []
+    for msg in rtnMSG{
+        print(msg)
+        //エラーメッセージを分解する
+        let err = msg.components(separatedBy: [":","【","】"])
+        let errCode = err[0]
+        //let errMSG = err[1].trimmingCharacters(in: .whitespaces) //エラーメッセージ
+        /*
+        var errNo = ""
+        //データNO.が含まれているときは抽出
+        if err.count > 2, err[2].contains("No.") {
+            errNo = err[2].components(separatedBy: "：")[1]
+            print(errNo)
+            //errID.append(Int(errNo)!-1)
+            errID.append((id:Int(errNo)!,cd:err[0]))
+        }*/
+        var msg_jp = ""
+        var msg_lo = ""
+        if let idx = errFromIBM.firstIndex(where: {$0.cd == errCode}) {
+            //errCode = errFromIBM[idx].cd
+            msg_jp = errFromIBM[idx].jp
+            msg_lo = errFromIBM[idx].lo
+        }else {
+            msg_jp = err[1]
+            msg_lo = err[1]
+        }
+
+        if language == "lo" {//ラオ語エラーメッセージ表示
+            str += "\(errCode):\(msg_lo)"
+        }else {
+            str += "\(errCode):\(msg_jp)"
+        }
+        /*
+        if errNo != "" {
+            str += "【No.\(errNo)】"
+        }*/
+        print(str)
+        str += "\n"
+    }
+    
+    return str
+}

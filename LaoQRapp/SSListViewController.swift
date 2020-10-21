@@ -345,7 +345,7 @@ class SSListViewController: UIViewController {
         refreshAlert = UIAlertController(title: "ປັບປຸງລາຍຊື່", message: "リスト更新中", preferredStyle: .alert)
         self.present(refreshAlert, animated: true, completion: nil)
         //self.listRefresh()
-        let data = DL.getCSV(parameter: parameter)
+        let data = DL.getCSV(parameter: idListParam)
         if data.err == "" {
             idList = DL.getIdList()
             

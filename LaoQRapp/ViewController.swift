@@ -118,7 +118,8 @@ class ViewController: UIViewController {
 //                    print(locateArr_)
                 }else {
                     //IBMから帰ってきた値がエラーだった時
-                    let errMsg = json!["RTNMSG"] as? String ?? ""
+                    let rtnMSG = json!["RTNMSG"] as? [String] ?? []
+                    let errMsg =  errMsgFromIBM(rtnMSG: rtnMSG)                    
                     SimpleAlert.make(title: "ロケーション取得エラー", message: errMsg)
                     locateArr_ = defaultLocate
                 }
@@ -138,9 +139,8 @@ class ViewController: UIViewController {
             //アラートが出なくなるので、遅延処理を入れる
             self.DL_errMsg = ""
             
-            let data = DL.getCSV(parameter: parameter)
+            let data = DL.getCSV(parameter: idListParam)
             self.DL_errMsg = data.err
-            
             
             if self.DL_errMsg == ""{
                 //更新できたら最終更新日を変更
