@@ -15,7 +15,7 @@ class SimpleAlert: NSObject {
             let action1 = UIAlertAction(title: "OK", style: .default, handler: nil)
             alert.addAction(action1)
             
-            if let topViewController: UIViewController = SimpleAlert.getTopViewController(){
+            if let topViewController: UIViewController = SimpleAlert.topViewController(){
                 //topViewController.view.addSubview(customView)
                 topViewController.present(alert, animated: true, completion: nil)
             }
@@ -39,7 +39,7 @@ class SimpleAlert: NSObject {
                 alert.addAction(act)
             }
             
-            if let topViewController: UIViewController = SimpleAlert.getTopViewController(){
+            if let topViewController: UIViewController = SimpleAlert.topViewController(){
                 //topViewController.view.addSubview(customView)
                 topViewController.present(alert, animated: true, completion: nil)
             }
@@ -54,7 +54,7 @@ class SimpleAlert: NSObject {
             }*/
         }
     }
-    
+    /*
     class func getTopViewController() -> UIViewController? {
         if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
             var topViewController: UIViewController = rootViewController
@@ -67,7 +67,24 @@ class SimpleAlert: NSObject {
         } else {
             return nil
         }
+    }*/
+    
+    
+    class func topViewController(controller: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
+        if let navigationController = controller as? UINavigationController {
+            return topViewController(controller: navigationController.visibleViewController)
+        }
+        if let tabController = controller as? UITabBarController {
+            if let selected = tabController.selectedViewController {
+                return topViewController(controller: selected)
+            }
+        }
+        if let presented = controller?.presentedViewController {
+            return topViewController(controller: presented)
+        }
+        return controller
     }
+    
     
     
 }

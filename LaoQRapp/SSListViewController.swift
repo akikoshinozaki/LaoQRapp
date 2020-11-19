@@ -33,7 +33,7 @@ class SSListViewController: UIViewController {
     var receivedData:[GASList] = []
     
     var gasList:[[GASList]] = []
-    let entry = EntryDataBase(db: _db!)
+    //let entry = EntryDataBase(db: _db!)
     var backBtn:UIBarButtonItem!
     //var postBtn:UIBarButtonItem!
     //let param:GASURL = GASURL(id: "sheetID", url: apiUrl+"?operation=idList")
@@ -58,16 +58,29 @@ class SSListViewController: UIViewController {
 
         backBtn = UIBarButtonItem(title: "＜Back(ກັບຄືນໄປບ່ອນ)", style: .plain, target: self, action: #selector(self.back))
         self.navigationItem.leftBarButtonItem = backBtn
-
+        /*
         if idList.count == 0 {
             self.refreshBtnTap(self)
         }
+        
         if sheetId != "", sheetName != "" {
             fileName = idList.first(where: {$0.id==sheetId})?.name ?? ""
             self.sheetLabel.text = fileName
             getGasList(select: 0)
-        }
+        }*/
         
+        sheetId = ""
+        sheetName = ""
+        fileName = ""
+        sheetLabel.text = ""
+        if idList.count == 1 {
+            sheetId = idList[0].id
+            sheetName = idList[0].sheet
+            fileName = idList[0].name
+            sheetLabel.text = fileName
+            getGasList(select: 0)
+        }
+
         listSelector.selectedSegmentIndex = 0
         //segmentedControlのタイトルラベルの設定
         for list in listSelector.subviews {
@@ -79,8 +92,6 @@ class SSListViewController: UIViewController {
                 }
             }
         }
-
-
 
     }
     
@@ -152,7 +163,7 @@ class SSListViewController: UIViewController {
                                 self.refreshAlert.dismiss(animated: true, completion: nil)
                                 for j in json {
                                     var createDate = ""
-                                    //print(j["Create Date"])
+                                    print(j["Create Date"] as? String)
                                     if let str = j["Create Date"] as? String {
                                         //print(str)
                                         if let date = str.toDate(format: "yyyy-MM-dd HH:mm:ss"){

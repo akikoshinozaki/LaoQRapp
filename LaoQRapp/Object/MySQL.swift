@@ -70,10 +70,10 @@ class MySQL: NSObject {
         task.resume()
     }
     
-    func getID(serial:String,completionClosure:@escaping CompletionClosure) {
+    func getID(serial:String,type:String,completionClosure:@escaping CompletionClosure) {
         var json:NSDictionary!
         var errMsg = ""
-        let param = "serial=\(serial)"
+        let param = "serial=\(serial)&type=\(type)"
         print(param)
         
         let url = URL(string: serverURL+"serial_getID.php")!
@@ -91,6 +91,10 @@ class MySQL: NSObject {
                 if(data != nil){
                     //戻ってきたデータを解析
                     do{
+                        if let str = String(data: data!, encoding: .utf8) {
+                            print(str)
+                        }
+                        
                         json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary
                         
                     }catch{

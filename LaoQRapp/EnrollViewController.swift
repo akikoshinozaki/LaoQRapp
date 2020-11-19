@@ -110,12 +110,18 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
             sheetName = idList[0].sheet
             fileName = idList[0].name
             sheetLabel.text = fileName
+            selectBtn.isEnabled = false
         }
         
-        self.setLocation()
-        if locateArr_.count == 0 {
-            locateArr_ = defaultLocate
+        locateArr_ = defaultLocate
+        if locateArr_.count == 1 {
+            locateCD_ = locateArr_[0].0
+            locateName_ = locateArr_[0].1
+            defaults.set(locateCD_, forKey: "locateCD")
+            defaults.set(locateName_, forKey: "locateName")
+            settingBtn.isEnabled = false
         }
+        self.setLocation()
         
     }
     
@@ -127,16 +133,17 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     func setLocation() {
         //社員CDとロケーションをユーザーデフォルトから取得
         syainCD_ = defaults.value(forKey: "syainCD") as? String ?? ""
+        /*
         ibmUser = syainCD_
         if ibmUser.count == 6, syainCD_.hasPrefix("14") {
             ibmUser = ibmUser.replacingOccurrences(of: "14", with: "L")
-        }
+        }*/
         syainName_ = defaults.value(forKey: "syainName") as? String ?? ""
         locateCD_ = defaults.value(forKey: "locateCD") as? String ?? ""
         locateName_ = defaults.value(forKey: "locateName") as? String ?? ""
-        
-        locationLabel.text = " "+locateName_
-        syainLabel.text = " \(syainCD_): \(syainName_)"
+                
+        locationLabel.text = "  "+locateName_
+        syainLabel.text = "  \(syainCD_): \(syainName_)"
     }
 
     
@@ -193,7 +200,6 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         DispatchQueue.main.async {
             self.itemDataLabel.text = str
             self.step4View.isHidden = (itemCD_ == "")
-            
         }
     }
     
@@ -295,68 +301,6 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
         dismiss(animated: true, completion: nil)
     }
 
-    func readJANCode(result:String){
-        //print(resultString)
-        
-        itemName_ = ""
-        itemCD_ = result
-
-        let param = ["UKE_CD":itemCD_]
-        IBM().hostRequest(type: "ENTCHK", param: param, completionClosure: {
-            (str, json,err) in
-            if err != nil {
-                //エラーの処理
-                let action = UIAlertAction(title: "OK", style: .default, handler: {
-                    Void in
-                    self.dismiss(animated: true, completion: nil)
-                })
-                SimpleAlert.make(title: "エラー", message: err?.localizedDescription, action: [action])
-                return
-            }
-            
-            if json != nil {
-                print(json!)
-                let json_ = json!
-                
-                if json!["RTNCD"] as! String == "000" {
-                    itemName_ = json_["SYOHIN_NM"]! as! String
-                    ORDER_SPEC = json_["ORDER_SPEC"]! as? String
-                    UKE_TYPE = json_["UKE_TYPE"]! as? String
-                    UKE_CDD = json_["UKE_CDD"]! as? String
-                    CUSTOMER_NM = json_["CUSTOMER_NM"]! as? String
-                    SYOHIN_CD = json_["SYOHIN_CD"]! as? String
-                    //商品CDから商品名（英語表記）を取得
-                    if let obj = itemArray.first(where: {$0.cd==UKE_CDD!}){
-                        itemName_ = obj.name
-                    }else {
-                        itemName_ = json_["SYOHIN_NM"]! as! String
-                    }
-                    self.setData()
-                    DispatchQueue.main.async {
-                        self.dismiss(animated: true, completion: nil)
-                    }
-                    
-                }else {
-                    //IBMからエラー戻り
-
-                    var errStr =  ""
-                    for err in json_["RTNMSG"] as? [String] ?? [] {
-                        errStr += err+"\n"
-                    }
-                    //print(errStr)
-                    
-                    let action = UIAlertAction(title: "OK", style: .default, handler: {
-                        Void in
-                        DispatchQueue.main.async {
-                            self.dismiss(animated: true, completion: nil)
-                        }
-                    })
-                    SimpleAlert.make(title: "エラー", message: errStr, action: [action])
-                }
-            }
-        })
-    }
-    
     
     //MARK: - ScanView起動
     @IBAction func showScanView(_ sender: UIButton) {
@@ -384,71 +328,41 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     func getData(type:String, data: String) {
         //QRコードを読んだ後の処理
         if type == "EAN13" {
-            self.readJANCode(result: data)
+            //self.readJANCode(result: data)
         }else if type == "QR" {
             self.serialNO = data
             DispatchQueue.main.async {
                 self.serialDataLabel.text = self.serialNO
-            }
-            /*
-            for field in fields {
-                field.text = ""
-            }
-            //QRチェック
-            let param = ["PRODUCT_SN":data]
-            IBM().hostRequest(type: "INQUIRY", param: param, completionClosure: {
-                (str, json,err) in
-                if err != nil {
-                    //エラーの処理
-                    let action = UIAlertAction(title: "OK", style: .default, handler: {
-                        Void in
-                        self.dismiss(animated: true, completion: nil)
-                    })
-                    SimpleAlert.make(title: "エラー", message: err?.localizedDescription, action: [action])
-                    return
+                for field in self.fields {
+                    field.text = ""
                 }
-                
-                if json != nil {
+            }
+            
+            //QRチェック
+            MySQL().getID(serial: serialNO, type:"search", completionClosure: {
+                (str, json,err) in
+                if err == nil, json != nil {
                     print(json!)
-                    let json_ = json!
-                    self.serialNO = ""
-                    if json!["RTNCD"] as? String == "000" {
-                        self.serialNO = data
-                        if let order = json_["ORDER_SPEC"] as? String {
+                    let status = json!["status"] as? String ?? ""
+                    if status == "success" {
+                        //sheetID未選択だったら上書き
+                        if sheetId == "" {
+                            sheetId = json!["sheetID"] as? String ?? ""
+                            sheetName = json!["sheetName"] as? String ?? ""
+                            
+                            DispatchQueue.main.async {
+                                fileName = json!["fileName"] as? String ?? ""
+                                self.sheetLabel.text = fileName
+                            }
+                        }
+                        
+                        if let order = json!["order_spec"] as? String {
                             //ORDER_SPECの有無を確認
-                            print(order)
                             self.qrInquiry(order: order)
                         }
-                        DispatchQueue.main.async {
-                            self.dismiss(animated: true, completion: nil)
-                        }
-                    }else {
-                        //IBMからエラー戻り
-                        let rtnMSG = json_["RTNMSG"] as? [String] ?? []
-                        let errStr =  errMsgFromIBM(rtnMSG: rtnMSG)
-                        
-                        if errStr.contains("E0043") {
-                            //E0043:未登録エラーはそのまま新規登録
-                            self.serialNO = data
-                            
-                        }else {
-                            //E0043:未登録エラー 以外はアラート表示
-                            let action = UIAlertAction(title: "OK", style: .default, handler: {
-                                Void in
-                                DispatchQueue.main.async {
-                                    self.dismiss(animated: true, completion: nil)
-                                }
-                            })
-                            SimpleAlert.make(title: "エラー", message: errStr, action: [action])
-                        }
                     }
-                    DispatchQueue.main.async {
-                        self.serialDataLabel.text = self.serialNO
-                    }
-                    
                 }
             })
-             */
         }
     }
     
@@ -458,7 +372,6 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
     func qrInquiry(order:String){
         //type:"insert" or "update"
         if order != "" {
-            
             //UPDATE
             let arr = order.components(separatedBy: ";")
             print(arr)
@@ -519,31 +432,22 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
  
     }
     
-//    @IBAction func getSerial(_ sender:Any){
-//        //MySQL().getID(serial: serialNO, completionClosure: {
-//        MySQL().getID(serial: "123456789012345678", completionClosure: {
-//            (str, json,err) in
-//            if err == nil, json != nil {
-//                print(json!)
-//                let status = json!["status"] as? String ?? ""
-//                if status == "success" {
-//                    sheetId = json!["sheetID"] as? String ?? ""
-//                    sheetName = json!["sheetName"] as? String ?? ""
-//                    fileName = json!["fileName"] as? String ?? ""
-//
-//                }else {
-//                    print(str!)
-//                }
-//            }
-//        })
-//    }
-    
     func saveID(){
+        let order = "UV=\(UVField.text!);" +
+            "UH=\(UHField.text!);" +
+            "LV=\(LVField.text!);" +
+            "LH=\(LHField.text!);" +
+            "WT=\(WTField.text!);" +
+            "HT=\(HTField.text!)"
+        
+        print(order)
+
         let param:NSDictionary = [
             "serial":serialNO,
-            "sheetID":sheetId,
+            "sheetid":sheetId,
             "sheetName":sheetName,
             "fileName":fileName,
+            "order":order,
             "staff":syainCD_,
             "date":Date().entryDate
         ]
@@ -562,7 +466,7 @@ class EnrollViewController:  UIViewController, ZBarReaderDelegate, UINavigationC
             "sheetName":sheetName,
             "operation":"input",
             "loc":locateCD_,
-            "itemCD":SYOHIN_CD,
+            "itemCD":itemCD_,
             "itemName":itemName_,
             "uv":UVField.text!,
             "uh":UHField.text!,
@@ -928,5 +832,67 @@ extension EnrollViewController { //IBM関係のメソッド（後で使うかも
            //アラートを表示
            self.present(alert,animated: true)
     
-       }*/
+       }
+    
+    func readJANCode(result:String){
+        //print(resultString)
+        
+        itemName_ = ""
+        itemCD_ = result
+
+        let param = ["UKE_CD":itemCD_]
+        IBM().hostRequest(type: "ENTCHK", param: param, completionClosure: {
+            (str, json,err) in
+            if err != nil {
+                //エラーの処理
+                let action = UIAlertAction(title: "OK", style: .default, handler: {
+                    Void in
+                    self.dismiss(animated: true, completion: nil)
+                })
+                SimpleAlert.make(title: "エラー", message: err?.localizedDescription, action: [action])
+                return
+            }
+            
+            if json != nil {
+                print(json!)
+                let json_ = json!
+                
+                if json!["RTNCD"] as! String == "000" {
+                    itemName_ = json_["SYOHIN_NM"]! as! String
+                    ORDER_SPEC = json_["ORDER_SPEC"]! as? String
+                    UKE_TYPE = json_["UKE_TYPE"]! as? String
+                    UKE_CDD = json_["UKE_CDD"]! as? String
+                    CUSTOMER_NM = json_["CUSTOMER_NM"]! as? String
+                    SYOHIN_CD = json_["SYOHIN_CD"]! as? String
+                    //商品CDから商品名（英語表記）を取得
+                    if let obj = itemArray.first(where: {$0.cd==UKE_CDD!}){
+                        itemName_ = obj.name
+                    }else {
+                        itemName_ = json_["SYOHIN_NM"]! as! String
+                    }
+                    self.setData()
+                    DispatchQueue.main.async {
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                    
+                }else {
+                    //IBMからエラー戻り
+
+                    var errStr =  ""
+                    for err in json_["RTNMSG"] as? [String] ?? [] {
+                        errStr += err+"\n"
+                    }
+                    //print(errStr)
+                    
+                    let action = UIAlertAction(title: "OK", style: .default, handler: {
+                        Void in
+                        DispatchQueue.main.async {
+                            self.dismiss(animated: true, completion: nil)
+                        }
+                    })
+                    SimpleAlert.make(title: "エラー", message: errStr, action: [action])
+                }
+            }
+        })
+    }*/
 }

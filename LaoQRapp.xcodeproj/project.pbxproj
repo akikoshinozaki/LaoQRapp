@@ -33,8 +33,6 @@
 		C3ACA1FB2526BEAA00F2CC51 /* dateChange.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1EC2526BEA900F2CC51 /* dateChange.png */; };
 		C3ACA1FC2526BEAA00F2CC51 /* barcode.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1ED2526BEA900F2CC51 /* barcode.png */; };
 		C3ACA1FD2526BEAA00F2CC51 /* reload.png in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA1EE2526BEA900F2CC51 /* reload.png */; };
-		C3ACA2082526BEBF00F2CC51 /* DBBackUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2002526BEBF00F2CC51 /* DBBackUp.swift */; };
-		C3ACA2092526BEBF00F2CC51 /* EntryDataBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2012526BEBF00F2CC51 /* EntryDataBase.swift */; };
 		C3ACA20B2526BEBF00F2CC51 /* DataDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2032526BEBF00F2CC51 /* DataDownload.swift */; };
 		C3ACA20C2526BEBF00F2CC51 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2042526BEBF00F2CC51 /* Common.swift */; };
 		C3ACA20D2526BEBF00F2CC51 /* IBM.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2052526BEBF00F2CC51 /* IBM.swift */; };
@@ -43,7 +41,6 @@
 		C3ACA2142526BF0800F2CC51 /* SimpleAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2132526BF0800F2CC51 /* SimpleAlert.swift */; };
 		C3ACA2162526C1A200F2CC51 /* HostConnect.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2152526C1A200F2CC51 /* HostConnect.swift */; };
 		C3ACA2182526F8A600F2CC51 /* EnrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2172526F8A600F2CC51 /* EnrollViewController.swift */; };
-		C3ACA21B2526FB0400F2CC51 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ACA2192526FB0400F2CC51 /* SettingView.swift */; };
 		C3ACA21C2526FB0400F2CC51 /* SettingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C3ACA21A2526FB0400F2CC51 /* SettingView.xib */; };
 		C3ACA21E2526FC0700F2CC51 /* libzbar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3ACA21D2526FC0700F2CC51 /* libzbar.a */; };
 		C3B6FBE1252ABAB0007397E1 /* SerialNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3B6FBE0252ABAB0007397E1 /* SerialNumber.swift */; };
@@ -80,8 +77,6 @@
 		C3ACA1EC2526BEA900F2CC51 /* dateChange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dateChange.png; sourceTree = "<group>"; };
 		C3ACA1ED2526BEA900F2CC51 /* barcode.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = barcode.png; sourceTree = "<group>"; };
 		C3ACA1EE2526BEA900F2CC51 /* reload.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reload.png; sourceTree = "<group>"; };
-		C3ACA2002526BEBF00F2CC51 /* DBBackUp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DBBackUp.swift; sourceTree = "<group>"; };
-		C3ACA2012526BEBF00F2CC51 /* EntryDataBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntryDataBase.swift; sourceTree = "<group>"; };
 		C3ACA2032526BEBF00F2CC51 /* DataDownload.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataDownload.swift; sourceTree = "<group>"; };
 		C3ACA2042526BEBF00F2CC51 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		C3ACA2052526BEBF00F2CC51 /* IBM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IBM.swift; sourceTree = "<group>"; };
@@ -90,7 +85,6 @@
 		C3ACA2132526BF0800F2CC51 /* SimpleAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleAlert.swift; sourceTree = "<group>"; };
 		C3ACA2152526C1A200F2CC51 /* HostConnect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostConnect.swift; sourceTree = "<group>"; };
 		C3ACA2172526F8A600F2CC51 /* EnrollViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnrollViewController.swift; sourceTree = "<group>"; };
-		C3ACA2192526FB0400F2CC51 /* SettingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		C3ACA21A2526FB0400F2CC51 /* SettingView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingView.xib; sourceTree = "<group>"; };
 		C3ACA21D2526FC0700F2CC51 /* libzbar.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libzbar.a; sourceTree = "<group>"; };
 		C3B6FBE0252ABAB0007397E1 /* SerialNumber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerialNumber.swift; sourceTree = "<group>"; };
@@ -160,7 +154,6 @@
 				C3B6FBE2252AFA0A007397E1 /* InquiryViewController.swift */,
 				C34F2B4A252C34A200766763 /* SSListViewController.swift */,
 				4E646AC4252DBA1F00A1A62E /* DetailListViewController.swift */,
-				C3ACA2192526FB0400F2CC51 /* SettingView.swift */,
 				C3ACA21A2526FB0400F2CC51 /* SettingView.xib */,
 				C3ACA1CD2526BC3E00F2CC51 /* Main.storyboard */,
 				C3ACA1D32526BC3F00F2CC51 /* Assets.xcassets */,
@@ -200,8 +193,6 @@
 				C3ACA2102526BEED00F2CC51 /* QRScannerView.swift */,
 				4EA60F8C25402704008AD0D6 /* MySQL.swift */,
 				C3ACA20F2526BEED00F2CC51 /* QRScannerView.xib */,
-				C3ACA2002526BEBF00F2CC51 /* DBBackUp.swift */,
-				C3ACA2012526BEBF00F2CC51 /* EntryDataBase.swift */,
 				C3ACA2032526BEBF00F2CC51 /* DataDownload.swift */,
 				C3ACA2042526BEBF00F2CC51 /* Common.swift */,
 				C3ACA2052526BEBF00F2CC51 /* IBM.swift */,
@@ -342,12 +333,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3ACA2082526BEBF00F2CC51 /* DBBackUp.swift in Sources */,
 				C3ACA1CC2526BC3E00F2CC51 /* ViewController.swift in Sources */,
 				C3A360DF253FDBF8002C7B76 /* GetSSData.swift in Sources */,
 				4E646AC5252DBA1F00A1A62E /* DetailListViewController.swift in Sources */,
 				C3ACA20C2526BEBF00F2CC51 /* Common.swift in Sources */,
-				C3ACA2092526BEBF00F2CC51 /* EntryDataBase.swift in Sources */,
 				C3ACA2142526BF0800F2CC51 /* SimpleAlert.swift in Sources */,
 				4EA60F8D25402704008AD0D6 /* MySQL.swift in Sources */,
 				C3ACA2162526C1A200F2CC51 /* HostConnect.swift in Sources */,
@@ -356,7 +345,6 @@
 				C3ACA1D22526BC3E00F2CC51 /* LaoQRapp.xcdatamodeld in Sources */,
 				C3B6FBE1252ABAB0007397E1 /* SerialNumber.swift in Sources */,
 				C3ACA1C82526BC3E00F2CC51 /* AppDelegate.swift in Sources */,
-				C3ACA21B2526FB0400F2CC51 /* SettingView.swift in Sources */,
 				C3ACA2182526F8A600F2CC51 /* EnrollViewController.swift in Sources */,
 				4E646AC3252DA3E800A1A62E /* InquiryTableViewCell.swift in Sources */,
 				C3ACA20D2526BEBF00F2CC51 /* IBM.swift in Sources */,
@@ -509,7 +497,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = LaoQRapp/LaoQRapp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0;
+				CURRENT_PROJECT_VERSION = 1.05;
 				DEVELOPMENT_TEAM = G4JZMC2GW3;
 				INFOPLIST_FILE = LaoQRapp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -521,7 +509,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.05;
 				PRODUCT_BUNDLE_IDENTIFIER = com.oktss.LaoQRapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -536,7 +524,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = LaoQRapp/LaoQRapp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0;
+				CURRENT_PROJECT_VERSION = 1.05;
 				DEVELOPMENT_TEAM = G4JZMC2GW3;
 				INFOPLIST_FILE = LaoQRapp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -548,7 +536,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.05;
 				PRODUCT_BUNDLE_IDENTIFIER = com.oktss.LaoQRapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

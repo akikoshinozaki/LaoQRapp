@@ -14,11 +14,12 @@ class GetSSData: NSObject {
     class func getUpdateDate()->String {
         let url = apiUrl + "?upd=update"
         var str = ""
+        
         //サーバー上のファイルのパス
         if let path = URL(string: url) {
             do {
                 str = try String(contentsOf: path, encoding: .utf8)
-                //print(str)
+                print(str)
                 defaults.set(str, forKey: "lastUpdate")
                 
             } catch let error as NSError {
@@ -28,12 +29,43 @@ class GetSSData: NSObject {
             }
         }
         return str
+        
+    }
+    
+    class func getupdate() -> String {
+        //テスト
+        let url = apiUrl + "?upd=update"
+        var str = ""
+        
+        let tokenString = "ya29.a0AfH6SMCJcR3yYk1LOEed_bgjyHhy8Aq-Pb_dG92vgbbvpCuomCaSlTVNzJMTUcqyY0DmsLg3IwmSB608DRa57_115oE149ym0b3z8OOCXEIgkz0LmPx4IF8ffyPGJJ4TEM58mkenaQK3a4Aob4bBKyDt9XjhIiYjw3bzeIU8z9Y"
+        var request = URLRequest(url: URL(string: url)!)
+//        let header = ["Authorization":"Bearer"+tokenString]
+//        request.addValue("application/json", forHTTPHeaderField: "Content-type")
+//        request.addValue("application/json", forHTTPHeaderField: "Accept")
+//        request.addValue("utf-8", forHTTPHeaderField: "Accept-Charset")
+        request.addValue("Bearer"+tokenString, forHTTPHeaderField: "Authorization")
+        request.httpMethod = "GET"
+        
+        URLSession.shared.dataTask(with: request) {data, response, err in
+            if (err == nil) {
+                print("success")
+                //let data: Data? = str.data(using: .utf8)
+                if let str = String(data: data!, encoding: .utf8) {
+                    print(str)
+                }
+                
+            } else {
+                print("error")
+            }
+        }.resume()
+        
+        return str
     }
     
     class func dataUpdate() {
         var DL_errMsg = ""
         let alert = UIAlertController(title: "データ更新中".loStr, message: "しばらくお待ちください".loStr, preferredStyle: .alert)
-        SimpleAlert.getTopViewController()?.present(alert, animated: true, completion: nil)
+        SimpleAlert.topViewController()?.present(alert, animated: true, completion: nil)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             //アラートが出なくなるので、遅延処理を入れる

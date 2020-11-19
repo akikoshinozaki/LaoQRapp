@@ -169,7 +169,6 @@ extension String {
             return self
         }
     }
-
 }
 
 
@@ -185,17 +184,24 @@ let apiUrl = "https://script.google.com/macros/s/AKfycbw7BTNIdwXwyCZHi0IiHtLqIXi
 
 var translate:Dictionary<String, String> = [:]
 let SS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSYsk2S-W-gH9usc2qC0qtBTch8VnFxp1gn1Kmt4_5gSRKj7gHxRge9Q9rjmDn2n8Pl99Garq9sJ55N/pub?gid="
-
+/*
 let parameters:[GASURL] = [
     GASURL(id: "itemArr", url: SS_URL+"1270331495&single=true&output=csv"),
     GASURL(id: "employee", url: SS_URL+"1920248299&single=true&output=csv"),
     GASURL(id: "errMessage", url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT_VIqCdRpHyjvV3dDyLRn9eonLWqDIHjYaiHQAxqe27SXXKUBH-t0CEOd4w7KGWbELl3KIYVEsphaU/pub?gid=1456474335&single=true&output=csv"),
     GASURL(id: "translate", url: SS_URL+"550904518&single=true&output=csv")
 ]
+*/
+let parameters:[GASURL] = [
+    GASURL(id: "itemArr", url: apiUrl+"?operation=csv&shName=MASTER"),
+    GASURL(id: "employee", url: apiUrl+"?operation=csv&shName=Employee"),
+    GASURL(id: "errMessage", url: apiUrl+"?operation=errMsg"),
+    GASURL(id: "translate", url: apiUrl+"?operation=csv&shName=translate")
+]
+
 
 //idList
 let idListParam:GASURL = GASURL(id: "sheetID", url: apiUrl+"?operation=idList")
-
 
 //var itemArray:[(cd:String,name:String,unit:String)] = [] //unit:単位
 var locArray:[(cd:String,name:String)] = []
@@ -213,7 +219,7 @@ var idfv:String = ""
 var pingResponse:Bool = true
 var IBMResponse:Bool!
 var language = ""
-let defaultLocate = [("IW01", "磐田ファートン工場"), ("IW04", "磐田物流センター"), ("KZ01", "小沢渡羽毛工場"), ("LA01", "ＬＡＯＳ"),  ("OK01", "大久保羊毛工場"), ("OK02", "大久保カーテン工場"), ("OK03", "大久保羊毛第一工場")]
+let defaultLocate = [("LA01", "ＬＡＯＳ")]
 
 var locateArr_ : [(String, String)] = []
 var syainCD_:String = "" //社員CD

@@ -35,9 +35,8 @@ class ViewController: UIViewController {
         }
         //アプリのバージョンを取得
         versionLabel.text = "Ver. " + bundleVersion
-        
         //ロケーションを取得しておく
-        locateList()
+        //locateList()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -56,8 +55,6 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    
     
     @objc func goToNext(_ sender: UIButton) {
         //次のページへ遷移
@@ -79,56 +76,6 @@ class ViewController: UIViewController {
         let nextVC = storyboard.instantiateViewController(withIdentifier: next)
         self.navigationController?.pushViewController(nextVC, animated: true)
 
-    }
-    
-    func ibmtest(){
-        //let param = ["PRODUCT_SN":"000085610170440356"] //登録のあるもの
-        let param = ["PRODUCT_SN":"000085610170440000"]  //登録エラー
-        IBM().hostRequest(type: "INQUIRY", param: param, completionClosure: {
-            (str, json,err) in
-            if err == nil, json != nil {
-                if json!["RTNCD"] as! String == "000" {
-                    print(json!)
-                    ORDER_SPEC = json!["ORDER_SPEC"] as? String ?? ""
-                }else {
-                    print(json!)
-                }
-            }
-        })
-        
-    }
-    
-    func locateList() {
-        IBM().hostRequest(type: "LOCAT_LST", param: [:], completionClosure: {
-            (str, json,err) in
-            if err == nil, json != nil {
-                var locDic:[(String,String)] = []
-                if json!["RTNCD"] as! String == "000" {
-                    //locateListを登録
-                    let locates = json!["LOCAT_LST"]! as! [NSDictionary]
-
-                    for locate in locates {
-                        let cd = locate.value(forKey: "LOCAT_CD") as! String
-                        let nm = locate.value(forKey: "LOCAT_NM") as! String
-                        if cd != "" && nm != ""{
-                            locDic.append((cd,nm))
-                        }
-                    }
-                    locateArr_ = locDic
-//                    print(locateArr_)
-                }else {
-                    //IBMから帰ってきた値がエラーだった時
-                    let rtnMSG = json!["RTNMSG"] as? [String] ?? []
-                    let errMsg =  errMsgFromIBM(rtnMSG: rtnMSG)                    
-                    SimpleAlert.make(title: "ロケーション取得エラー", message: errMsg)
-                    locateArr_ = defaultLocate
-                }
-                
-            }else {
-                SimpleAlert.make(title: "ロケーション取得エラー", message: err?.localizedDescription)
-                locateArr_ = defaultLocate
-            }
-        })
     }
     
     @IBAction func dataUpdate(_ sender: Any) {
@@ -154,10 +101,61 @@ class ViewController: UIViewController {
             }
             
             idList = DL.getIdList()
-            //tableView.reloadData()
         }
     }
+}
 
-
+extension ViewController {
+    /*
+    func ibmtest(){
+        //let param = ["PRODUCT_SN":"000085610170440356"] //登録のあるもの
+        let param = ["PRODUCT_SN":"000085610170440000"]  //登録エラー
+        IBM().hostRequest(type: "INQUIRY", param: param, completionClosure: {
+            (str, json,err) in
+            if err == nil, json != nil {
+                if json!["RTNCD"] as! String == "000" {
+                    print(json!)
+                    ORDER_SPEC = json!["ORDER_SPEC"] as? String ?? ""
+                }else {
+                    print(json!)
+                }
+            }
+        })
+        
+    }
+    
+    func locateList() {
+        IBM().hostRequest(type: "LOCAT_LST", param: [:], completionClosure: {
+            (str, json,err) in
+            if err == nil, json != nil {
+                var locDic:[(String,String)] = []
+                if json!["RTNCD"] as! String == "000" {
+                    //locateListを登録
+                    let locates = json!["LOCAT_LST"]! as! [NSDictionary]
+                    
+                    for locate in locates {
+                        let cd = locate.value(forKey: "LOCAT_CD") as! String
+                        let nm = locate.value(forKey: "LOCAT_NM") as! String
+                        if cd != "" && nm != ""{
+                            locDic.append((cd,nm))
+                        }
+                    }
+                    locateArr_ = locDic
+                    //print(locateArr_)
+                }else {
+                    //IBMから帰ってきた値がエラーだった時
+                    let rtnMSG = json!["RTNMSG"] as? [String] ?? []
+                    let errMsg =  errMsgFromIBM(rtnMSG: rtnMSG)
+                    SimpleAlert.make(title: "ロケーション取得エラー", message: errMsg)
+                    locateArr_ = defaultLocate
+                }
+                
+            }else {
+                SimpleAlert.make(title: "ロケーション取得エラー", message: err?.localizedDescription)
+                locateArr_ = defaultLocate
+            }
+        })
+    }
+    */
 }
 

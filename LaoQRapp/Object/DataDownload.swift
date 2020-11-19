@@ -19,12 +19,13 @@ class DataDownload: NSObject {
         var csvStr = ""
         var errMsg = ""
         //サーバー上のcsvファイルのパス
+        print(parameter.url)
         if let csvPath = URL(string: parameter.url) {
             do {
                 //CSVファイルのデータを取得する。
                 let str = try String(contentsOf: csvPath, encoding: .utf8)
                 csvStr = str
-                //print(str)
+                print(str)
                 defaults.set(csvStr, forKey: parameter.id)
                 print("csvの保存に成功")
                 
@@ -51,6 +52,7 @@ class DataDownload: NSObject {
             array.enumerateLines { (line, stop) -> () in
                 arr.append(line.components(separatedBy: ","))
             }
+            print(arr)
             for item in arr {
                 if item.count > 5 {
                     if item[5] == "ON" {

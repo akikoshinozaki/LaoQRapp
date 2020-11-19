@@ -14,33 +14,9 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
     @IBOutlet var QRButton: UIButton!
     @IBOutlet var rtnData: UITextView!
     
-    @IBOutlet weak var selectBtn: UIButton!
-    @IBOutlet weak var sheetLabel: UILabel!
+    //@IBOutlet weak var selectBtn: UIButton!
+    //@IBOutlet weak var sheetLabel: UILabel!
     @IBOutlet weak var deleteBtn: UIButton!
-    
-    var inq_UKE_TYPE: String!
-    var inq_UKE_CDD: String!
-    var inq_SYAIN_CD: String!
-    var inq_SYAIN_NM: String!
-    var inq_LOCAT_CD: String!
-    var inq_LOCAT_NM: String!
-    var inq_SYOHIN_CD: String!
-    var inq_SYOHIN_NM: String!
-    var inq_ORDER_SPEC: String!
-    var inq_CUSTOMER_NM: String!
-    
-    //var delButton:UIBarButtonItem!
-    
-    var tourokuDate: String!
-    //削除ボタンに設定するAttribute
-    let canDelete:[NSAttributedString.Key : Any] = [
-        .foregroundColor: UIColor.red,
-        .font: UIFont.boldSystemFont(ofSize: 18.0)
-    ]
-    let notDelete:[NSAttributedString.Key : Any] = [
-        .foregroundColor: UIColor.gray,
-        .font: UIFont.systemFont(ofSize: 18.0)
-    ]
     
     var qrScanner:QRScannerView!
     var serialNO:String = ""
@@ -51,7 +27,6 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
 
         // Do any additional setup after loading the view.
 
-        
         self.navigationController?.setNavigationBarHidden(false, animated: false)
         let backButton = UIBarButtonItem(title: "＜ 戻る", style: .plain, target: self, action: #selector(self.goToMenu))
         //delButton = UIBarButtonItem(title: "削除", style: .plain, target: self, action: #selector(self.deleteData))
@@ -63,23 +38,26 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         rtnData.layer.borderColor = UIColor.gray.cgColor
         rtnData.layer.borderWidth = 2
         
+        deleteBtn.layer.cornerRadius = 8
+        deleteBtn.titleLabel?.numberOfLines = 0
+        /*
         let btns:[UIButton] = [selectBtn, deleteBtn]
         for btn in btns {
             btn.layer.cornerRadius = 8
             btn.titleLabel?.numberOfLines = 0
-        }
+        }*/
         
         self.deleteBtn.isHidden = true
         
         sheetId = ""
         sheetName = ""
         fileName = ""
-        sheetLabel.text = ""
+        //sheetLabel.text = ""
         if idList.count == 1 {
             sheetId = idList[0].id
             sheetName = idList[0].sheet
             fileName = idList[0].name
-            sheetLabel.text = fileName
+            //sheetLabel.text = fileName
         }
 
     }
@@ -104,9 +82,7 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
                     Void in
                     sheetId = id.id
                     sheetName = id.sheet
-                    DispatchQueue.main.async {
-                        self.sheetLabel.text = id.name
-                    }
+                    fileName = id.name
                     
                 }))
             }
@@ -143,13 +119,9 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         print(#function)
     }
     
-    @IBAction func test(_ sender: Any) {
-        self.getData(type:"", data: "53604221619170005")
-    }
-    
     func getData(type:String, data: String){
         serialNO = data
-        MySQL().getID(serial: serialNO, completionClosure: {
+        MySQL().getID(serial: serialNO, type:"search", completionClosure: {
             (str, json,err) in
             if err == nil, json != nil {
                 print(json!)
@@ -173,7 +145,7 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
                 
             }else {
                  //シートID取得できないときの処理
-                SimpleAlert.make(title: "エラー", message: "")
+                SimpleAlert.make(title: "エラー", message: "取得できません")
             }
         })
     }
@@ -181,6 +153,7 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
     var getAlert = UIAlertController()
     func searchSS(serial: String) {
         DispatchQueue.main.async {
+            self.deleteBtn.isHidden = true
             self.getAlert = UIAlertController(title: "ຂໍ້ມູນ ກຳ ລັງໄດ້ຮັບ", message: "データ取得中", preferredStyle: .alert)
             self.present(self.getAlert, animated: true, completion: nil)
         }
@@ -221,59 +194,23 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
                             }
                             
                             if let json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary {
+                                self.display(json: json)
                                 //print(json)
                                 DispatchQueue.main.async {
                                     self.getAlert.dismiss(animated: true, completion: nil)
+                                    self.deleteBtn.isHidden = false
                                 }
-                                //日付を変換
-                                var createDate = ""
-                                if let str = json["Create Date"] as? String {
-                                    if let date = str.toDate(format: "yyyy-MM-dd HH:mm:ss"){
-                                        createDate = date.toString(format: "yyyy/MM/dd")
-                                    }else {
-                                        createDate = str
-                                    }
-                                }
-                                
-                                let val = GASList(loc: json["Location"] as? String ?? "",
-                                                  item: json["item"] as? String ?? "",
-                                                  itemName: json["itemName"] as? String ?? "",
-                                                  staff: json["staff"] as? String ?? "",
-                                                  date: createDate,
-                                                  serial: json["Serial"] as? String ?? "",
-                                                  UV: json["UV"] as? String ?? "",
-                                                  UH: json["UH"] as? String ?? "",
-                                                  LV: json["LV"] as? String ?? "",
-                                                  LH: json["LH"] as? String ?? "",
-                                                  WT: json["WT"] as? String ?? "",
-                                                  HT: json["HT"] as? String ?? "")
-                                
-                                DispatchQueue.main.async {
-                                    //データ表示
-                                    let str = "SerialNumber: \(val.serial)\n" +
-                                        //"製造場所: \(inq_LOCAT_NM!)\n" +
-                                        "entryDate: \(createDate)\n" +
-                                        "staff: \(val.staff)\n\n" +
-                                        "itemCD: \(val.item)\n" +
-                                        "itemName: \(val.itemName)\n" +
-                                    "ORDER_SPEC: UV=\(val.UV), UH=\(val.UH),LV=\(val.LV),LH=\(val.LH),WT=\(val.WT),HT=\(val.HT)"
-                                    self.rtnData.text = str
-                                }
-                                
                             }
-                            
                         }catch{
                             //スプレッドシートに接続できない
                             title = "Error:2003"
                             msg = "ບໍ່ສາມາດເຂົ້າເຖິງເອກະສານ\nスプレッドシートに接続できません"
                         }
-                        
                     }else {
                         //GASからの戻りがない
                         title = "Error:2004"
                         msg = "ບໍ່ມີການຕອບຮັບຈາກເຊີເວີ\nサーバーから応答がありません"
                     }
-                    
                 }else {
                     title = "Error:2001"
                     msg = err!.localizedDescription
@@ -291,24 +228,71 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
         task.resume()
     }
     
-    @IBAction func deleteData() {
-        ssDelete()
+    func display(json:NSDictionary!){
         /*
-        //print("削除")
-        if sheetId == "" {
-            let alert = UIAlertController(title: "ບໍ່ມີການຄັດເລືອກເອກະສານ", message: "スプレッドシートが選択されていません", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "ສືບຕໍ່/続ける", style: .default, handler: {
-                Void in
-                self.ibmDelete()
-            }))
-            alert.addAction(UIAlertAction(title: "ຍົກເລີກ/Cancel", style: .cancel, handler: nil))
-            self.present(alert, animated: true, completion: nil)
-            
-        }else {
-            ibmDelete()
-        }
-*/
+        //日付を変換
+        var createDate = ""
+        if let str = json["Create Date"] as? String {
+            if let date = str.toDate(format: "yyyy-MM-dd HH:mm:ss"){
+                createDate = date.toString(format: "yyyy/MM/dd")
+            }else {
+                createDate = str
+            }
+        }*/
         
+        let val = GASList(loc: json["Location"] as? String ?? "",
+                          item: json["item"] as? String ?? "",
+                          itemName: json["itemName"] as? String ?? "",
+                          staff: json["staff"] as? String ?? "",
+                          date: json["Create Date"] as? String ?? "",
+                          serial: json["Serial"] as? String ?? "",
+                          UV: json["UV"] as? String ?? "",
+                          UH: json["UH"] as? String ?? "",
+                          LV: json["LV"] as? String ?? "",
+                          LH: json["LH"] as? String ?? "",
+                          WT: json["WT"] as? String ?? "",
+                          HT: json["HT"] as? String ?? "")
+
+        //データ表示
+        let str = "FileName: \(fileName)\n" +
+            "SheetID: \(sheetId)\n" +
+            "SheetName: \(sheetName)\n\n" +
+            "SerialNumber: \(val.serial)\n" +
+            //"製造場所: \(inq_LOCAT_NM!)\n" +
+            "EntryDate: \(val.date)\n" +
+            "Staff: \(val.staff)\n\n" +
+            "ItemCD: \(val.item)\n" +
+            "ItemName: \(val.itemName)\n" +
+        "ORDER_SPEC: UV=\(val.UV), UH=\(val.UH),LV=\(val.LV),LH=\(val.LH),WT=\(val.WT),HT=\(val.HT)"
+        
+        DispatchQueue.main.async {
+            self.rtnData.text = str
+        }
+        
+    }
+    
+    @IBAction func deleteData() {
+        //MySQLから削除
+        
+        MySQL().getID(serial: serialNO, type:"delete", completionClosure: {
+            (str, json,err) in
+            if err == nil, json != nil {
+                print(json!)
+                let status = json!["status"] as? String ?? ""
+                if status == "success" {
+                    //削除成功
+                    self.ssDelete()
+                }else {
+                    //失敗
+                    print(str!)
+                    SimpleAlert.make(title: "削除失敗", message: "しばらくしてからやり直してください")
+                }
+            }else {
+                //シートID取得できない
+                SimpleAlert.make(title: "削除失敗", message: "しばらくしてからやり直してください")
+            }
+            
+        })
     }
 
     func ssDelete() {
@@ -380,41 +364,6 @@ class InquiryViewController: UIViewController, QRScannerViewDelegate {
 
 extension InquiryViewController { //IBM関連メソッド
     /*
-    func display(json:NSDictionary!){
-        var str = ""
-        inq_UKE_TYPE = json["UKE_TYPE"]! as? String
-        inq_UKE_CDD = json["UKE_CDD"]! as? String
-        serialNO = json["PRODUCT_SN"]! as? String ?? ""
-        
-        inq_SYAIN_CD = json["SYAIN_CD"]! as? String
-        inq_SYAIN_NM = json["SYAIN_NM"]! as? String
-        inq_LOCAT_CD = json["LOCAT_CD"]! as? String
-        inq_LOCAT_NM = json["LOCAT_NM"]! as? String
-        inq_SYOHIN_CD = json["SYOHIN_CD"]! as? String
-        inq_SYOHIN_NM = json["SYOHIN_NM"]! as? String
-        
-        inq_ORDER_SPEC = json["ORDER_SPEC"]! as? String
-        inq_CUSTOMER_NM = json["CUSTOMER_NM"]! as? String
-        tourokuDate = String(describing: json["ENTRY_DATE"]!)
-        str = "製造番号: \(serialNO)\n" +
-            "製造場所: \(inq_LOCAT_NM!)\n" +
-            "登録日: \(tourokuDate!)\n" +
-            "登録者: \(inq_SYAIN_CD!) \(inq_SYAIN_NM!)\n\n" +
-            "受付タイプ：\(inq_UKE_TYPE!)　\(inq_UKE_CDD!)\n商品CD: \(inq_SYOHIN_CD!)\n" +
-        "商品名: \(inq_SYOHIN_NM!)"
-        
-        if inq_CUSTOMER_NM != "" {
-            str += "\nお客様名: \(inq_CUSTOMER_NM!) 様"
-        }
-        if inq_ORDER_SPEC != "" {
-            str += "\nオーダー仕様: \(inq_ORDER_SPEC!)"
-        }
-        
-        DispatchQueue.main.async {
-            self.rtnData.text = str
-        }
-        
-    }
     
     func getData(type:String, data: String) {
         serialNO = data

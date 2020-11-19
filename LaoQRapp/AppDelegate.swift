@@ -63,7 +63,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, HostConnectDelegate {
         if defaults.object(forKey: "startUpCount") != nil {
             startUpCount = defaults.object(forKey: "startUpCount") as! Int
         }
-
+        
+        if let str = defaults.object(forKey: "appVersion") as? String, bundleVersion == str {
+            print(str)
+        }else {
+            print("アップデート後、初起動")
+            GetSSData.dataUpdate()
+            defaults.set(bundleVersion, forKey: "appVersion")
+            defaults.removeObject(forKey: "lastDataDownload")
+            defaults.set(0, forKey: "launchCount")
+        }
+        
         return true
     }
     
@@ -81,7 +91,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, HostConnectDelegate {
             print("enrollView")
             currentView = "enrollView"
         }
-
+        
         //IBMと通信可能かチェック
         hostConnect.delegate = self
         hostConnect.start(hostName: hostName)
@@ -109,10 +119,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, HostConnectDelegate {
         }
         
     }
-
+    
     func applicationDidEnterBackground(_ application: UIApplication) {
         //アラートが表示されていたら消す
-        let top = SimpleAlert.getTopViewController()
+        let top = SimpleAlert.topViewController()
         if top?.classForCoder == UIAlertController.classForCoder() {
             top?.dismiss(animated: false, completion: nil)
         }
