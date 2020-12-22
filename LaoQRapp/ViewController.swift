@@ -34,7 +34,7 @@ class ViewController: UIViewController {
             btn.titleLabel?.numberOfLines = 0
         }
         //アプリのバージョンを取得
-        versionLabel.text = "Ver. " + bundleVersion
+        versionLabel.text = "Ver. " + appVersion
         //ロケーションを取得しておく
         //locateList()
     }
@@ -79,29 +79,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func dataUpdate(_ sender: Any) {
-        let alert = UIAlertController(title: "データ更新中", message: "しばらくお待ちください", preferredStyle: .alert)
-        self.present(alert, animated: true, completion: nil)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            //アラートが出なくなるので、遅延処理を入れる
-            self.DL_errMsg = ""
-            
-            let data = DL.getCSV(parameter: idListParam)
-            self.DL_errMsg = data.err
-            
-            if self.DL_errMsg == ""{
-                //更新できたら最終更新日を変更
-                defaults.set(Date().string, forKey: "lastDataDownload")
-                //self.updateLabel()
-                alert.dismiss(animated: true, completion: nil)
-            }else {
-                alert.title = "更新に失敗しました"
-                alert.message = self.DL_errMsg
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            }
-            
-            idList = DL.getIdList()
-        }
+        DL.dataDL()
     }
 }
 

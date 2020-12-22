@@ -37,7 +37,7 @@ class SSListViewController: UIViewController {
     var backBtn:UIBarButtonItem!
     //var postBtn:UIBarButtonItem!
     //let param:GASURL = GASURL(id: "sheetID", url: apiUrl+"?operation=idList")
-    var refreshAlert = UIAlertController()
+    var dataGetAlert:UIAlertController!
     //var postAlert = UIAlertController()
     
     var index = 0
@@ -107,9 +107,9 @@ class SSListViewController: UIViewController {
     }
     
     func getGasList(select: Int) {
-        refreshAlert = UIAlertController(title: "ຂໍ້ມູນ ກຳ ລັງໄດ້ຮັບ", message: "データ取得中", preferredStyle: .alert)
-        
-        self.present(refreshAlert, animated: true, completion: nil)
+            dataGetAlert = UIAlertController(title: "ຂໍ້ມູນ ກຳ ລັງໄດ້ຮັບ", message: "データ取得中", preferredStyle: .alert)
+            
+            self.present(dataGetAlert, animated: true, completion: nil)
         
         var list:[GASList] = []
         let param = [
@@ -147,20 +147,23 @@ class SSListViewController: UIViewController {
                             if let j = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary  {
                                 print(j)
                                 //エラーメッセージ
-                                self.refreshAlert.title = "ຂໍ້ຜິດພາດ/Error"
-                                self.refreshAlert.message = "ຄວາມລົ້ມເຫລວໃນການຊອກຫາຂໍ້ມູນ\nデータ取得失敗"
-                                self.refreshAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
+                                self.dataGetAlert.title = "ຂໍ້ຜິດພາດ/Error"
+                                self.dataGetAlert.message = "ຄວາມລົ້ມເຫລວໃນການຊອກຫາຂໍ້ມູນ\nデータ取得失敗"
+                                self.dataGetAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
                                     Void in
                                     DispatchQueue.main.async {
                                         self.gasList = []
                                         self.tableView.reloadData()
+                                        self.dataGetAlert = nil
                                     }
                                 }))
                             }
                             
                             if let json = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? [NSDictionary] {
                                 //print(json)
-                                self.refreshAlert.dismiss(animated: true, completion: nil)
+                                self.dataGetAlert.dismiss(animated: true, completion: {
+                                    self.dataGetAlert = nil
+                                })
                                 for j in json {
                                     var createDate = ""
                                     print(j["Create Date"] as? String)
@@ -216,7 +219,9 @@ class SSListViewController: UIViewController {
                 
                 if title != "" { //エラーがあった場合の処理
                     DispatchQueue.main.async {
-                        self.refreshAlert.dismiss(animated: true, completion: nil)
+                        self.dataGetAlert.dismiss(animated: true, completion: {
+                            self.dataGetAlert = nil
+                        })
                         SimpleAlert.make(title: title, message: msg)
                         
                         //listを渡してtableView更新
@@ -301,22 +306,36 @@ class SSListViewController: UIViewController {
     
     
     @IBAction func refreshBtnTap(_ sender: Any) {
-        refreshAlert = UIAlertController(title: "ປັບປຸງລາຍຊື່", message: "リスト更新中", preferredStyle: .alert)
-        self.present(refreshAlert, animated: true, completion: nil)
+        var refreshAlert:UIAlertController!
+        DispatchQueue.main.async {
+            refreshAlert = UIAlertController(title: "ປັບປຸງລາຍຊື່", message: "リスト更新中", preferredStyle: .alert)
+            self.present(refreshAlert, animated: true, completion: nil)
+        }
+
         //self.listRefresh()
-        let data = DL.getCSV(parameter: idListParam)
-        if data.err == "" {
-            idList = DL.getIdList()
-            
+        let err = GetSSData.getCSV()
+        if err == "" {
+            print(idList.count)
             DispatchQueue.main.async {
                 if idList.count == 1 {
                     sheetName = idList[0].sheet
                     sheetId = idList[0].id
                     self.sheetLabel.text = idList[0].name
                 }
-                self.refreshAlert.dismiss(animated: true, completion: nil)
+                refreshAlert.dismiss(animated: true, completion: {
+                    refreshAlert = nil
+                })
             }
             
+        }else {
+            DispatchQueue.main.async {
+                refreshAlert.title = "エラー".loStr
+                refreshAlert.message = err
+                refreshAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: {
+                    Void in
+                    refreshAlert = nil
+                }))
+            }
         }
         
     }

@@ -193,9 +193,10 @@ let parameters:[GASURL] = [
 ]
 */
 let parameters:[GASURL] = [
+    GASURL(id: "sheetID", url: apiUrl+"?operation=idList"),
     GASURL(id: "itemArr", url: apiUrl+"?operation=csv&shName=MASTER"),
     GASURL(id: "employee", url: apiUrl+"?operation=csv&shName=Employee"),
-    GASURL(id: "errMessage", url: apiUrl+"?operation=errMsg"),
+    GASURL(id: "errMessage", url: apiUrl+"?operation=csv&shName=IBM_error"),
     GASURL(id: "translate", url: apiUrl+"?operation=csv&shName=translate")
 ]
 
@@ -238,7 +239,7 @@ var previousTime:String = ""
 //起動時のViewControllerの情報を格納
 var currentView:String = ""
 var startUpCount = 0
-var bundleVersion = ""
+var appVersion = ""
 var isHostConnected:Bool = false
 
 //FMDBの変数

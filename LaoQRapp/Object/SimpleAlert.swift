@@ -15,60 +15,39 @@ class SimpleAlert: NSObject {
             let action1 = UIAlertAction(title: "OK", style: .default, handler: nil)
             alert.addAction(action1)
             
-            if let topViewController: UIViewController = SimpleAlert.topViewController(){
-                //topViewController.view.addSubview(customView)
+            if var topViewController: UIViewController = SimpleAlert.topViewController(){
+                
+                if topViewController.classForCoder == UIAlertController.classForCoder(){
+                    topViewController.dismiss(animated: true, completion: {
+                        topViewController = SimpleAlert.topViewController()!
+                    })
+                }
                 topViewController.present(alert, animated: true, completion: nil)
             }
-            /*
-            if window_.rootViewController?.presentedViewController != nil ||
-                window_.rootViewController?.presentingViewController != nil{
-                window_.rootViewController?.dismiss(animated: false, completion: {
-                    window_.rootViewController?.present(alert, animated: true, completion: nil)
-                })
-            } else {
-               window_.rootViewController?.present(alert, animated: true, completion: nil)
-            }*/
+            
         }
     }
     
     class func make (title: String?, message: String?, action:[UIAlertAction]) {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            //let action1 = UIAlertAction(title: "OK", style: .default, handler: nil)
             for act in action {
                 alert.addAction(act)
             }
             
-            if let topViewController: UIViewController = SimpleAlert.topViewController(){
-                //topViewController.view.addSubview(customView)
+            if var topViewController: UIViewController = SimpleAlert.topViewController(){
+                
+                if topViewController.classForCoder == UIAlertController.classForCoder(){
+                    topViewController.dismiss(animated: true, completion: {
+                        topViewController = SimpleAlert.topViewController()!
+                    })
+                }
                 topViewController.present(alert, animated: true, completion: nil)
             }
-            /*
-            if window_.rootViewController?.presentedViewController != nil ||
-                window_.rootViewController?.presentingViewController != nil{
-                window_.rootViewController?.dismiss(animated: false, completion: {
-                    window_.rootViewController?.present(alert, animated: true, completion: nil)
-                })
-            } else {
-                window_.rootViewController?.present(alert, animated: true, completion: nil)
-            }*/
+            
         }
     }
-    /*
-    class func getTopViewController() -> UIViewController? {
-        if let rootViewController = UIApplication.shared.keyWindow?.rootViewController {
-            var topViewController: UIViewController = rootViewController
 
-            while let presentedViewController = topViewController.presentedViewController {
-                topViewController = presentedViewController
-            }
-
-            return topViewController
-        } else {
-            return nil
-        }
-    }*/
-    
     
     class func topViewController(controller: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
         if let navigationController = controller as? UINavigationController {
