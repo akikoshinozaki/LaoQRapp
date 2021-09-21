@@ -1,6 +1,5 @@
 //
 //  HostConnect.swift
-//  SekisuiTatami
 //
 //  Created by administrator on 2019/02/04.
 //  Copyright © 2019年 Akiko Shinozaki. All rights reserved.
@@ -12,7 +11,7 @@ import Reachability
 protocol HostConnectDelegate{
     func complete(_: Any)
     func failed(status: ConnectionStatus)
-    //func failed(error: Error)
+//    func failed(error: Error)
 }
 enum ConnectionStatus {
     case success
@@ -22,43 +21,59 @@ enum ConnectionStatus {
 }
 
 let hostConnect = HostConnect()
+var connect:ConnectionStatus = .notConnect
+
 class HostConnect: NSObject {
     var delegate:HostConnectDelegate?
     var ipList:[String] = ["172.17.","172.31."]
     var vpnConnect:Bool = false
     
-    var connect:ConnectionStatus = .notConnect
-    
     var reachability: Reachability?
     var networkStatus = ""
     
-    func start(hostName:String) {
+        
+     func start(hostName:String) {
+        print("---------hostconnect start()")
+        connect = .notConnect
         stopNotifier()
         
-        if IP_Check() {
-            do{
-                reachability = try Reachability(hostname: hostName)
-                vpnConnect = true
-            }catch {
-                print(error)
-            }
-        }else {
-            do{
-                reachability = try Reachability()
-                vpnConnect = false
-            }catch {
-                print(error)
-            }
+        vpnConnect = IP_Check()
+        print(vpnConnect)
+        if vpnConnect {
+            reachability = try? Reachability(hostname: hostName)
+        } else {
+            reachability = try? Reachability()
         }
 
-        //print(reachability?.connection.description ?? "")
         startNotifier()
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(reachabilityChanged(_:)),
-            name: .reachabilityChanged,
-            object: reachability
-        )
+
+        reachability?.whenReachable = { reachability in
+            self.updateStatusWhenReachable(reachability)
+        }
+        reachability?.whenUnreachable = { reachability in
+            self.updateStatusWhenNotReachable(reachability)
+        }
+       
+    }
+
+    func updateStatusWhenReachable(_ reachability: Reachability) {
+        print(#function)
+        print("\(reachability.description) - \(reachability.connection)")
+        if IP_Check() {
+            connect = .success
+            self.delegate?.complete(connect)
+        }else {
+            connect = .vpn_error
+            self.delegate?.failed(status: connect)
+        }
+    }
+    
+    func updateStatusWhenNotReachable(_ reachability: Reachability) {
+        print(#function)
+        print("\(reachability.description) - \(reachability.connection)")
+
+        connect = .notConnect
+        self.delegate?.failed(status: .notConnect)
     }
     
     func startNotifier() {
@@ -78,32 +93,18 @@ class HostConnect: NSObject {
         NotificationCenter.default.removeObserver(self, name: .reachabilityChanged, object: nil)
         reachability = nil
     }
-    
 
+    
     @objc func reachabilityChanged(_ note: Notification) {
+        print(#function)
         let reachability = note.object as! Reachability
-        print(reachability.connection)
-        connect = .notConnect
         
-        if IP_Check() {
-            //vpnOKの時
-            if reachability.connection != .unavailable {
-                connect = .success
-                delegate?.complete(reachability.connection)
-            } else {
-                connect = .host_res_error
-                delegate?.failed(status: connect)
-            }
-        }else{
-            //vpnNGの時
-            if reachability.connection != .unavailable {
-                connect = .vpn_error
-            } else {
-                connect = .notConnect
-            }
-            delegate?.failed(status: connect)
+        if reachability.connection != .unavailable {
+            updateStatusWhenReachable(reachability)
+        } else {
+            updateStatusWhenNotReachable(reachability)
         }
-        
+    
     }
     
     deinit {
@@ -113,11 +114,12 @@ class HostConnect: NSObject {
     //MARK:- IPアドレスのチェック
     func IP_Check() -> Bool{
         var connect:Bool = false
-        //print(self.ipList)
+        print(self.ipList)
         for ip in self.getNetworkInterfaces() {
             for str in self.ipList {
                 //ipアドレスに指定の値が含まれていればtrueに
                 if ip.hasPrefix(str){
+                    //ipAddress = ip
                     connect = true
                 }
             }
@@ -155,7 +157,7 @@ class HostConnect: NSObject {
                 //print("\(name): \(String(cString: hostname))")
             }
         }
-
+        //print(address)
         freeifaddrs(ifaddr)
         
         return address

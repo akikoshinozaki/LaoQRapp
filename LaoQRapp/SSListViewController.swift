@@ -78,7 +78,7 @@ class SSListViewController: UIViewController {
             sheetName = idList[0].sheet
             fileName = idList[0].name
             sheetLabel.text = fileName
-            getGasList(select: 0)
+            getGasList(select: 0)//リスト取得(当日分表示)
         }
 
         listSelector.selectedSegmentIndex = 0
@@ -103,20 +103,29 @@ class SSListViewController: UIViewController {
             return
         }
         index = sender.selectedSegmentIndex
-        getGasList(select: index)
+        dispTable(type: index)
+//        if receivedData == 0 {
+//            getGasList(select: index)
+//        }else {
+//            dispTable(type: index)
+//        }
     }
     
-    func getGasList(select: Int) {
+    func getGasList(select:Int) {
             dataGetAlert = UIAlertController(title: "ຂໍ້ມູນ ກຳ ລັງໄດ້ຮັບ", message: "データ取得中", preferredStyle: .alert)
-            
+//        dataGetAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: {
+//            Void in
+//            return
+//        }))
             self.present(dataGetAlert, animated: true, completion: nil)
         
         var list:[GASList] = []
+        receivedData = []
         let param = [
             "operation":"search",
             "sheetID":sheetId,
             "shName":sheetName,
-            "term":String(select)
+//            "term":String(select)
 //            "device":iPadName,
 //            "date1":"",
 //            "date2":"",
@@ -132,20 +141,22 @@ class SSListViewController: UIViewController {
         let request = URLRequest(url: URL(string: url)!)
         
         let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 20.0
+//        config.timeoutIntervalForRequest = 20.0
         let session = URLSession(configuration: config)
         
         var title = ""
         var msg = ""
         let task = session.dataTask(with: request as URLRequest, completionHandler: {(data,response,err) -> Void in
+            let start = Date()
+            
             DispatchQueue.main.async {
                 
                 if err == nil {
                     if data != nil {
-                        print(data!)
+                        //print(data!)
                         do{
-                            if let j = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary  {
-                                print(j)
+                            if let _ = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.allowFragments) as? NSDictionary  {
+                                //print(j)
                                 //エラーメッセージ
                                 self.dataGetAlert.title = "ຂໍ້ຜິດພາດ/Error"
                                 self.dataGetAlert.message = "ຄວາມລົ້ມເຫລວໃນການຊອກຫາຂໍ້ມູນ\nデータ取得失敗"
@@ -164,18 +175,23 @@ class SSListViewController: UIViewController {
                                 self.dataGetAlert.dismiss(animated: true, completion: {
                                     self.dataGetAlert = nil
                                 })
+                                
                                 for j in json {
                                     var createDate = ""
-                                    print(j["Create Date"] as? String)
+                                    //var createMonth = ""
+                                    
+                                    //print(j["Create Date"] as? String)
                                     if let str = j["Create Date"] as? String {
                                         //print(str)
                                         if let date = str.toDate(format: "yyyy-MM-dd HH:mm:ss"){
                                             createDate = date.toString(format: "yyyy/MM/dd")
+                                            //createMonth = date.toString(format: "yyyyMM")
+                                            
                                         }else {
                                             createDate = str
                                         }
-                                    }
-                                    //print(createDate)
+                                        
+//                                    print(createDate)
                                     let val = GASList(loc: j["Location"] as? String ?? "",
                                                       item: j["item"] as? String ?? "",
                                                       itemName: j["itemName"] as? String ?? "",
@@ -188,14 +204,20 @@ class SSListViewController: UIViewController {
                                                       LH: j["LH"] as? String ?? "",
                                                       WT: j["WT"] as? String ?? "",
                                                       HT: j["HT"] as? String ?? "")
+                                        list.append(val)
+                                        
+                                    }
                                     
-                                    list.append(val)
                                 }
+                                //self.dsp(select: select, list: list)
                                 
                                 DispatchQueue.main.async {
+                                    let time = Date().timeIntervalSince(start)
+                                    //print(start.timeIntervalSince1970)
+                                    print(time)
                                     //listを渡してtableView更新
-                                    list = list.sorted(by: {($0.date < $1.date)})
-                                    self.dispTable(type:select, list:list)
+                                    self.receivedData = list.sorted(by: {($0.date < $1.date)})
+                                    self.dispTable(type:select)
                                 }
                                                         
                             }
@@ -235,16 +257,51 @@ class SSListViewController: UIViewController {
         task.resume()
     }
     
-    func dispTable(type:Int,list:[GASList]) {
-        receivedData = list
-        if list.count == 0 {
+
+    func dispTable(type:Int) {
+        
+        if receivedData.count == 0 {
             //データがない時
             self.gasList = []
         }else {
+            let calendar = Calendar(identifier: .gregorian)
+            //比較用
+            let year = calendar.component(.year, from: Date())//年
+            let month = calendar.component(.month, from: Date())//月
+            
+            var list:[GASList] = []
             var _list:[[GASList]] = []
             var arr:[GASList] = []
             
-            //print("list.cnt= \(list.count)")
+            switch type {
+            case 0://当日
+                list = receivedData.filter{$0.date == Date().toString(format: "yyyy/MM/dd")}
+            case 1://前日
+                list = receivedData.filter{$0.date == (Date()-24*60*60).toString(format: "yyyy/MM/dd")}
+            case 2://当月
+                list = receivedData.filter{
+                    let comp_s = $0.date.split(separator: "/")
+                    let comp = comp_s.map{Int($0)!}
+                    return Int(comp[0])*100+Int(comp[1])==year*100+month
+                }
+            //print(list)
+            case 3://前月
+                list = receivedData.filter{
+                    let comp_s = $0.date.split(separator: "/")
+                    let comp = comp_s.map{Int($0)!}
+                    if month == 1 {//1月の場合は、前年の12月
+                        return Int(comp[0])*100+Int(comp[1])==(year-1)*100+12
+                    }else {
+                        return Int(comp[0])*100+Int(comp[1])==year*100+month-1
+                    }
+                }
+            //print(list)
+            
+            default:
+                return
+            }
+            
+            print("list.cnt= \(list.count)")
             if type == 0 || type == 1 { //当日・前日分は日付のソートはしない
                 let groupArr = self.createGroup(arr: list)
                 _list = [groupArr]
@@ -353,6 +410,7 @@ class SSListViewController: UIViewController {
                     
                     let i = self.listSelector.selectedSegmentIndex
                     self.getGasList(select: i)
+//                    self.getGasList()
                 }
             }))
         }
@@ -422,7 +480,12 @@ extension SSListViewController:UITableViewDelegate, UITableViewDataSource {
         
         detailList = receivedData.filter{$0.date==obj.date && $0.item==obj.item}
         
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        var storyboard:UIStoryboard!
+        if is_iPhone {
+            storyboard = UIStoryboard(name: "Main2", bundle: nil)
+        }else {
+            storyboard = UIStoryboard(name: "Main", bundle: nil)
+        }
         let detail = storyboard.instantiateViewController(withIdentifier: "detail")
         //self.navigationController?.pushViewController(detail, animated: true)
         self.present(detail, animated: true, completion: nil)

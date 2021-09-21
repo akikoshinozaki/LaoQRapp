@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14865.1" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="ipad9_7" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14819.2"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="QRScannerView" customModule="SerialEnrollment" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="QRScannerView" customModule="LaoQRapp" customModuleProvider="target">
             <connections>
                 <outlet property="baseView" destination="woY-JH-MrY" id="pXg-Ci-c28"/>
                 <outlet property="closeBtn" destination="fHp-GA-NA6" id="LDz-Im-hFs"/>
@@ -21,17 +21,16 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="woY-JH-MrY">
-                    <rect key="frame" x="65" y="231" width="638" height="562"/>
+                    <rect key="frame" x="38.5" y="132" width="691" height="760"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SAv-or-yMv">
-                            <rect key="frame" x="0.0" y="0.0" width="638" height="478"/>
+                            <rect key="frame" x="0.0" y="0.0" width="691" height="684"/>
                             <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </view>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fHp-GA-NA6">
-                            <rect key="frame" x="234" y="491" width="170" height="63"/>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fHp-GA-NA6">
+                            <rect key="frame" x="270.5" y="689" width="150" height="66"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="63" id="Ukq-Es-lsn"/>
-                                <constraint firstAttribute="width" constant="170" id="bRk-jc-Vph"/>
+                                <constraint firstAttribute="width" constant="150" id="bRk-jc-Vph"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                             <state key="normal" title="閉じる"/>
@@ -39,23 +38,24 @@
                     </subviews>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstItem="fHp-GA-NA6" firstAttribute="top" secondItem="SAv-or-yMv" secondAttribute="bottom" constant="13" id="8hQ-E9-W9g"/>
                         <constraint firstItem="SAv-or-yMv" firstAttribute="top" secondItem="woY-JH-MrY" secondAttribute="top" id="Dw7-cQ-XxQ"/>
-                        <constraint firstAttribute="bottom" secondItem="fHp-GA-NA6" secondAttribute="bottom" constant="8" id="EgO-7q-7J9"/>
-                        <constraint firstAttribute="height" constant="562" id="Fp1-Cq-vqv"/>
+                        <constraint firstAttribute="bottom" secondItem="fHp-GA-NA6" secondAttribute="bottom" constant="5" id="EgO-7q-7J9"/>
+                        <constraint firstItem="fHp-GA-NA6" firstAttribute="top" secondItem="SAv-or-yMv" secondAttribute="bottom" constant="5" id="Egf-9O-ppM"/>
                         <constraint firstAttribute="trailing" secondItem="SAv-or-yMv" secondAttribute="trailing" id="MFb-Ow-bea"/>
+                        <constraint firstItem="SAv-or-yMv" firstAttribute="height" secondItem="woY-JH-MrY" secondAttribute="height" multiplier="0.9" id="Q7Z-1J-5DX"/>
                         <constraint firstItem="SAv-or-yMv" firstAttribute="centerX" secondItem="woY-JH-MrY" secondAttribute="centerX" id="Vaj-mI-3u2"/>
                         <constraint firstItem="fHp-GA-NA6" firstAttribute="centerX" secondItem="woY-JH-MrY" secondAttribute="centerX" id="aWM-2e-sfb"/>
-                        <constraint firstAttribute="width" constant="638" id="nCv-6l-65N"/>
+                        <constraint firstAttribute="width" secondItem="woY-JH-MrY" secondAttribute="height" multiplier="1:1.1" id="nLC-NM-VfG"/>
                         <constraint firstItem="SAv-or-yMv" firstAttribute="leading" secondItem="woY-JH-MrY" secondAttribute="leading" id="uOc-df-rUs"/>
                     </constraints>
                 </view>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <constraints>
+                <constraint firstItem="woY-JH-MrY" firstAttribute="width" secondItem="vUN-kp-3ea" secondAttribute="width" multiplier="0.9" id="Siu-Kf-7pi"/>
                 <constraint firstItem="woY-JH-MrY" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="YPB-s4-g0W"/>
                 <constraint firstItem="woY-JH-MrY" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="bU2-mI-ny9"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <point key="canvasLocation" x="138.28125" y="114.84374999999999"/>
         </view>
     </objects>

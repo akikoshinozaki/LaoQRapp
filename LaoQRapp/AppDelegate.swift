@@ -39,7 +39,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, HostConnectDelegate {
             defaults.set(0, forKey: "launchCount")
         }
         
-        
+        //端末を判別（iPhone/iPad）
+        let idiom = UIDevice.current.userInterfaceIdiom
+        is_iPhone = idiom == UIUserInterfaceIdiom.phone
+                
         /* FMDB変数 */
         if let dir = manager.urls(for: .documentDirectory, in: .userDomainMask).first{
             _path = dir.appendingPathComponent(dbName)
@@ -76,7 +79,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, HostConnectDelegate {
         #else
         iPadName = UIDevice.current.name.uppercased()
         #endif
-        
         
         /* 起動中のViewControllerを取得 */
         let navi = self.window?.rootViewController as! UINavigationController

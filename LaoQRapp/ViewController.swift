@@ -13,7 +13,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var enroll: UIButton!
     @IBOutlet weak var inquiry: UIButton!
     @IBOutlet weak var listBtn: UIButton!
-    @IBOutlet weak var inputBtn: UIButton!
+//    @IBOutlet weak var inputBtn: UIButton!
     @IBOutlet weak var versionLabel: UILabel!
     
     @IBOutlet var buttons:[UIButton]!
@@ -59,6 +59,7 @@ class ViewController: UIViewController {
     @objc func goToNext(_ sender: UIButton) {
         //次のページへ遷移
         var next:String = ""
+        var storyboard:UIStoryboard!
         switch sender {
         case enroll:
             next = "enroll"
@@ -66,13 +67,20 @@ class ViewController: UIViewController {
             next = "inquiry"
         case listBtn:
             next = "ssList"
-        case inputBtn:
-            next = "input"
+//        case inputBtn:
+//            next = "input"
         default:
             break
         }
         
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if is_iPhone {
+            //iPhoneの時
+            storyboard = UIStoryboard(name: "Main2", bundle: nil)
+        }else {
+            //iPadの時
+            storyboard = UIStoryboard(name: "Main", bundle: nil)
+        }
+
         let nextVC = storyboard.instantiateViewController(withIdentifier: next)
         self.navigationController?.pushViewController(nextVC, animated: true)
 

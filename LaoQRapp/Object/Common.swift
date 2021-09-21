@@ -177,9 +177,11 @@ typealias CompletionClosure = ((_ resultString:String?,_ resultJson:NSDictionary
 //typealias CompletionClosure = ((_ result:NSDictionary?, _ err:Error?) -> Void)
 //GAS APIのURL
 //TEST
+//https://docs.google.com/spreadsheets/d/1tkfxMdZ4jA3xbSeWOJCFEQ4CSns4noPMMtXGscCaPCw/edit
 //let apiUrl = "https://script.google.com/macros/s/AKfycbzo7SQFMFqc6BXTvjxxiQgqUB08vT263oT-Df2WAWedb1lxEQU/exec"
 
 //本番
+//https://docs.google.com/spreadsheets/d/1LCFgc2UBEGT0QCWqoH87n2jcjV9QWOgDI_L-3b6VOgE/edit
 let apiUrl = "https://script.google.com/macros/s/AKfycbw7BTNIdwXwyCZHi0IiHtLqIXioC4nQXfP228YflCxkgO55XKQ/exec"
 
 var translate:Dictionary<String, String> = [:]
@@ -258,6 +260,8 @@ let xserverPath = "https://oktss03.xsrv.jp/QRBackUp/"
 let hostURL = "https://maru8ibm.maruhachi.co.jp/HTP2/WAH001CL.PGM?" //本番
 var dbInsertSuccess = false
 var autoUpload:Bool = false
+var is_iPhone:Bool = false
+
 
 //var errID:[(id:Int,cd:String)] = []
 func errMsgFromIBM(rtnMSG:[String]) -> String {
